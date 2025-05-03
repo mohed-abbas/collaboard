@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Project>
  */
-class CategoryFactory extends Factory
+class ProjectFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,7 +18,8 @@ class CategoryFactory extends Factory
     {
         return [
             'title' => fake()->sentence(),
-            'project_id' => 1,
+            'created_by' => 1,
+            'created_at' => now()
         ];
     }
 }
