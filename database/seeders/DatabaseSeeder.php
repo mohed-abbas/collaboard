@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Task;
+use App\Models\Project;
+use App\Models\Category;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,13 +17,27 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory(10)->create();
+        
+        // Create a project first (required for categories)
+        $project = Project::factory()->create([
+            'created_by' => 1, // First user is the creator
+        ]);
 
-        // Attacher la task 1 au user 1
-        $task = Task::find(1);
+        // Create a category belonging to the created project
+        $category = Category::factory()->create([
+            'project_id' => $project->id,
+        ]);
+
+        // Create a task belonging to the created category
+        $task = Task::factory()->create([
+            'category_id' => $category->id,
+        ]);
+
+        // Attacher la task au user 1
         $user = User::find(1);
 
-        if (!$task || !$user) {
-            throw new \Exception("La tâche ou l'utilisateur avec l'ID 1 n'existe pas.");
+        if (!$user) {
+            throw new \Exception("L'utilisateur avec l'ID 1 n'existe pas.");
         }
 
         // Lier la tâche au user 1 comme créateur
