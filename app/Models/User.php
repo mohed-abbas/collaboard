@@ -62,4 +62,18 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Task::class);
     }
+
+    // Projects this user owns
+    public function ownedProjects()
+    {
+        return $this->hasMany(Project::class, 'owner_id');
+    }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class)
+            ->withTimestamps()
+            ->orderBy('sort_order');
+    }
+
 }
