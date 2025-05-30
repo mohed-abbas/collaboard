@@ -14,4 +14,9 @@ class Task extends Model
     {
         return $this->belongsToMany(User::class)->withPivot('is_creator');
     }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }

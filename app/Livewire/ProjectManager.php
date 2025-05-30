@@ -83,6 +83,7 @@ class ProjectManager extends Component
                 'name' => $this->name,
                 'description' => $this->description,
             ]);
+        $this->dispatch('projectUpdated', $this->editingId);
 
         $this->closeModal();
         $this->reloadProjects();

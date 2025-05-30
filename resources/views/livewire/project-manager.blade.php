@@ -6,9 +6,9 @@
         @forelse($projects as $project)
             <li class="relative flex justify-between items-center py-2" x-data="{ open: false }">
                 <!-- Project Name -->
-                <div>
+                <a href="{{ route('project.board', $project->id) }}">
                     {{ $project->name }}
-                </div>
+                </a>
 
                 <!-- Dropdown Trigger & Menu -->
                 <div class="relative">
