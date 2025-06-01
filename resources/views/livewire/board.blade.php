@@ -1,0 +1,37 @@
+<div>
+    <h1 class="text-2xl font-bold mb-4">
+        {{ $project->name }}
+    </h1>
+
+    <!-- Create category button in the board -->
+    <button wire:click="openCreateCategoryModal"
+        class="mb-4 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+        + Create Category
+    </button>
+    <!-- Categories -->
+    <div class="flex flex-row gap-4 overflow-x-auto items-start py-4 px-2">
+        @foreach($categories as $category)
+        <div class="flex flex-col min-w-[280px] bg-white rounded-lg shadow px-2 py-3">
+            <h2 class="text-lg font-semibold mb-2">{{ $category->title }}</h2>
+            <div class="flex flex-col gap-2">
+                @forelse($category->tasks as $task)
+                <div class="bg-gray-100 rounded-lg p-3">
+                    <h3 class="font-medium">{{ $task->title }}</h3>
+                    <p class="text-sm text-gray-600">{{ $task->description }}</p>
+                    <div class="mt-2 flex justify-between items-center">
+                        <span class="text-xs text-gray-500">Due:
+                            {{ $task->due_date ? $task->due_date->format('Y-m-d') : 'No due date' }}</span>
+                        <button wire:click="openEditTaskModal({{ $task->id }})"
+                            class="text-blue-500 hover:underline">Edit</button>
+                    </div>
+                </div>
+                @empty
+                <div class="text-gray-400 italic text-center p-2">No tasks</div>
+                @endforelse
+            </div>
+        </div>
+        @endforeach
+    </div>
+    <!-- Category Modal -->
+    @include('livewire.category-modal')
+</div>
