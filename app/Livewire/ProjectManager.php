@@ -18,6 +18,13 @@ class ProjectManager extends Component
     public string $name = '';
     public string $description = '';
 
+    protected $listeners = [
+        'openCreateProjectModal' => 'openCreateModal',
+        'projectCreated' => 'reloadProjects',
+        'projectUpdated' => 'reloadProjects',
+        'projectDeleted' => 'reloadProjects',
+    ];
+
     protected function rules()
     {
         return [
@@ -33,10 +40,10 @@ class ProjectManager extends Component
 
     public function reloadProjects()
     {
-        $this->projects = auth()->user()
-            ->projects()
-            ->orderBy('sort_order')
-            ->get();
+        // Récupérer tous les projets de l'utilisateur
+        $this->projects = auth()->user()->projects()->latest()->get();
+        // DEBUG:
+        // dd($this->projects); // Décommenter pour vérifier les données récupérées
     }
 
     //–– Create Flow ––
@@ -54,54 +61,68 @@ class ProjectManager extends Component
         $project = Project::create([
             'name' => $this->name,
             'description' => $this->description,
+            'user_id' => auth()->id(),
             'owner_id' => auth()->id(),
         ]);
-        $project->members()->attach(auth()->id());
 
-        $this->closeModal();
+        $this->showModal = false;
+        $this->resetForm();
+        
+        // Important: recharger la liste
         $this->reloadProjects();
+        
+        $this->dispatch('projectCreated');
     }
 
     //–– Edit Flow ––
-    public function openEditModal(int $id)
+    public function openEditModal($projectId)
     {
-        $project = Project::findOrFail($id);
-
-        $this->editingId = $project->id;
+        $this->isEditing = true;
+        $this->editingId = $projectId;
+        
+        // Charger les données du projet
+        $project = Project::findOrFail($projectId);
         $this->name = $project->name;
         $this->description = $project->description;
-        $this->isEditing = true;
+        
+        // Ouvrir la modale
         $this->showModal = true;
     }
 
     public function updateProject()
     {
+        // Validation
         $this->validate();
-
-        Project::findOrFail($this->editingId)
-            ->update([
-                'name' => $this->name,
-                'description' => $this->description,
-            ]);
-        $this->dispatch('projectUpdated', $this->editingId);
-
-        $this->closeModal();
+        
+        // Mise à jour du projet
+        $project = Project::find($this->editingId);
+        $project->update([
+            'name' => $this->name,
+            'description' => $this->description
+        ]);
+        
+        // Fermer la modale et réinitialiser le formulaire
+        $this->showModal = false;
+        $this->resetForm();
+        
+        // Rafraîchir la liste des projets
         $this->reloadProjects();
+        
+        // Émettre un événement pour informer d'autres composants
+        $this->dispatch('projectUpdated');
     }
 
     //–– Delete Flow ––
-    public function deleteProject(int $id)
+    public function deleteProject($projectId)
     {
-        $project = Project::findOrFail($id);
-
-        // Only owner can delete
-        if ($project->owner_id !== auth()->id()) {
-            session()->flash('error', 'Only the owner can delete this project.');
-            return;
-        }
-
-        $project->delete();
+        // Supprimer le projet
+        Project::destroy($projectId);
+        
+        // Rafraîchir la liste
         $this->reloadProjects();
+        
+        // Émettre un événement
+        $this->dispatch('projectDeleted');
     }
 
     public function closeModal()
@@ -112,9 +133,7 @@ class ProjectManager extends Component
 
     private function resetForm()
     {
-        $this->editingId = null;
-        $this->name = '';
-        $this->description = '';
+        $this->reset(['name', 'description', 'editingId', 'isEditing']);
     }
 
     public function render()

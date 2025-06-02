@@ -1,21 +1,22 @@
 <?php
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-    protected $fillable = ['name', 'description', 'owner_id'];
+    use HasFactory;
 
-    // Owner relation (the user who created it)
-    public function owner()
-    {
-        return $this->belongsTo(User::class, 'owner_id');
-    }
+    protected $fillable = [
+        'name',
+        'description',
+        'user_id',
+        'owner_id',  // Ajoutez cette ligne
+    ];
 
-    // Members relation (users who belong to it)
-    public function members()
+    public function user()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

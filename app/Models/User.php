@@ -71,9 +71,9 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function projects()
     {
-        return $this->belongsToMany(Project::class)
-            ->withTimestamps()
-            ->orderBy('sort_order');
+        return $this->hasMany(Project::class, 'user_id');
+        // OU si owner_id est utilisé comme clé étrangère
+        // return $this->hasMany(Project::class, 'owner_id');
     }
 
 }
