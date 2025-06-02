@@ -9,8 +9,10 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
+Route::get('dashboard', function() {
+    $projects = auth()->user()->projects()->latest()->get();
+    return view('dashboard', compact('projects'));
+})->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
@@ -21,4 +23,27 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 });
 
+<<<<<<< HEAD
 require __DIR__.'/auth.php';
+=======
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/projects/manage', function () {
+        return view('projects.manage');
+    })->name('projects.manage');
+});
+
+
+Route::get('/projects/{project}/board', function(App\Models\Project $project) {
+    // Vérifier que l'utilisateur a accès à ce projet
+    if ($project->user_id !== auth()->id()) {
+        abort(403);
+    }
+    
+    return view('projects.project-board', compact('project'));
+})->middleware(['auth'])->name('projects.board');
+
+
+require __DIR__ . '/auth.php';
+>>>>>>> 56432cc (update ilia)
