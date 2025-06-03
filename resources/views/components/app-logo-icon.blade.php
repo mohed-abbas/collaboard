@@ -1,8 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 42" {{ $attributes }}>
-    <path 
-        fill="currentColor" 
-        fill-rule="evenodd" 
-        clip-rule="evenodd"
-        d="M17.2 5.633 8.6.855 0 5.633v26.51l16.2 9 16.2-9v-8.442l7.6-4.223V9.856l-8.6-4.777-8.6 4.777V18.3l-5.6 3.111V5.633ZM38 18.301l-5.6 3.11v-6.157l5.6-3.11V18.3Zm-1.06-7.856-5.54 3.078-5.54-3.079 5.54-3.078 5.54 3.079ZM24.8 18.3v-6.157l5.6 3.111v6.158L24.8 18.3Zm-1 1.732 5.54 3.078-13.14 7.302-5.54-3.078 13.14-7.3v-.002Zm-16.2 7.89 7.6 4.222V38.3L2 30.966V7.92l5.6 3.111v16.892ZM8.6 9.3 3.06 6.222 8.6 3.143l5.54 3.08L8.6 9.3Zm21.8 15.51-13.2 7.334V38.3l13.2-7.334v-6.156ZM9.6 11.034l5.6-3.11v14.6l-5.6 3.11v-14.6Z"
-    />
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="collaboGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#3B82F6; stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#8B5CF6; stop-opacity:1" />
+        </linearGradient>
+    </defs>
+
+    <!-- Abstract connected nodes -->
+    <circle cx="160" cy="160" r="20" fill="url(#collaboGradient)" />
+    <circle cx="352" cy="160" r="20" fill="url(#collaboGradient)" />
+    <circle cx="256" cy="320" r="20" fill="url(#collaboGradient)" />
+
+    <line x1="160" y1="160" x2="352" y2="160" stroke="url(#collaboGradient)" stroke-width="10" />
+    <line x1="160" y1="160" x2="256" y2="320" stroke="url(#collaboGradient)" stroke-width="10" />
+    <line x1="352" y1="160" x2="256" y2="320" stroke="url(#collaboGradient)" stroke-width="10" />
+
+    <!-- Wordmark -->
+    <text x="256" y="460" text-anchor="middle" font-family="Helvetica, sans-serif" font-size="48" fill="#000000">
+        Collaboard
+    </text>
 </svg>

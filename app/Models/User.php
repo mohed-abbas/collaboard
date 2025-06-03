@@ -54,12 +54,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return Str::of($this->name)
             ->explode(' ')
-            ->map(fn (string $name) => Str::of($name)->substr(0, 1))
+            ->map(fn(string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
     }
-<<<<<<< HEAD
-}
-=======
 
     public function assignedTasks()
     {
@@ -75,9 +72,5 @@ class User extends Authenticatable implements MustVerifyEmail
     public function projects()
     {
         return $this->hasMany(Project::class, 'user_id');
-        // OU si owner_id est utilisé comme clé étrangère
-        // return $this->hasMany(Project::class, 'owner_id');
     }
-
 }
->>>>>>> 56432cc (update ilia)
