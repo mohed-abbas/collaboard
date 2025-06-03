@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProjectController;
 use App\Livewire\Board;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
@@ -34,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Route board
     Route::get('/{project}/board', Board::class)->name('project.board');
+    Route::get('/projects/{project}/board', [ProjectController::class, 'board'])->name('projects.board');
 });
 
 require __DIR__ . '/auth.php';

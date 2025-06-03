@@ -48,3 +48,6 @@
 
     @livewire('project-modal')
 </x-layouts.app>
+
+<?php
+Route::get('/projects/{project}/board', [ProjectController::class, 'board'])->name('projects.board');
