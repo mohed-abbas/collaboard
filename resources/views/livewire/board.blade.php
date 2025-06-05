@@ -25,6 +25,10 @@
                             class="text-blue-500 hover:underline">Edit</button>
                     </div>
                 </div>
+                <button wire:click="openCreateTaskModal({{ $category->id }})"
+                    class="mt-2 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-700">
+                    + Add Task
+                </button>
                 @empty
                 <div class="text-gray-400 italic text-center p-2">No tasks</div>
                 @endforelse

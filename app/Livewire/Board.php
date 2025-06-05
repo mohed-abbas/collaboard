@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Category;
 use Livewire\Component;
 use App\Models\Project;
+use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use stdClass;
@@ -72,11 +73,47 @@ class Board extends Component
         $this->loadBoard();
     }
 
-    public function resetForm()
+    //   Tasks: Create Flow
+
+    public $taskTitle = '';
+    public $taskDescription = '';
+    public $taskStatus = '';
+    public $taskCategoryId = null;
+
+    public function openCreateTaskModal($categoryId)
+    {
+        $this->resetForm();
+        $this->taskCategoryId = $categoryId;
+        $this->showModal = true;
+    }
+
+    public function createTask()
+    {
+        $this->validate([
+            'taskTitle' => 'required|string|max:255',
+            'taskDescription' => 'nullable|string',
+            'taskStatus' => 'required|string|max:255',
+            'taskCategoryId' => 'required|exists:categories,id',
+        ]);
+
+        $task = Task::create([
+            'title' => $this->taskTitle,
+            'description' => $this->taskDescription,
+            'status' => $this->taskStatus,
+            'category_id' => $this->taskCategoryId,
+            'is_done' => false,
+        ]);
+
+        $this->resetTaskForm();
+        $this->showModal = false;
+        $this->loadBoard();
+    }
+
+    public function resetTaskForm()
     {
         $this->isEditing = false;
         $this->showModal = false;
-        $this->reset(['categoryTitle']);
+        $this->reset(['taskTitle', 'taskDescription', 'taskStatus', 'taskCategoryId']);
     }
 
 
