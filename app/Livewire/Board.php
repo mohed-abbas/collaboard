@@ -49,6 +49,12 @@ class Board extends Component
         }
     }
 
+    public function resetForm()
+    {
+        $this->isEditing = false;
+        $this->showModal = false;
+        $this->reset(['categoryTitle', 'taskTitle', 'taskDescription', 'taskStatus', 'taskCategoryId']);
+    }
 
     //   Category: Create Flow
     public function openCreateCategoryModal()
@@ -73,17 +79,16 @@ class Board extends Component
         $this->loadBoard();
     }
 
-    //   Tasks: Create Flow
+    //   Task: Create Flow
 
     public $taskTitle = '';
     public $taskDescription = '';
     public $taskStatus = '';
-    public $taskCategoryId = null;
+    public $categoryId = '';
 
     public function openCreateTaskModal($categoryId)
     {
-        $this->resetForm();
-        $this->taskCategoryId = $categoryId;
+        $this->categoryId = $categoryId;
         $this->showModal = true;
     }
 
@@ -92,19 +97,28 @@ class Board extends Component
         $this->validate([
             'taskTitle' => 'required|string|max:255',
             'taskDescription' => 'nullable|string',
-            'taskStatus' => 'required|string|max:255',
-            'taskCategoryId' => 'required|exists:categories,id',
+            // 'taskStatus' => 'required|string|max:255',
+            'categoryId' => 'required|exists:categories,id',
         ]);
 
         $task = Task::create([
             'title' => $this->taskTitle,
             'description' => $this->taskDescription,
-            'status' => $this->taskStatus,
-            'category_id' => $this->taskCategoryId,
+            'category_id' => $this->categoryId,
             'is_done' => false,
+            'deadline' => null,
+            'priority_level' => 1,
+            'position' => 0,
         ]);
+        
+        // Add the new task to the correct category's task array
+        $this->tasks[$this->categoryId][] = [
+            'id' => $task->id,
+            'title' => $task->title,
+            'description' => $task->description,
+            'category_id' => $task->category_id,
+        ];
 
-        $this->resetTaskForm();
         $this->showModal = false;
         $this->loadBoard();
     }
