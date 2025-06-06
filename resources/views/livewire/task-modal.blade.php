@@ -2,7 +2,7 @@
     <x-modal.dialog wire:model="showModal">
         <x-slot name="title">
             <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                {{ $isEditing ? 'Edit Task' : 'Create New Task' }} for {{ $categoryId }}
+                {{ $isEditing ? 'Edit Task' : 'Create New Task' }}
             </h3>
         </x-slot>
 

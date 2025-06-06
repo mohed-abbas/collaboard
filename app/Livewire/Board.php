@@ -53,7 +53,7 @@ class Board extends Component
     {
         $this->isEditing = false;
         $this->showModal = false;
-        $this->reset(['categoryTitle', 'taskTitle', 'taskDescription', 'taskStatus', 'taskCategoryId']);
+        $this->reset(['categoryTitle', 'taskTitle', 'taskDescription']);
     }
 
     //   Category: Create Flow
@@ -80,7 +80,7 @@ class Board extends Component
     }
 
     //   Task: Create Flow
-
+    public $taskId = '';
     public $taskTitle = '';
     public $taskDescription = '';
     public $taskStatus = '';
@@ -127,9 +127,55 @@ class Board extends Component
     {
         $this->isEditing = false;
         $this->showModal = false;
-        $this->reset(['taskTitle', 'taskDescription', 'taskStatus', 'taskCategoryId']);
+        $this->reset(['taskTitle', 'taskDescription']);
     }
 
+    public function openEditTaskModal($taskId)
+    {
+        $task = Task::find($taskId);
+        if ($task) {
+            $this->taskId = $task->id;
+            $this->taskTitle = $task->title;
+            $this->taskDescription = $task->description;
+            $this->categoryId = $task->category_id;
+            $this->isEditing = true;
+            $this->showModal = true;
+        }
+    }
+
+    public function updateTask()
+    {
+        $this->validate([
+            'taskTitle' => 'required|string|max:255',
+            'taskDescription' => 'nullable|string',
+            'categoryId' => 'required|exists:categories,id',
+        ]);
+
+        $task = Task::find($this->taskId);
+        if ($task) {
+            $task->update([
+                'title' => $this->taskTitle,
+                'description' => $this->taskDescription,
+                'category_id' => $this->categoryId,
+            ]);
+
+            // Update the task in the tasks array
+            $this->tasks[$this->categoryId] = collect($this->tasks[$this->categoryId])->map(function ($t) use ($task) {
+                if ($t['id'] === $task->id) {
+                    return [
+                        'id' => $task->id,
+                        'title' => $task->title,
+                        'description' => $task->description,
+                        'category_id' => $task->category_id,
+                    ];
+                }
+                return $t;
+            })->toArray();
+        }
+
+        $this->resetTaskForm();
+        $this->loadBoard();
+    }
 
     // Listener for project updates
     #[On('projectUpdated')]

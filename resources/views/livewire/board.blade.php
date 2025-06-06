@@ -19,7 +19,7 @@
                     <h3 class="font-medium">{{ $task->title }}</h3>
                     <p class="text-sm text-gray-600">{{ $task->description }}</p>
                     <div class="mt-2 flex justify-between items-center">
-                        <span class="text-xs text-gray-500">Due:
+                        <span class="text-xs text-gray-500">
                             {{ $task->due_date ? $task->due_date->format('Y-m-d') : 'No due date' }}</span>
                         <button wire:click="openEditTaskModal({{ $task->id }})"
                             class="text-blue-500 hover:underline">Edit</button>
@@ -30,7 +30,7 @@
                 <div class="text-gray-400 italic text-center p-2">No tasks</div>
                 @endforelse
                 <button wire:click="openCreateTaskModal({{ $category->id }})"
-                    class="mt-2 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-700">
+                    class="mt-2 px-3 py-1 bg-gray-100 text-black rounded hover:bg-green-500 cursor-pointer hover:text-white">
                     + Add Task
                 </button>
             </div>
