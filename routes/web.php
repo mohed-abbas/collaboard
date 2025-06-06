@@ -13,9 +13,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::get('/dashboard', App\Livewire\Dashboard::class)->name('dashboard')->middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -36,5 +34,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/{project}/settings', ProjectSettings::class)->name('project.settings');
 });
 
+Route::resource('projects', App\Http\Controllers\Board::class);
 
 require __DIR__ . '/auth.php';
