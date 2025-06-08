@@ -8,7 +8,6 @@
 
         <x-slot name="newContent">
             <form wire:submit.prevent="{{ $isEditing ? 'updateTask' : 'createTask' }}" class="space-y-6">
-
                 <!-- Task Title -->
                 <div class="space-y-1">
                     <label for="taskTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-300">

@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Livewire;
+
 use App\Models\Task;
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -27,7 +29,7 @@ class TaskManager extends Component
         $this->categoryId = null;
         $this->isEditing = false;
         $this->showModal = false;
-    }   
+    }
 
     #[On('openCreateTaskModal')]
     public function openCreateTaskModal($categoryId)
@@ -46,9 +48,16 @@ class TaskManager extends Component
         $this->showModal = true;
         $this->taskId = $taskId;
         // Load task data here if needed
+        $task = Task::find($this->taskId);
+        if ($task) {
+            $this->taskTitle = $task->title;
+            $this->taskDescription = $task->description;
+            $this->categoryId = $task->category_id;
+        }
     }
 
-    public function createTask(){
+    public function createTask()
+    {
         $this->validate([
             'taskTitle' => 'required|string|max:255',
             'taskDescription' => 'nullable|string',
@@ -75,9 +84,8 @@ class TaskManager extends Component
             'taskDescription' => 'nullable|string',
             'categoryId' => 'required|exists:categories,id',
         ]);
-
         $task = Task::find($this->taskId);
-        if ($task) {
+        if($task) {
             $task->update([
                 'title' => $this->taskTitle,
                 'description' => $this->taskDescription,
