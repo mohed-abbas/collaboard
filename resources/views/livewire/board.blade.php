@@ -13,19 +13,17 @@
                 <h2 class="text-lg font-semibold mb-2">{{ $category->title }}</h2>
                 <div class="flex flex-col gap-2">
                     @forelse($category->tasks as $task)
-                        <div class="bg-gray-100 rounded-lg p-3">
+                        <div wire:click="$dispatch('openEditTaskModal', { taskId: {{ $task->id }} })"
+                            class="task bg-gray-100 rounded-lg p-3 cursor-pointer transition-colors duration-150 hover:bg-blue-100">
                             <h3 class="font-medium">{{ $task->title }}</h3>
-                            @if ($task->is_done == 1)
-                                <div class="text-green-600">Done</div>
-                            @endif
-                            <p class="text-sm text-gray-600">{{ $task->description }}</p>
+                            <p class="text-sm text-gray-600 ">{{ $task->description }}</p>
                             <div class="mt-2 flex justify-between items-center">
                                 <span class="text-xs text-gray-500">
-                                {{ $task->deadline ? 'Deadline : ' . \Carbon\Carbon::parse($task->deadline)->format('Y-m-d H:m') : '' }}</span>
-                                <button wire:click="$dispatch('openEditTaskModal', { taskId: {{ $task->id }}})"
-                                    class="text-blue-500 hover:underline">
-                                    Edit
-                                </button>
+                                    {{ $task->deadline ? 'Deadline : ' . \Carbon\Carbon::parse($task->deadline)->format('Y-m-d H:i') : '' }}
+                                </span>
+                                @if ($task->is_done == 1)
+                                    <div class="text-green-600 text-sm">Done</div>
+                                @endif
                             </div>
                         </div>
                         {{-- Create task button at the end of the task list --}}
@@ -33,8 +31,8 @@
                         <div class="text-gray-400 italic text-center p-2">No tasks</div>
                     @endforelse
                     <button wire:click="$dispatch('openCreateTaskModal', {categoryId: {{ $category->id }}})"
-                        class="mt-2 px-3 py-1 bg-gray-100 text-black rounded hover:bg-green-500 cursor-pointer hover:text-white">
-                        Add Task
+                        class="mt-2 px-3 py-1 border text-black rounded cursor-pointer hover:bg-gray-100 transition-colors duration-150">
+                        + Add Task
                     </button>
                 </div>
             </div>
