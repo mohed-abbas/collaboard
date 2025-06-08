@@ -1,5 +1,5 @@
 <div>
-    <x-modal.dialog wire:model="">
+    <x-modal.dialog wire:model="showCategoryModal">
         <x-slot name="title">
             <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 {{ $isEditing ? 'Edit Category' : 'Create New Category' }}
