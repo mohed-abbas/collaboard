@@ -15,17 +15,22 @@
                     </label>
                     <input id="taskTitle" type="text" wire:model="taskTitle" placeholder="Enter title"
                         class="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200 sm:text-sm" />
-                    @error('title')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
+                    @error('title')
+                        <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                 <!-- Task Description -->
+                <!-- Task Description -->
                 <div class="space-y-1">
                     <label for="taskDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Description
                     </label>
-                    <input id="taskDescription" type="text" wire:model="taskDescription" placeholder="Enter description"
+                    <input id="taskDescription" type="text" wire:model="taskDescription"
+                        placeholder="Enter description"
                         class="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200 sm:text-sm" />
-                    @error('title')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
+                    @error('title')
+                        <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Task Deadline -->
@@ -36,46 +41,51 @@
                     <input id="deadline" type="datetime-local" wire:model="taskDeadline" placeholder="Select due date"
                         value="{{ old('taskDeadline', $taskDeadline ? \Illuminate\Support\Carbon::parse($taskDeadline)->format('Y-m-d') : '') }}"
                         class="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200 sm:text-sm" />
-                    @error('taskDeadline')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
+                    @error('taskDeadline')
+                        <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                {{-- is Done --}}
+                {{-- Category --}}
                 <div class="space-y-1">
-                    <div class="flex items-center space-x-2">
-                        <label for="taskIsDone" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-0">
-                            Is Done
-                        </label>
-                        <input id="taskIsDone" type="checkbox" wire:model="taskIsDone"
-                            :checked="!!@js($taskIsDone)"
-                            class="rounded border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200" />
-                    </div>
-                    @error('is_done')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
-                    
-                    {{-- Category --}}
-                    <div class="space-y-1">
-                        <label for="categoryId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Category
-                        </label>
-                        <select id="categoryId" wire:model="categoryId"
-                            class="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200 sm:text-sm">
-                            <option value="">Select Category</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->title }}</option>
-                            @endforeach
-                        </select>
-            
-                    <!-- Actions -->
-            
-                <div class="flex justify-end space-x-3 gap-2">
-                    <button type="button" wire:click="$set('showModal', false)"
-                        class="flex-1 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                        class=" flex-1 px-4 py-2 bg-blue-500 border border-transparent rounded-md text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        {{ $isEditing ? 'Update Task' : 'Add Task' }}
-                    </button>
+                    <label for="categoryId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Category
+                    </label>
+                    <select id="categoryId" wire:model="categoryId"
+                        class="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200 sm:text-sm">
+                        <option value="{{$categoryId}}">Select category</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->title }}</option>
+                        @endforeach
+                    </select>
                 </div>
+
+                    {{-- is Done --}}
+                    <div class="space-y-1">
+                        <div class="flex items-center space-x-2">
+                            <label for="taskIsDone" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-0">
+                                Is Done
+                            </label>
+                            <input id="taskIsDone" type="checkbox" wire:model="taskIsDone"
+                                :checked="!!@js($taskIsDone)"
+                                class="rounded border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200" />
+                        </div>
+                        @error('is_done')
+                            <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <!-- Actions -->
+
+                    <div class="flex justify-end space-x-3 gap-2">
+                        <button type="button" wire:click="$set('showModal', false)"
+                            class="flex-1 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class=" flex-1 px-4 py-2 bg-blue-500 border border-transparent rounded-md text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            {{ $isEditing ? 'Update Task' : 'Add Task' }}
+                        </button>
+                    </div>
             </form>
         </x-slot>
     </x-modal.dialog>
