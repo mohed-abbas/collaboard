@@ -44,7 +44,8 @@
                         <label for="isDone" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-0">
                             Is Done
                         </label>
-                        <input id="isDone" type="checkbox" wire:model="taskIsDone"
+                        <input id="isDone" type="checkbox" wire:model.defer="taskIsDone"
+                            :checked="(bool) $taskIsDone"
                             class="rounded border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200" />
                     </div>
 
