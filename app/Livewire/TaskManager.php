@@ -14,6 +14,7 @@ class TaskManager extends Component
     public $categoryId;
     public $taskDeadline;
     public $taskIsDone;
+    public $categories = [];
 
     public $isEditing = false;
     public $showModal = false;
@@ -60,7 +61,7 @@ class TaskManager extends Component
             'position' => 1,
             'is_done' => $this->taskIsDone,
         ]);
-        
+
         $this->dispatch('projectUpdated');
         $this->resetForm();
     }

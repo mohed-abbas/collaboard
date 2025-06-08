@@ -26,7 +26,6 @@
                                 @endif
                             </div>
                         </div>
-                        {{-- Create task button at the end of the task list --}}
                     @empty
                         <div class="text-gray-400 italic text-center p-2">No tasks</div>
                     @endforelse
@@ -42,5 +41,5 @@
     <!-- Category Modal -->
     @include('livewire.category-modal')
     {{-- Task Modal --}}
-    <livewire:task-manager />
+    <livewire:task-manager :categories="$categories" />
 </div>
