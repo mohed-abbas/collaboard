@@ -45,13 +45,12 @@
                         <label for="isDone" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-0">
                             Is Done
                         </label>
-                        <input id="isDone" type="checkbox" wire:model.defer="taskIsDone"
-                            :checked="(bool) $taskIsDone"
+                        <input id="isDone" type="checkbox" @if($taskIsDone == 1) checked @endif
                             class="rounded border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200" />
                     </div>
                     @error('is_done')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
                     
-                   {{ $taskDeadline }}
+                   {{ $taskIsDone }}
                 <!-- Actions -->
             
                 <div class="flex justify-end space-x-3 gap-2">
