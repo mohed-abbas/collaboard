@@ -12,24 +12,11 @@ class TaskManager extends Component
     public $taskTitle = '';
     public $taskDescription = '';
     public $categoryId;
+    public $taskDeadline;
+    public $taskIsDone;
 
     public $isEditing = false;
     public $showModal = false;
-
-    protected $listeners = [
-        'openCreateTaskModal',
-        'openEditTaskModal',
-    ];
-
-    public function resetForm()
-    {
-        $this->taskId = null;
-        $this->taskTitle = '';
-        $this->taskDescription = '';
-        $this->categoryId = null;
-        $this->isEditing = false;
-        $this->showModal = false;
-    }
 
     #[On('openCreateTaskModal')]
     public function openCreateTaskModal($categoryId)
@@ -48,29 +35,30 @@ class TaskManager extends Component
         $this->showModal = true;
         $this->taskId = $taskId;
         // Load task data here if needed
-        $task = Task::find($this->taskId);
+        $task = Task::find($taskId);
         if ($task) {
             $this->taskTitle = $task->title;
             $this->taskDescription = $task->description;
             $this->categoryId = $task->category_id;
+            $this->taskDeadline = $task->deadline;
+            $this->taskIsDone = $task->is_done;
         }
     }
 
+    // Task : CRUD operations
+
     public function createTask()
     {
-        $this->validate([
-            'taskTitle' => 'required|string|max:255',
-            'taskDescription' => 'nullable|string',
-            'categoryId' => 'required|exists:categories,id',
-        ]);
+        $this->validateTask();
 
         Task::create([
             'title' => $this->taskTitle,
             'description' => $this->taskDescription,
             'category_id' => $this->categoryId,
+            'deadline' => $this->taskDeadline ?? now(), // Use user input or default
             'priority_level' => 1, // Default priority level
             'position' => 1,
-            'is_done' => false,
+            'is_done' => $this->taskIsDone,
         ]);
 
         $this->resetForm();
@@ -79,22 +67,45 @@ class TaskManager extends Component
 
     public function updateTask()
     {
-        $this->validate([
-            'taskTitle' => 'required|string|max:255',
-            'taskDescription' => 'nullable|string',
-            'categoryId' => 'required|exists:categories,id',
-        ]);
+        $this->validateTask();
         $task = Task::find($this->taskId);
-        if($task) {
+        if ($task) {
             $task->update([
                 'title' => $this->taskTitle,
                 'description' => $this->taskDescription,
                 'category_id' => $this->categoryId,
+                'deadline' => $this->taskDeadline,
+                'is_done' => $this->taskIsDone,
             ]);
         }
 
         $this->resetForm();
         $this->dispatch('projectUpdated');
+    }
+
+    // End CRUD operations
+
+    public function validateTask()
+    {
+        $this->validate([
+            'taskTitle' => 'required|string|max:255',
+            'taskDescription' => 'nullable|string',
+            'categoryId' => 'required|exists:categories,id',
+            'taskDeadline' => 'nullable|date',
+        ]);
+    }
+
+    public function resetForm()
+    {
+        $this->taskId = null;
+        $this->taskTitle = '';
+        $this->taskDescription = '';
+        $this->categoryId = null;
+        $this->taskDeadline = null;
+        $this->taskIsDone = 0;
+
+        $this->isEditing = false;
+        $this->showModal = false;
     }
 
     // updateTask, resetForm, etc...

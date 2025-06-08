@@ -15,10 +15,13 @@
                     @forelse($category->tasks as $task)
                         <div class="bg-gray-100 rounded-lg p-3">
                             <h3 class="font-medium">{{ $task->title }}</h3>
+                            @if ($task->is_done == 1)
+                                <div class="text-green-600">Done</div>
+                            @endif
                             <p class="text-sm text-gray-600">{{ $task->description }}</p>
                             <div class="mt-2 flex justify-between items-center">
                                 <span class="text-xs text-gray-500">
-                                    {{ $task->due_date ? $task->due_date->format('Y-m-d') : 'No due date' }}</span>
+                                {{ $task->deadline ? 'Deadline : ' . \Carbon\Carbon::parse($task->deadline)->format('Y-m-d') : '' }}</span>
                                 <button wire:click="$dispatch('openEditTaskModal', { taskId: {{ $task->id }}})"
                                     class="text-blue-500 hover:underline">
                                     Edit

@@ -1,5 +1,5 @@
 <div>
-    <x-modal.dialog wire:model="showModal">
+    <x-modal.dialog wire:model="showModal" class="w-full max-w-md">
         <x-slot name="title">
             <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
                 {{ $isEditing ? 'Edit Task' : 'Create New Task' }}
@@ -28,7 +28,31 @@
                     @error('title')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
                 </div>
 
+                <!-- Task Due Date -->
+                <div class="space-y-1">
+                    <label for="deadline" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Due Date
+                    </label>
+                    <input id="deadline" type="date" wire:model="taskDeadline" placeholder="Select due date"
+                        class="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200 sm:text-sm" />
+                    @error('due_date')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
+                </div>
+
+                {{-- is Done --}}
+                <div class="space-y-1">
+                    <div class="flex items-center space-x-2">
+                        <label for="isDone" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-0">
+                            Is Done
+                        </label>
+                        <input id="isDone" type="checkbox" wire:model="taskIsDone"
+                            class="rounded border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200" />
+                    </div>
+
+                    {{$taskIsDone ? 'Task is completed' : 'Task is not completed'}}
+                    @error('is_done')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
+
                 <!-- Actions -->
+            
                 <div class="flex justify-end space-x-3 gap-2">
                     <button type="button" wire:click="$set('showModal', false)"
                         class="flex-1 px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
