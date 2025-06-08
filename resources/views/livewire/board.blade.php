@@ -21,7 +21,7 @@
                             <p class="text-sm text-gray-600">{{ $task->description }}</p>
                             <div class="mt-2 flex justify-between items-center">
                                 <span class="text-xs text-gray-500">
-                                {{ $task->deadline ? 'Deadline : ' . \Carbon\Carbon::parse($task->deadline)->format('Y-m-d') : '' }}</span>
+                                {{ $task->deadline ? 'Deadline : ' . \Carbon\Carbon::parse($task->deadline)->format('Y-m-d H:m') : '' }}</span>
                                 <button wire:click="$dispatch('openEditTaskModal', { taskId: {{ $task->id }}})"
                                     class="text-blue-500 hover:underline">
                                     Edit

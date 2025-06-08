@@ -28,14 +28,15 @@
                     @error('title')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
                 </div>
 
-                <!-- Task Due Date -->
+                <!-- Task Deadline -->
                 <div class="space-y-1">
                     <label for="deadline" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                         Due Date
                     </label>
-                    <input id="deadline" type="date" wire:model="taskDeadline" placeholder="Select due date"
+                    <input id="deadline" type="datetime-local" wire:model="taskDeadline" placeholder="Select due date"
+                        value="{{ old('taskDeadline', $taskDeadline ? \Illuminate\Support\Carbon::parse($taskDeadline)->format('Y-m-d') : '') }}"
                         class="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200 sm:text-sm" />
-                    @error('due_date')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
+                    @error('taskDeadline')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
                 </div>
 
                 {{-- is Done --}}
@@ -48,10 +49,9 @@
                             :checked="(bool) $taskIsDone"
                             class="rounded border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200" />
                     </div>
-
-                    {{$taskIsDone ? 'Task is completed' : 'Task is not completed'}}
                     @error('is_done')<p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>@enderror
-
+                    
+                   {{ $taskDeadline }}
                 <!-- Actions -->
             
                 <div class="flex justify-end space-x-3 gap-2">
