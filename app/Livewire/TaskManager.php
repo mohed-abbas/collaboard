@@ -60,9 +60,9 @@ class TaskManager extends Component
             'position' => 1,
             'is_done' => $this->taskIsDone,
         ]);
-
-        $this->resetForm();
+        
         $this->dispatch('projectUpdated');
+        $this->resetForm();
     }
 
     public function updateTask()
@@ -78,9 +78,8 @@ class TaskManager extends Component
                 'is_done' => $this->taskIsDone,
             ]);
         }
-
-        $this->resetForm();
         $this->dispatch('projectUpdated');
+        $this->resetForm();
     }
 
     // End CRUD operations
