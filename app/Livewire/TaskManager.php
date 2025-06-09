@@ -5,16 +5,22 @@ namespace App\Livewire;
 use App\Models\Task;
 use Livewire\Component;
 use Livewire\Attributes\On;
+use Illuminate\Support\Facades\Auth;
 
 class TaskManager extends Component
 {
+    // Props from Board component
+    public $categories = [];
+    public $project;
+
     public $taskId;
     public $taskTitle = '';
     public $taskDescription = '';
     public $categoryId;
     public $taskDeadline;
     public $taskIsDone;
-    public $categories = [];
+    public $task;
+    public $taskUsers = [];
 
     public $isEditing = false;
     public $showModal = false;
@@ -36,13 +42,14 @@ class TaskManager extends Component
         $this->showModal = true;
         $this->taskId = $taskId;
         // Load task data here if needed
-        $task = Task::find($taskId);
-        if ($task) {
-            $this->taskTitle = $task->title;
-            $this->taskDescription = $task->description;
-            $this->categoryId = $task->category_id;
-            $this->taskDeadline = $task->deadline;
-            $this->taskIsDone = $task->is_done;
+        $this->task = Task::find($taskId);
+        if ($this->task) {
+            $this->taskTitle = $this->task->title;
+            $this->taskDescription = $this->task->description;
+            $this->categoryId = $this->task->category_id;
+            $this->taskDeadline = $this->task->deadline;
+            $this->taskIsDone = $this->task->is_done;
+            $this->taskUsers = $this->task->users->toArray(); // Get array of user objects
         }
     }
 
@@ -52,15 +59,18 @@ class TaskManager extends Component
     {
         $this->validateTask();
 
-        Task::create([
+        $task = Task::create([
             'title' => $this->taskTitle,
             'description' => $this->taskDescription,
             'category_id' => $this->categoryId,
             'deadline' => $this->taskDeadline ?? now(), // Use user input or default
             'priority_level' => 1, // Default priority level
             'position' => 1,
-            'is_done' => $this->taskIsDone,
+            'is_done' => 0, // Set is_done explicitly
         ]);
+
+        // Attach current user as creator
+        $task->users()->attach(Auth::id(), ['is_creator' => true, 'created_at' => now()]);
 
         $this->dispatch('projectUpdated');
         $this->resetForm();

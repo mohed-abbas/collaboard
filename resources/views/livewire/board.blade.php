@@ -41,5 +41,5 @@
     <!-- Category Modal -->
     @include('livewire.category-modal')
     {{-- Task Modal --}}
-    <livewire:task-manager :categories="$categories" />
+    <livewire:task-manager :categories="$categories" :project="$project"/>
 </div>
