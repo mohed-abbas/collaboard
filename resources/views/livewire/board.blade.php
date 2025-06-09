@@ -13,19 +13,29 @@
                 <h2 class="text-lg font-semibold mb-2">{{ $category->title }}</h2>
                 <div class="flex flex-col gap-2">
                     @forelse($category->tasks as $task)
+                        {{-- Task card --}}
                         <div wire:click="$dispatch('openEditTaskModal', { taskId: {{ $task->id }} })"
-                            class="task bg-gray-100 rounded-lg p-3 cursor-pointer transition-colors duration-150 hover:bg-blue-100">
-                            <h3 class="font-medium">{{ $task->title }}</h3>
+                            class="task rounded-lg p-3 cursor-pointer transition-colors duration-150
+                                {{ $task->is_done == 1 ? 'bg-green-100 hover:bg-green-200 line-through opacity-70' : 'bg-gray-100 hover:bg-blue-100' }}">
+                            <div class="flex items-center justify-between">
+                                {{-- Task Title --}}
+                                <h3 class="font-medium">{{ $task->title }}</h3>
+                                {{-- Checkbox isDone --}}
+                                <label class="mt-2 inline-flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox"
+                                        wire:click.stop="$dispatch('toggleTaskDone', {taskId: {{ $task->id }}})"
+                                        {{ $task->is_done ? 'checked' : '' }}
+                                        class="form-checkbox h-5 w-5 text-green-600 transition duration-150 rounded checked:bg-green-600">
+                                </label>
+                            </div>
                             <p class="text-sm text-gray-600 ">{{ $task->description }}</p>
                             <div class="mt-2 flex justify-between items-center">
                                 <span class="text-xs text-gray-500">
                                     {{ $task->deadline ? 'Deadline : ' . \Carbon\Carbon::parse($task->deadline)->format('Y-m-d H:i') : '' }}
                                 </span>
-                                @if ($task->is_done == 1)
-                                    <div class="text-green-600 text-sm">Done</div>
-                                @endif
                             </div>
                         </div>
+                        {{-- End Task Card --}}
                     @empty
                         <div class="text-gray-400 italic text-center p-2">No tasks</div>
                     @endforelse
@@ -41,5 +51,5 @@
     <!-- Category Modal -->
     @include('livewire.category-modal')
     {{-- Task Modal --}}
-    <livewire:task-manager :categories="$categories" :project="$project"/>
+    <livewire:task-manager :categories="$categories" />
 </div>

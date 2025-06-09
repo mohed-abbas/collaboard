@@ -11,7 +11,6 @@ class TaskManager extends Component
 {
     // Props from Board component
     public $categories = [];
-    public $project;
 
     public $taskId;
     public $taskTitle = '';
@@ -93,6 +92,28 @@ class TaskManager extends Component
         $this->resetForm();
     }
 
+    #[On('deleteTask')]
+    public function deleteTask($taskId)
+    {
+        $task = Task::find($taskId);
+        if ($task) {
+            $task->delete();
+            $this->dispatch('projectUpdated');
+            $this->resetForm();
+        }
+    }
+
+    #[On('toggleTaskDone')]
+    public function toggleTaskDone($taskId)
+    {
+        $task = Task::find($taskId);
+        if ($task) {
+            $task->is_done = !$task->is_done;
+            $task->save();
+            $this->dispatch('projectUpdated');
+        }
+    }
+
     // End CRUD operations
 
     public function validateTask()
@@ -113,7 +134,10 @@ class TaskManager extends Component
         $this->categoryId = null;
         $this->taskDeadline = null;
         $this->taskIsDone = 0;
+        $this->task = null;
+        $this->taskUsers = [];
 
+        // Reset modal state
         $this->isEditing = false;
         $this->showModal = false;
     }

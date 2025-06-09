@@ -39,7 +39,7 @@
                         Due Date
                     </label>
                     <input id="deadline" type="datetime-local" wire:model="taskDeadline" placeholder="Select due date"
-                        value="{{ old('taskDeadline', $taskDeadline ? \Illuminate\Support\Carbon::parse($taskDeadline)->format('Y-m-d') : '') }}"
+                        value="{{ old('taskDeadline', $taskDeadline ? \Illuminate\Support\Carbon::parse($taskDeadline)->format('Y-m-d\TH:i') : '') }}"
                         class="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200 sm:text-sm" />
                     @error('taskDeadline')
                         <p class="text-sm text-red-600 dark:text-red-400 mt-1">{{ $message }}</p>
@@ -82,7 +82,7 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Creator
                         </label>
-                        <ul class="list-disc list-inside text-sm text-gray-800 dark:text-gray-200">
+                        <ul class="text-sm text-gray-800 dark:text-gray-200">
                             @foreach ($task['users'] as $user)
                                 @if ($user['pivot']['is_creator'])
                                     <li>{{ $user['name'] }} &lt;{{ $user['email'] }}&gt;</li>
@@ -105,8 +105,18 @@
                         </ul>
                     </div>
                 @endif
-                
+
+
                 <!-- Actions -->
+                {{-- delete Task --}}
+                @if ($isEditing)
+                    <div class="flex space-x-3 gap-2">
+                        <button type="button" wire:click="deleteTask({{ $taskId }})"
+                            class="px-4 py-2 bg-red-500 border border-transparent rounded-md text-sm font-medium text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Delete Task
+                        </button>
+                    </div>
+                @endif
 
                 <div class="flex justify-end space-x-3 gap-2">
                     <button type="button" wire:click="$set('showModal', false)"
