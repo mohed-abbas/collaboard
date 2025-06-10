@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Board;
+use App\Livewire\ProjectSettings;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -32,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('projects.manage');
 
     Route::get('/{project}/board', Board::class)->name('project.board');
+    Route::get('/{project}/settings', ProjectSettings::class)->name('project.settings');
 });
 
 
