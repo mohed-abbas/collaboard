@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Category;
 use Livewire\Component;
 use App\Models\Project;
+use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use stdClass;
@@ -16,7 +17,9 @@ class Board extends Component
     public $categories;
     public $categoryTitle = '';
     public $tasks = [];
-    public $showModal = false;
+
+    public $showCategoryModal = false;
+    public $showTaskModal = false;
     public $isEditing = false;
 
     public function loadBoard()
@@ -48,12 +51,19 @@ class Board extends Component
         }
     }
 
+    public function resetForm()
+    {
+        $this->isEditing = false;
+        $this->showCategoryModal = false;
+        $this->showTaskModal = false;
+        $this->reset(['categoryTitle']);
+    }
 
     //   Category: Create Flow
     public function openCreateCategoryModal()
     {
         $this->resetForm();
-        $this->showModal = true;
+        $this->showCategoryModal = true;
     }
 
     public function createCategory()
@@ -70,13 +80,6 @@ class Board extends Component
         $this->categories->push($category);
         $this->resetForm();
         $this->loadBoard();
-    }
-
-    public function resetForm()
-    {
-        $this->isEditing = false;
-        $this->showModal = false;
-        $this->reset(['categoryTitle']);
     }
 
 
