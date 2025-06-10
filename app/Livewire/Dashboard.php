@@ -2,19 +2,17 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Project;
+use Livewire\Component;
 use Illuminate\Support\Facades\Log;
 
-class ProjectManager extends Component
+class Dashboard extends Component
 {
-    public $projects = [];
-
-    // Modal state
+    // Propriétés du modal
     public bool $showModal = false;
     public bool $isEditing = false;
-
-    // Form fields
+    
+    // Champs du formulaire
     public ?int $editingId = null;
     public string $name = '';
     public string $description = '';
@@ -26,46 +24,42 @@ class ProjectManager extends Component
             'description' => 'nullable|string',
         ];
     }
-
-    public function mount()
-    {
-        $this->reloadProjects();
-    }
-
-    public function reloadProjects()
-    {
-        // Récupérer tous les projets dont l'utilisateur est membre, pas seulement ceux qu'il a créés
-        $userId = auth()->id();
-        
-        // Option 1: Récupérer les projets où l'utilisateur est propriétaire ou membre
-        $this->projects = Project::where('user_id', $userId)
-            ->orWhereHas('members', function($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-            ->orderBy('created_at', 'desc')  // Tri par date de création (le plus récent en premier)
-            ->get();
-            
-        // Ajouter un log pour déboguer
-        Log::info('Projets chargés', ['count' => $this->projects->count()]);
-    }
     
-    // Lors de l'actualisation de la liste
     public function render()
     {
-        // Force le rechargement des projets à chaque rendu
-        $this->reloadProjects();
-        
-        return view('livewire.project-manager');
+        $projects = Project::where('user_id', auth()->id())
+            ->orWhereHas('members', function($query) {
+                $query->where('user_id', auth()->id());
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+            
+        return view('livewire.dashboard', [
+            'projects' => $projects
+        ]);
     }
     
-    //–– Create Flow ––
+    // Fonctions pour le modal de création
     public function openCreateModal()
     {
         $this->resetForm();
         $this->isEditing = false;
         $this->showModal = true;
     }
-
+    
+    // Fonctions pour le modal d'édition
+    public function openEditModal(int $id)
+    {
+        $project = Project::findOrFail($id);
+        
+        $this->editingId = $project->id;
+        $this->name = $project->name;
+        $this->description = $project->description;
+        $this->isEditing = true;
+        $this->showModal = true;
+    }
+    
+    // Fonction de création de projet
     public function createProject()
     {
         $this->validate();
@@ -78,59 +72,44 @@ class ProjectManager extends Component
         $project->save();
         
         $project->members()->attach(auth()->id());
-
+        
         $this->closeModal();
-        $this->reloadProjects();
     }
-
-    //–– Edit Flow ––
-    public function openEditModal(int $id)
-    {
-        $project = Project::findOrFail($id);
-
-        $this->editingId = $project->id;
-        $this->name = $project->name;
-        $this->description = $project->description;
-        $this->isEditing = true;
-        $this->showModal = true;
-    }
-
+    
+    // Fonction de mise à jour de projet
     public function updateProject()
     {
         $this->validate();
-
+        
         Project::findOrFail($this->editingId)
             ->update([
                 'name' => $this->name,
                 'description' => $this->description,
             ]);
-        $this->dispatch('projectUpdated', $this->editingId);
-
+            
         $this->closeModal();
-        $this->reloadProjects();
     }
-
-    //–– Delete Flow ––
+    
+    // Fonction de suppression de projet
     public function deleteProject(int $id)
     {
         $project = Project::findOrFail($id);
-
-        // Only owner can delete
+        
+        // Vérification que l'utilisateur est bien propriétaire
         if ($project->owner_id !== auth()->id()) {
             session()->flash('error', 'Only the owner can delete this project.');
             return;
         }
-
+        
         $project->delete();
-        $this->reloadProjects();
     }
-
+    
     public function closeModal()
     {
         $this->resetForm();
         $this->showModal = false;
     }
-
+    
     private function resetForm()
     {
         $this->editingId = null;
