@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Project;
-use Illuminate\Support\Facades\Log;
 
 class ProjectManager extends Component
 {
@@ -34,30 +33,12 @@ class ProjectManager extends Component
 
     public function reloadProjects()
     {
-        // Récupérer tous les projets dont l'utilisateur est membre, pas seulement ceux qu'il a créés
-        $userId = auth()->id();
-        
-        // Option 1: Récupérer les projets où l'utilisateur est propriétaire ou membre
-        $this->projects = Project::where('user_id', $userId)
-            ->orWhereHas('members', function($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-            ->orderBy('created_at', 'desc')  // Tri par date de création (le plus récent en premier)
+        $this->projects = auth()->user()
+            ->projects()
+            ->orderBy('sort_order')
             ->get();
-            
-        // Ajouter un log pour déboguer
-        Log::info('Projets chargés', ['count' => $this->projects->count()]);
     }
-    
-    // Lors de l'actualisation de la liste
-    public function render()
-    {
-        // Force le rechargement des projets à chaque rendu
-        $this->reloadProjects();
-        
-        return view('livewire.project-manager');
-    }
-    
+
     //–– Create Flow ––
     public function openCreateModal()
     {
@@ -69,14 +50,12 @@ class ProjectManager extends Component
     public function createProject()
     {
         $this->validate();
-        
-        $project = new Project();
-        $project->name = $this->name;
-        $project->description = $this->description;
-        $project->owner_id = auth()->id();
-        $project->user_id = auth()->id();
-        $project->save();
-        
+
+        $project = Project::create([
+            'name' => $this->name,
+            'description' => $this->description,
+            'owner_id' => auth()->id(),
+        ]);
         $project->members()->attach(auth()->id());
 
         $this->closeModal();
@@ -136,5 +115,10 @@ class ProjectManager extends Component
         $this->editingId = null;
         $this->name = '';
         $this->description = '';
+    }
+
+    public function render()
+    {
+        return view('livewire.project-manager');
     }
 }
