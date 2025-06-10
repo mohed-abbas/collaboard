@@ -1,126 +1,18 @@
 <x-layouts.app :title="__('Dashboard')">
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <header class="mb-12">
-            <div class="flex items-center justify-between mb-6">
-              <div>
-                <h1 class="text-4xl font-bold text-gray-900 mb-2 tracking-tight">Dashboard</h1>
-                <p class="text-lg text-gray-600">Welcome back! Here's an overview of your projects</p>
-              </div>
-              <button
-                onclick="handleOpenCreateModal()"
-                class="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-              >
-                <i class="mr-2">+</i>
-                <span class="font-semibold">New Project</span>
-              </button>
+    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
+        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
+                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
             </div>
-          </header>
-  
-          <section class="mb-10">
-            <div class="flex justify-between items-center mb-8">
-                <div class="flex items-center">
-                    <h2 class="text-2xl font-semibold text-gray-800">My Projects</h2>
-                    <span class="ml-4 px-4 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full">
-                        {{ isset($projects) && is_countable($projects) ? count($projects) : 0 }}
-                    </span>
-                </div>
+            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
+                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
             </div>
-            
-            @if(isset($projects) && is_countable($projects) && count($projects) > 0)
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                    @foreach($projects as $project)
-                    <div class="group bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden transform hover:-translate-y-1">
-                        <div class="p-6">
-                          <div class="flex justify-between items-start mb-4">
-                            <h3 class="text-xl font-semibold text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
-                              {{ $project->name }}
-                            </h3>
-                            <div class="relative" x-data="{ open: false }">
-                              <button
-                                @click="open = !open"
-                                class="p-2 rounded-lg hover:bg-gray-100 focus:outline-none transition-colors duration-200"
-                              >
-                                <!-- SVG icon for more options -->
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                  <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                                </svg>
-                              </button>
-                              <div x-show="open" 
-                                   class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-xl z-10 animate-fade-in"
-                                   @click.outside="open = false">
-                                <button
-                                  onclick="handleOpenEditModal({{ $project->id }})"
-                                  class="flex w-full items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 first:rounded-t-lg"
-                                >
-                                  <!-- Edit icon -->
-                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                                    <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
-                                  </svg>
-                                  Edit Project
-                                </button>
-                                <button
-                                  onclick="handleDeleteProject({{ $project->id }})"
-                                  class="flex w-full items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 last:rounded-b-lg border-t border-gray-100"
-                                >
-                                  <!-- Delete icon -->
-                                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                  </svg>
-                                  Delete Project
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                          <p class="text-gray-600 mb-6 line-clamp-2 min-h-[48px]">
-                            {{ $project->description ?? 'No description provided' }}
-                          </p>
-                          <div class="pt-4 border-t border-gray-100">
-                            <a href="{{ route('project.board', $project->id) }}" class="w-full py-2.5 px-4 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors duration-200 font-medium text-sm flex items-center justify-center">
-                                View Board
-                            </a>
-                          </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="flex flex-col items-center justify-center bg-white rounded-2xl shadow-sm border border-dashed border-gray-300 p-12">
-                    <div class="bg-blue-50 p-4 rounded-full mb-6">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                      </svg>
-                    </div>
-                    <h3 class="text-2xl font-semibold text-gray-900 mb-3">No projects yet</h3>
-                    <p class="text-gray-600 text-center mb-8 max-w-md">
-                        Get started by creating your first project. You can track progress, set milestones, and collaborate with your team.
-                    </p>
-                    <button
-                        onclick="handleOpenCreateModal()"
-                        class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                    >
-                        Create Your First Project
-                    </button>
-                </div>
-            @endif
-          </section>
+            <div class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
+                <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
+            </div>
+        </div>
+        <div class="relative h-full flex-1 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
+            <x-placeholder-pattern class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20" />
         </div>
     </div>
-
-    <!-- Add JavaScript for modals -->
-    <script>
-      function handleOpenCreateModal() {
-          // Your modal open logic here
-          // You could use Alpine.js or another library
-      }
-      
-      function handleOpenEditModal(projectId) {
-          // Edit modal logic
-      }
-      
-      function handleDeleteProject(projectId) {
-          // Delete project logic
-      }
-    </script>
 </x-layouts.app>
