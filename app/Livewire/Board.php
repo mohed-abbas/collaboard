@@ -8,16 +8,13 @@ use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
-use stdClass;
 
 class Board extends Component
 {
-
     public $project;
     public $categories;
     public $categoryTitle = '';
     public $tasks = [];
-
     public $showCategoryModal = false;
     public $showTaskModal = false;
     public $isEditing = false;
