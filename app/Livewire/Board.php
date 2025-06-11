@@ -56,7 +56,7 @@ class Board extends Component
         $this->isEditing = false;
         $this->showCategoryModal = false;
         $this->showTaskModal = false;
-        $this->reset(['categoryTitle']);
+        $this->reset(['categoryTitle', 'editingCategoryId']);
     }
 
     //   Category: Create Flow
@@ -81,6 +81,54 @@ class Board extends Component
         $this->resetForm();
         $this->loadBoard();
     }
+
+    //   Category: Edit Flow
+    public $editingCategoryId;
+    
+    public function openEditCategoryModal($categoryId)
+    {
+        $this->resetForm();
+        $this->isEditing = true;
+        $this->editingCategoryId = $categoryId;
+        $category = $this->categories->find($categoryId);
+        $this->categoryTitle = $category->title;
+        $this->showCategoryModal = true;
+    }
+    
+    public function updateCategory()
+    {
+        $this->validate([
+            'categoryTitle' => 'required|string|max:255',
+        ]);
+        
+        $category = Category::find($this->editingCategoryId);
+        $category->update([
+            'title' => $this->categoryTitle
+        ]);
+        
+        $this->resetForm();
+        $this->loadBoard();
+    }
+
+    //Category Delete Flow  
+    public function deleteCategory($categoryId)
+    {
+        $category = Category::find($categoryId);
+        
+        if ($category) {
+            // Delete all tasks in this category first
+            Task::where('category_id', $categoryId)->delete();
+            
+            // Then delete the category
+            $category->delete();
+            
+            $this->loadBoard();
+        }
+    }
+
+
+
+
 
 
     // Listener for project updates

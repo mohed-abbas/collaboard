@@ -10,7 +10,27 @@
     <div class="flex flex-row gap-4 overflow-x-auto items-start py-4 px-2">
         @foreach ($categories as $category)
             <div class="flex flex-col min-w-[280px] bg-white rounded-lg shadow px-2 py-3">
-                <h2 class="text-lg font-semibold mb-2">{{ $category->title }}</h2>
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-lg font-semibold">{{ $category->title }}</h2>
+                    <!-- Three-dot menu -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="p-1 rounded-full hover:bg-gray-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                            </svg>
+                        </button>
+                        <div x-show="open" @click.outside="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                            <div class="py-1">
+                                <button wire:click="openEditCategoryModal({{ $category->id }})" @click="open = false" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left">
+                                    Edit Category
+                                </button>
+                                <button wire:click="deleteCategory({{ $category->id }})" @click="open = false" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 w-full text-left">
+                                    Delete Category
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="flex flex-col gap-2">
                     @forelse($category->tasks as $task)
                         {{-- Task card --}}
