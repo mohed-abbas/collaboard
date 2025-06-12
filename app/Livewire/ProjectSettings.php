@@ -35,6 +35,8 @@ class ProjectSettings extends Component
             $this->project->save();
 
             session()->flash('success', 'Project settings updated successfully.');
+
+            $this->dispatch('reloadProjects'); // Notify other components to reload projects
         } catch (\Exception $e) {
             session()->flash('error', 'Failed to update project settings.');
         }
