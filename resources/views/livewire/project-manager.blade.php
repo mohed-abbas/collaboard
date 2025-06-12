@@ -2,12 +2,12 @@
     <h3 class="text-lg font-semibold mb-2">My Projects</h3>
     <ul class="divide-y divide-gray-200">
         @forelse($projects as $project)
-            <li class="relative flex justify-between items-center py-2 hover:bg-gray-100 transition duration-200 ease-in-out" x-data="{ open: false }">
+            <li class="relative flex justify-between items-center py-2 hover:bg-gray-100 transition duration-200 ease-in-out"
+                x-data="{ open: false }">
                 <!-- Project Name -->
                 <a href="{{ route('project.board', $project->id) }}" class="flex-1">
                     {{ $project->name }}
                 </a>
-
                 <!-- Dropdown Trigger & Menu -->
                 <div class="relative">
                     <!-- Ellipsis Button -->
@@ -22,18 +22,17 @@
                     <ul x-show="open" @click.away="open = false" x-transition
                         class="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-20">
                         <li>
-                            <button wire:click="openEditModal({{ $project->id }})" @click="open = false"
-                                class="block w-full text-left text-black px-4 py-2 hover:bg-gray-100">
-                                Edit
-                            </button>
-                        </li>
-                        <li>
                             <button wire:click="deleteProject({{ $project->id }})" @click="open = false"
                                 onclick="confirm('Delete this project?') || event.stopImmediatePropagation()"
                                 class="block w-full text-left px-4 text-black py-2 hover:bg-gray-100">
                                 Delete
                             </button>
                         </li>
+                        <li>
+                            <a href="{{ route('project.settings', $project->id) }}"
+                                class="block w-full text-left text-black px-4 py-2 hover:bg-gray-100">
+                                Settings
+                            </a>
                     </ul>
                 </div>
             </li>

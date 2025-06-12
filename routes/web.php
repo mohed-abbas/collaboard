@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Board;
+use App\Livewire\ProjectSettings;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -26,12 +27,16 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
+
     // MODIFICATION: Route pour la gestion des projets (liste et actions CRUD)
     Route::get('/projects/manage', ProjectManager::class)->name('projects.manage');
     // MODIFICATION: Route pour la création de projet (même composant mais avec modal ouvert)
     Route::get('/projects/create', ProjectManager::class)->name('projects.create');
     // MODIFICATION: Route pour accéder au tableau Kanban d'un projet spécifique
     Route::get('/project/{project}/board', Board::class)->name('project.board');
+
+    Route::get('/project/{project}/settings', ProjectSettings::class)->name('project.settings');
+
 });
 
 // MODIFICATION: Inclusion des routes d'authentification Laravel Breeze
