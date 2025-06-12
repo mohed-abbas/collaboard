@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <div class="bg-tranparent rounded-lg shadow  p-4">
     <h3 class="text-lg font-semibold mb-2">My Projects</h3>
     <ul class="divide-y divide-gray-200">
@@ -7,6 +8,17 @@
             <a href="{{ route('project.board', $project->id) }}">
                 {{ $project->name }}
             </a>
+=======
+<div class="bg-tranparent rounded-lg shadow overflow-hidden p-4">
+    <h3 class="text-lg font-semibold mb-2">My Projects</h3>
+    <ul class="divide-y divide-gray-200">
+        @forelse($projects as $project)
+            <li class="relative flex justify-between items-center py-2 hover:bg-gray-100 transition duration-200 ease-in-out" x-data="{ open: false }">
+                <!-- Project Name -->
+                <a href="{{ route('project.board', $project->id) }}" class="flex-1">
+                    {{ $project->name }}
+                </a>
+>>>>>>> development
 
             <!-- Dropdown Trigger & Menu -->
             <div class="relative">
@@ -44,8 +56,8 @@
 
         {{-- Create Button --}}
         <button wire:click="openCreateModal"
-            class="mb-4 w-full px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-            + Create Project
+            class=" top-blade flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+            + Nouveau Projet
         </button>
     </ul>
 

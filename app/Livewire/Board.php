@@ -19,22 +19,28 @@ class Board extends Component
     public $showTaskModal = false;
     public $isEditing = false;
 
+    // MODIFICATION: Méthode pour charger le tableau avec les catégories et tâches
     public function loadBoard()
     {
+        // MODIFICATION: Récupération des catégories avec leurs tâches associées, triées par date de création
         $this->categories = Category::where('project_id', $this->project->id)->with('tasks')
             ->orderBy('created_at', 'asc')
             ->get();
         $this->tasks = [];
+        
+        // MODIFICATION: Organisation des tâches par catégorie
         foreach ($this->categories as $category) {
             $this->tasks[$category->id] = $category->tasks;
         }
-        // Initialize tasks for each category
+        
+        // MODIFICATION: Initialisation des tâches pour chaque catégorie (au cas où elle serait vide)
         foreach ($this->categories as $category) {
             if (!isset($this->tasks[$category->id])) {
                 $this->tasks[$category->id] = collect();
             }
         }
-        // Ensure tasks are in the correct format
+        
+        // MODIFICATION: Formatage des tâches pour l'affichage
         foreach ($this->tasks as $categoryId => $taskCollection) {
             $this->tasks[$categoryId] = $taskCollection->map(function ($task) {
                 return [
@@ -48,21 +54,23 @@ class Board extends Component
         }
     }
 
+    // MODIFICATION: Méthode pour réinitialiser le formulaire modal
     public function resetForm()
     {
         $this->isEditing = false;
         $this->showCategoryModal = false;
         $this->showTaskModal = false;
-        $this->reset(['categoryTitle']);
+        $this->reset(['categoryTitle', 'editingCategoryId']);
     }
 
-    //   Category: Create Flow
+    // MODIFICATION: Flux de création de catégorie - Ouverture du modal
     public function openCreateCategoryModal()
     {
         $this->resetForm();
         $this->showCategoryModal = true;
     }
 
+    // MODIFICATION: Flux de création de catégorie - Création effective
     public function createCategory()
     {
         $this->validate([
@@ -79,22 +87,76 @@ class Board extends Component
         $this->loadBoard();
     }
 
+    // MODIFICATION: Flux d'édition de catégorie - Variable pour stocker l'ID en cours d'édition
+    public $editingCategoryId;
+    
+    // MODIFICATION: Flux d'édition de catégorie - Ouverture du modal d'édition
+    public function openEditCategoryModal($categoryId)
+    {
+        $this->resetForm();
+        $this->isEditing = true;
+        $this->editingCategoryId = $categoryId;
+        $category = $this->categories->find($categoryId);
+        $this->categoryTitle = $category->title;
+        $this->showCategoryModal = true;
+    }
+    
+    // MODIFICATION: Flux d'édition de catégorie - Mise à jour effective
+    public function updateCategory()
+    {
+        $this->validate([
+            'categoryTitle' => 'required|string|max:255',
+        ]);
+        
+        $category = Category::find($this->editingCategoryId);
+        $category->update([
+            'title' => $this->categoryTitle
+        ]);
+        
+        $this->resetForm();
+        $this->loadBoard();
+    }
 
-    // Listener for project updates
+    // MODIFICATION: Flux de suppression de catégorie - Suppression en cascade des tâches
+    public function deleteCategory($categoryId)
+    {
+        $category = Category::find($categoryId);
+        
+        if ($category) {
+            // MODIFICATION: Suppression d'abord de toutes les tâches de cette catégorie
+            Task::where('category_id', $categoryId)->delete();
+            
+            // MODIFICATION: Puis suppression de la catégorie elle-même
+            $category->delete();
+            
+            $this->loadBoard();
+        }
+    }
+
+    // MODIFICATION: Écouteur pour les mises à jour de projet
     #[On('projectUpdated')]
     public function projectUpdated()
     {
-        // $this->project = Project::find($this->project->id);
+        // MODIFICATION: Rechargement du tableau quand le projet est mis à jour
         $this->loadBoard();
     }
 
-    public function mount($project)
+    // MODIFICATION: Méthode d'initialisation du composant avec vérification des droits d'accès
+    public function mount(Project $project)
     {
-        $this->project = Project::find($project);
+        // MODIFICATION: Vérification que l'utilisateur a accès à ce projet (membre ou propriétaire)
+        if (!$project->members->contains(auth()->id()) && $project->owner_id !== auth()->id()) {
+            abort(403, 'Accès non autorisé à ce projet');
+        }
+        
+        $this->project = $project;
         $this->loadBoard();
     }
+
+    // MODIFICATION: Rendu de la vue avec layout personnalisé et titre dynamique
     public function render()
     {
-        return view('livewire.board');
+        return view('livewire.board')
+            ->layout('components.layouts.app', ['title' => 'Tableau - ' . $this->project->name]);
     }
 }

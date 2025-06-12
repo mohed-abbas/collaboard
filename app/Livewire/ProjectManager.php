@@ -29,6 +29,11 @@ class ProjectManager extends Component
     public function mount()
     {
         $this->reloadProjects();
+        
+        // Si on vient de projects.create, ouvrir automatiquement le modal
+        if (request()->routeIs('projects.create')) {
+            $this->openCreateModal();
+        }
     }
 
     public function reloadProjects()
@@ -117,8 +122,19 @@ class ProjectManager extends Component
         $this->description = '';
     }
 
+    protected $listeners = [
+        'viewProjectBoard' => 'viewBoard',
+        'open-create-project' => 'openCreateModal' // Ajouter cet écouteur
+    ];
+
+    public function viewBoard($projectId)
+    {
+        return $this->redirect(route('project.board', $projectId));
+    }
+
     public function render()
     {
-        return view('livewire.project-manager');
+        return view('livewire.project-manager')
+            ->layout('layouts.app', ['title' => 'Gestion des Projets']);
     }
 }
