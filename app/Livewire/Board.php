@@ -22,8 +22,10 @@ class Board extends Component
     public $showTaskModal = false;
     public $isEditing = false;
 
+    // MODIFICATION: Méthode pour charger le tableau avec les catégories et tâches
     public function loadBoard()
     {
+        // MODIFICATION: Récupération des catégories avec leurs tâches associées, triées par date de création
         $this->categories = Category::where('project_id', $this->project->id)->with('tasks')
             ->orderBy('created_at', 'asc')
             ->get();
@@ -31,7 +33,8 @@ class Board extends Component
         foreach ($this->categories as $category) {
             $this->tasksByCategory[$category->id] = $category->tasks;
         }
-        // Initialize tasks for each category
+        
+        // MODIFICATION: Initialisation des tâches pour chaque catégorie (au cas où elle serait vide)
         foreach ($this->categories as $category) {
             if (!isset($this->tasksByCategory[$category->id])) {
                 $this->tasksByCategory[$category->id] = collect();
@@ -54,6 +57,7 @@ class Board extends Component
         }
     }
 
+    // MODIFICATION: Méthode pour réinitialiser le formulaire modal
     public function resetForm()
     {
         $this->isEditing = false;
@@ -62,13 +66,14 @@ class Board extends Component
         $this->reset(['categoryTitle']);
     }
 
-    //   Category: Create Flow
+    // MODIFICATION: Flux de création de catégorie - Ouverture du modal
     public function openCreateCategoryModal()
     {
         $this->resetForm();
         $this->showCategoryModal = true;
     }
 
+    // MODIFICATION: Flux de création de catégorie - Création effective
     public function createCategory()
     {
         $this->validate([
@@ -93,14 +98,23 @@ class Board extends Component
         $this->loadBoard();
     }
 
-    public function mount($project)
+    // MODIFICATION: Méthode d'initialisation du composant avec vérification des droits d'accès
+    public function mount(Project $project)
     {
-        $this->project = Project::find($project);
+        // MODIFICATION: Vérification que l'utilisateur a accès à ce projet (membre ou propriétaire)
+        if (!$project->members->contains(auth()->id()) && $project->owner_id !== auth()->id()) {
+            abort(403, 'Accès non autorisé à ce projet');
+        }
+        
+        $this->project = $project;
         $this->loadBoard();
     }
+
+    // MODIFICATION: Rendu de la vue avec layout personnalisé et titre dynamique
     public function render()
     {
-        return view('livewire.board');
+        return view('livewire.board')
+            ->layout('components.layouts.app', ['title' => 'Tableau - ' . $this->project->name]);
     }
 
 

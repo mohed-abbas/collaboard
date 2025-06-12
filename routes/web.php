@@ -9,6 +9,7 @@ use App\Livewire\ProjectManager;
 use Illuminate\Support\Facades\Route;
 
 
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
@@ -25,8 +26,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 });
 
-
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/projects/manage', function () {
         return view('projects.manage');
@@ -36,5 +35,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/{project}/settings', ProjectSettings::class)->name('project.settings');
 });
 
-
+// MODIFICATION: Inclusion des routes d'authentification Laravel Breeze
 require __DIR__ . '/auth.php';
