@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
 use Livewire\Component;
 use App\Models\Project;
 use Livewire\Attributes\On;
@@ -62,6 +63,22 @@ class ProjectManager extends Component
             'owner_id' => auth()->id(),
         ]);
         $project->members()->attach(auth()->id());
+
+        // Create the default categories for the project
+        // Create default categories
+        $defaultCategories = [
+            ['title' => 'À faire', 'sort_order' => 1],
+            ['title' => 'En cours', 'sort_order' => 2],
+            ['title' => 'Terminé', 'sort_order' => 3],
+        ];
+
+        foreach ($defaultCategories as $categoryData) {
+            Category::create([
+                'title' => $categoryData['title'],
+                'project_id' => $project->id,
+                'sort_order' => $categoryData['sort_order'],
+            ]);
+        }
         $this->closeModal();
 
         // Redirect to the project board after creation
