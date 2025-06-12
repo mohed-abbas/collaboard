@@ -37,9 +37,9 @@
             </div>
         </li>
         @empty
-        <li class="py-2 text-gray-500">
-            You’re not part of any projects yet.
-        </li>
+            <li class="py-2 text-gray-500">
+                You’re not part of any projects yet.
+            </li>
         @endforelse
 
         {{-- Create Button --}}

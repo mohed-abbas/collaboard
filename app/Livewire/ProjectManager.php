@@ -4,15 +4,14 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Project;
+use Livewire\Attributes\On;
 
 class ProjectManager extends Component
 {
     public $projects = [];
-
     // Modal state
     public bool $showModal = false;
     public bool $isEditing = false;
-
     // Form fields
     public ?int $editingId = null;
     public string $name = '';
@@ -29,13 +28,14 @@ class ProjectManager extends Component
     public function mount()
     {
         $this->reloadProjects();
-        
+
         // Si on vient de projects.create, ouvrir automatiquement le modal
         if (request()->routeIs('projects.create')) {
             $this->openCreateModal();
         }
     }
 
+    #[On('reloadProjects')]
     public function reloadProjects()
     {
         $this->projects = auth()->user()
@@ -62,8 +62,11 @@ class ProjectManager extends Component
             'owner_id' => auth()->id(),
         ]);
         $project->members()->attach(auth()->id());
-
         $this->closeModal();
+
+        // Redirect to the project board after creation
+        redirect()->route('project.board', $project->id)
+            ->with('success', 'Project created successfully.');
         $this->reloadProjects();
     }
 
@@ -106,6 +109,11 @@ class ProjectManager extends Component
         }
 
         $project->delete();
+
+        //redirect to the dashboard or projects list
+        redirect()->route('dashboard')
+            ->with('success', 'Project deleted successfully.');
+        // Reload projects after deletion
         $this->reloadProjects();
     }
 

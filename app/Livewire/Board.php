@@ -33,7 +33,7 @@ class Board extends Component
         foreach ($this->categories as $category) {
             $this->tasksByCategory[$category->id] = $category->tasks;
         }
-        
+
         // MODIFICATION: Initialisation des tâches pour chaque catégorie (au cas où elle serait vide)
         foreach ($this->categories as $category) {
             if (!isset($this->tasksByCategory[$category->id])) {
@@ -97,15 +97,13 @@ class Board extends Component
     {
         $this->loadBoard();
     }
-
     // MODIFICATION: Méthode d'initialisation du composant avec vérification des droits d'accès
     public function mount(Project $project)
     {
         // MODIFICATION: Vérification que l'utilisateur a accès à ce projet (membre ou propriétaire)
-        if (!$project->members->contains(auth()->id()) && $project->owner_id !== auth()->id()) {
+        if (!$project->members->contains(Auth::id()) && $project->owner_id !== Auth::id()) {
             abort(403, 'Accès non autorisé à ce projet');
         }
-        
         $this->project = $project;
         $this->loadBoard();
     }
@@ -113,8 +111,7 @@ class Board extends Component
     // MODIFICATION: Rendu de la vue avec layout personnalisé et titre dynamique
     public function render()
     {
-        return view('livewire.board')
-            ->layout('components.layouts.app', ['title' => 'Tableau - ' . $this->project->name]);
+        return view('livewire.board')->layout('components.layouts.app', ['title' => 'Tableau - ' . $this->project->name]);
     }
 
 
