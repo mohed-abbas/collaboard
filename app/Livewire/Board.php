@@ -5,18 +5,19 @@ namespace App\Livewire;
 use App\Models\Category;
 use Livewire\Component;
 use App\Models\Project;
-use App\Models\Task;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
-use stdClass;
 
 class Board extends Component
 {
+    public $viewMode = 'board'; // Default view mode
+    public $listSortby = 'task'; // Default sort by task
+    public $listSortDirection = 'asc'; // Default sort direction
 
     public $project;
     public $categories;
     public $categoryTitle = '';
     public $tasks = [];
+    public $tasksByCategory = [];
 
     public $showCategoryModal = false;
     public $showTaskModal = false;
@@ -27,19 +28,22 @@ class Board extends Component
         $this->categories = Category::where('project_id', $this->project->id)->with('tasks')
             ->orderBy('created_at', 'asc')
             ->get();
-        $this->tasks = [];
+        $this->tasksByCategory = [];
         foreach ($this->categories as $category) {
-            $this->tasks[$category->id] = $category->tasks;
+            $this->tasksByCategory[$category->id] = $category->tasks;
         }
         // Initialize tasks for each category
         foreach ($this->categories as $category) {
-            if (!isset($this->tasks[$category->id])) {
-                $this->tasks[$category->id] = collect();
+            if (!isset($this->tasksByCategory[$category->id])) {
+                $this->tasksByCategory[$category->id] = collect();
+            }
+            foreach ($category->tasks as $task) {
+                $this->tasks[] = $task;
             }
         }
         // Ensure tasks are in the correct format
-        foreach ($this->tasks as $categoryId => $taskCollection) {
-            $this->tasks[$categoryId] = $taskCollection->map(function ($task) {
+        foreach ($this->tasksByCategory as $categoryId => $taskCollection) {
+            $this->tasksByCategory[$categoryId] = $taskCollection->map(function ($task) {
                 return [
                     'id' => $task->id,
                     'title' => $task->title,
@@ -99,5 +103,15 @@ class Board extends Component
     public function render()
     {
         return view('livewire.board');
+    }
+
+    public function sortTasks($categoryId, $sortBy)
+    {
+        if ($sortBy === 'task') {
+            $this->tasks[$categoryId] = collect($this->tasks[$categoryId])->sortBy('title')->values()->toArray();
+        } elseif ($sortBy === 'status') {
+            $this->tasks[$categoryId] = collect($this->tasks[$categoryId])->sortBy('status')->values()->toArray();
+        }
+        $this->listSortby = $sortBy;
     }
 }
