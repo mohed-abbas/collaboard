@@ -114,6 +114,16 @@ class Board extends Component
         $this->loadBoard();
     }
 
+    public function sortTasks($categoryId, $sortBy)
+    {
+        if ($sortBy === 'task') {
+            $this->tasks[$categoryId] = collect($this->tasks[$categoryId])->sortBy('title')->values()->toArray();
+        } elseif ($sortBy === 'status') {
+            $this->tasks[$categoryId] = collect($this->tasks[$categoryId])->sortBy('status')->values()->toArray();
+        }
+        $this->listSortby = $sortBy;
+    }
+
     // MODIFICATION: Rendu de la vue avec layout personnalisé et titre dynamique
     public function render()
     {
