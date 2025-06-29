@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -17,5 +18,15 @@ class Project extends Model
     public function members()
     {
         return $this->belongsToMany(User::class);
+    }
+
+    public function categories()
+    {
+        return $this->hasMany(\App\Models\Category::class);
+    }
+
+    public function tasks()
+    {
+        return $this->hasManyThrough(\App\Models\Task::class, \App\Models\Category::class);
     }
 }

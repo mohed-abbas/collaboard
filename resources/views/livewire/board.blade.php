@@ -4,27 +4,27 @@
             {{ $project->name }}
         </h1>
         <div class="flex gap-2 text-gray-500">
-            <span 
-                class="cursor-pointer px-2 py-1 rounded {{ $viewMode === 'board' ? 'bg-blue-500 text-white font-semibold' : 'hover:bg-gray-200' }}" 
-                wire:click="$set('viewMode','board')"
-            >
+            <span
+                class="cursor-pointer px-2 py-1 rounded {{ $viewMode === 'board' ? 'bg-blue-500 text-white font-semibold' : 'hover:bg-gray-200' }}"
+                wire:click="$set('viewMode','board')">
                 Board
             </span>
-            <span 
-                class="cursor-pointer px-2 py-1 rounded {{ $viewMode === 'list' ? 'bg-blue-500 text-white font-semibold' : 'hover:bg-gray-200' }}" 
-                wire:click="$set('viewMode','list')"
-            >
+            <span
+                class="cursor-pointer px-2 py-1 rounded {{ $viewMode === 'list' ? 'bg-blue-500 text-white font-semibold' : 'hover:bg-gray-200' }}"
+                wire:click="$set('viewMode','list')">
                 List
             </span>
         </div>
     </div>
     @if ($viewMode === 'list')
-        @include('livewire.list')
+        <livewire:list-view :project="$project" />
     @else
-    <!-- Create category button in the board -->
-    <button wire:click="openCreateCategoryModal" class="mb-4 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-        + Create Category
-    </button>
+        {{-- Board view code --}}
+        <!-- Create category button in the board -->
+        <button wire:click="openCreateCategoryModal"
+            class="mb-4 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+            + Create Category
+        </button>
         {{-- Board View --}}
         <!-- Categories -->
         <div class="flex flex-row gap-4 overflow-x-auto items-start py-4 px-2">
