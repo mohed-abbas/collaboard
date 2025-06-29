@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Project;
+use App\Policies\ProjectPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
     protected $policies = [
-        \App\Models\Project::class => \App\Policies\ProjectPolicy::class,
+        Project::class => ProjectPolicy::class,
     ];
 
     /**

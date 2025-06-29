@@ -8,12 +8,15 @@ use Illuminate\Auth\Access\Response;
 
 class ProjectPolicy
 {
+    /**
+     * Determine whether the user can view any projects.
+     */
     // Can the user view this project?
     public function view(User $user, Project $project): bool
     {
-        return $user->id === $project->owner_id
-            || $project->members->contains($user);
+        return $user->id === $project->owner_id || $project->members->contains($user);
     }
+
 
     // Can the user update this project?
     public function update(User $user, Project $project): bool
@@ -35,6 +38,12 @@ class ProjectPolicy
         return $user->id === $project->owner_id;
     }
 
+    public function viewSettings(User $user, Project $project): bool
+    {
+        // Allow viewing settings if the user is the owner or a member of the project
+        return $user->id === $project->owner_id;
+    }
+
     /**
      * Determine whether the user can restore the model.
      */
@@ -50,4 +59,6 @@ class ProjectPolicy
     {
         return false;
     }
+
+
 }

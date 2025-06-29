@@ -101,9 +101,15 @@ class Board extends Component
     public function mount(Project $project)
     {
         // MODIFICATION: Vérification que l'utilisateur a accès à ce projet (membre ou propriétaire)
-        if (!$project->members->contains(Auth::id()) && $project->owner_id !== Auth::id()) {
-            abort(403, 'Accès non autorisé à ce projet');
+        // if (!$project->members->contains(Auth::id()) && $project->owner_id !== Auth::id()) {
+        //     abort(403, 'Accès non autorisé à ce projet');
+        // }
+
+        if (!Auth::user()->can('view', $project)) {
+            session()->flash('error', 'Vous n\'avez pas la permission de voir ce projet.');
+            return redirect()->route('dashboard'); // Redirection vers le tableau de bord
         }
+
         $this->project = $project;
         $this->loadBoard();
     }
