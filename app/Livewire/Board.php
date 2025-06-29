@@ -10,8 +10,7 @@ use Livewire\Attributes\On;
 class Board extends Component
 {
     public $viewMode = 'board'; // Default view mode
-    public $listSortby = 'task'; // Default sort by task
-    public $listSortDirection = 'asc'; // Default sort direction
+
 
     public $project;
     public $categories;
@@ -91,7 +90,6 @@ class Board extends Component
     #[On('projectUpdated')]
     public function projectUpdated()
     {
-        // $this->project = Project::find($this->project->id);
         $this->loadBoard();
     }
 
@@ -105,13 +103,5 @@ class Board extends Component
         return view('livewire.board');
     }
 
-    public function sortTasks($categoryId, $sortBy)
-    {
-        if ($sortBy === 'task') {
-            $this->tasks[$categoryId] = collect($this->tasks[$categoryId])->sortBy('title')->values()->toArray();
-        } elseif ($sortBy === 'status') {
-            $this->tasks[$categoryId] = collect($this->tasks[$categoryId])->sortBy('status')->values()->toArray();
-        }
-        $this->listSortby = $sortBy;
-    }
+
 }
