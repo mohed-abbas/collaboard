@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Project;
 use Livewire\Component;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 
 class ProjectSettings extends Component
@@ -29,22 +30,35 @@ class ProjectSettings extends Component
     public function saveSettings()
     {
         $this->validate();
+
+        // Check if the user has permission to update project settings
+        if (!Auth::user()->can('update', $this->project)) {
+            session()->flash('error', 'Vous n\'avez pas la permission de mettre à jour les paramètres du projet.');
+            $this->addError('projectName', 'Vous n\'avez pas la permission de mettre à jour les paramètres du projet.');
+            return;
+        }
+
         try {
             $this->project->name = $this->projectName;
             $this->project->description = $this->projectDescription;
             $this->project->save();
-
-            session()->flash('success', 'Project settings updated successfully.');
-
+            session()->flash('success', 'Paramètres du projet mis à jour avec succès.');
             $this->dispatch('reloadProjects'); // Notify other components to reload projects
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to update project settings.');
+            session()->flash('error', 'Échec de la mise à jour des paramètres du projet.');
         }
         $this->members = $this->getMembers(); // Refresh members list
     }
 
     public function mount($project)
     {
+
+        // Check if the user has permission to view the project
+        if (!Auth::user()->can('viewSettings', Project::find($project))) {
+            session()->flash('error', 'Vous n\'avez pas la permission de voir ce projet.');
+            return redirect()->route('project.board', $project); //Redirect to project board page.
+        }
+
         $this->project = Project::findOrFail($project);
         $this->projectName = $this->project->name;
         $this->projectDescription = $this->project->description;
@@ -60,68 +74,82 @@ class ProjectSettings extends Component
         return $query->get();
     }
 
+    /**
+     * This method is called whenever the searchMember property is updated.
+     * It searches for users based on the input and updates the searchResults.
+     */
     public function updatedSearchMember()
     {
-        if (strlen($this->searchMember) >= 2) {
+
+        // Check if the user has the permission to search members
+        if (!Auth::user()->can('manageMembership', $this->project)) {
+            session()->flash('error', 'Vous n\'avez pas la permission de gérer les membres du projet.');
+            $this->searchResults = [];
+            $this->showSearchResults = false;
+            $this->addError('newMemberEmail', 'Vous n\'avez pas la permission de gérer les membres du projet.');
+        } else {
             $this->searchResults = User::where(function ($query) {
                 $query->where('name', 'like', '%' . $this->searchMember . '%')
                     ->orWhere('email', 'like', '%' . $this->searchMember . '%');
             })
-                ->whereNotIn('id', $this->members->pluck('id')->toArray()) // Exclude already added members
+                ->whereNotIn('id', $this->members->pluck('id')) // Exclude already added members
                 ->limit(10)
                 ->get();
-
             $this->showSearchResults = true;
-        } else {
-            $this->searchResults = [];
-            $this->showSearchResults = false;
         }
     }
 
     public function addMemberToProject($userId)
     {
+        // Check if the user has permission to manage members
+        if (!Auth::user()->can('manageMembership', $this->project)) {
+            session()->flash('error', 'Vous n\'avez pas la permission de gérer les membres du projet.');
+            $this->addError('newMemberEmail', 'Vous n\'avez pas la permission de gérer les membres du projet.');
+            $this->searchResults = [];
+            $this->showSearchResults = false;
+            return;
+        }
+
         try {
             $user = User::findOrFail($userId);
-
             // Check if user is already a member
             if ($this->project->members()->where('user_id', $userId)->exists()) {
-                session()->flash('error', 'User is already a member of this project.');
+                session()->flash('error', '' . $user->name . ' est déjà membre du projet.');
                 return;
             }
-
             // Add user to project
             $this->project->members()->attach($userId);
-
             // Refresh members list
             $this->members = $this->project->members;
-
             // Clear search
             $this->searchMember = '';
             $this->searchResults = [];
             $this->showSearchResults = false;
 
-            session()->flash('success', $user->name . ' has been added to the project.');
+            // Flash success message
+            session()->flash('success', $user->name . ' a été ajouté au projet.');
 
         } catch (\Exception $e) {
-            session()->flash('error', 'Failed to add member to project.');
+            session()->flash('error', 'Échec de l\'ajout du membre au projet.');
         }
     }
 
     public function removeMember($userId)
     {
-        try {
-            $user = User::findOrFail($userId);
-
-            // Remove user from project
-            $this->project->members()->detach($userId);
-
-            // Refresh members list
-            $this->members = $this->project->members;
-
-            session()->flash('success', $user->name . ' has been removed from the project.');
-
-        } catch (\Exception $e) {
-            session()->flash('error', 'Failed to remove member from project.');
+        if (!Auth::user()->can('manageMembership', $this->project)) {
+            session()->flash('error', 'Vous n\'avez pas la permission de gérer les membres du projet.');
+            $this->addError('newMemberEmail', 'Vous n\'avez pas la permission de gérer les membres du projet.');
+            $this->searchResults = [];
+            $this->showSearchResults = false;
+            return;
+        } else {
+            try {
+                $this->project->members()->detach($userId);
+                $this->members = $this->getMembers(); // Refresh members list
+                session()->flash('success', 'Membre supprimé avec succès.');
+            } catch (\Exception $e) {
+                session()->flash('error', 'Échec de la suppression du membre du projet.');
+            }
         }
     }
 
