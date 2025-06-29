@@ -113,7 +113,6 @@ class Board extends Component
         $this->project = $project;
         $this->loadBoard();
     }
-
     public function sortTasks($categoryId, $sortBy)
     {
         if ($sortBy === 'task') {
@@ -124,7 +123,7 @@ class Board extends Component
         $this->listSortby = $sortBy;
     }
 
-    // MODIFICATION: Rendu de la vue avec layout personnalisé et titre dynamique
+  
     public function render()
     {
         return view('livewire.board')->layout('components.layouts.app', ['title' => 'Tableau - ' . $this->project->name]);
