@@ -18,6 +18,14 @@ class ProjectManager extends Component
     public string $name = '';
     public string $description = '';
 
+
+    private array $defaultCategories = [
+        ['title' => 'À faire', 'sort_order' => 1],
+        ['title' => 'En cours', 'sort_order' => 2],
+        ['title' => 'Terminé', 'sort_order' => 3],
+    ];
+
+
     protected function rules()
     {
         return [
@@ -64,15 +72,8 @@ class ProjectManager extends Component
         ]);
         $project->members()->attach(auth()->id());
 
-        // Create the default categories for the project
-        // Create default categories
-        $defaultCategories = [
-            ['title' => 'À faire', 'sort_order' => 1],
-            ['title' => 'En cours', 'sort_order' => 2],
-            ['title' => 'Terminé', 'sort_order' => 3],
-        ];
 
-        foreach ($defaultCategories as $categoryData) {
+        foreach ($this->defaultCategories as $categoryData) {
             Category::create([
                 'title' => $categoryData['title'],
                 'project_id' => $project->id,
@@ -83,7 +84,7 @@ class ProjectManager extends Component
 
         // Redirect to the project board after creation
         redirect()->route('project.board', $project->id)
-            ->with('success', 'Project created successfully.');
+            ->with('success', 'Projet créé avec succès.');
         $this->reloadProjects();
     }
 
@@ -121,7 +122,7 @@ class ProjectManager extends Component
 
         // Only owner can delete
         if ($project->owner_id !== auth()->id()) {
-            session()->flash('error', 'Only the owner can delete this project.');
+            session()->flash('error', 'Vous n\'avez pas la permission de supprimer ce projet.');
             return;
         }
 

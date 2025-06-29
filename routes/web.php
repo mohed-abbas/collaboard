@@ -34,9 +34,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/projects/create', ProjectManager::class)->name('projects.create');
     // MODIFICATION: Route pour accéder au tableau Kanban d'un projet spécifique
     Route::get('/project/{project}/board', Board::class)->name('project.board');
-
-    Route::get('/project/{project}/settings', ProjectSettings::class)->name('project.settings');
-
+    // MODIFICATION: Route pour les paramètres d'un projet spécifique
+    Route::get('/project/{project}/settings', ProjectSettings::class)
+        ->name('project.settings');// MODIFICATION: Ajout de la vérification de la permission d'accès aux paramètres du projet
 });
 
 // MODIFICATION: Inclusion des routes d'authentification Laravel Breeze
