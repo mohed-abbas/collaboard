@@ -2,21 +2,29 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
 use Livewire\Component;
 use App\Models\Project;
+use Livewire\Attributes\On;
 
 class ProjectManager extends Component
 {
     public $projects = [];
-
     // Modal state
     public bool $showModal = false;
     public bool $isEditing = false;
-
     // Form fields
     public ?int $editingId = null;
     public string $name = '';
     public string $description = '';
+
+
+    private array $defaultCategories = [
+        ['title' => 'À faire', 'sort_order' => 1],
+        ['title' => 'En cours', 'sort_order' => 2],
+        ['title' => 'Terminé', 'sort_order' => 3],
+    ];
+
 
     protected function rules()
     {
@@ -29,8 +37,14 @@ class ProjectManager extends Component
     public function mount()
     {
         $this->reloadProjects();
+
+        // Si on vient de projects.create, ouvrir automatiquement le modal
+        if (request()->routeIs('projects.create')) {
+            $this->openCreateModal();
+        }
     }
 
+    #[On('reloadProjects')]
     public function reloadProjects()
     {
         $this->projects = auth()->user()
@@ -58,7 +72,19 @@ class ProjectManager extends Component
         ]);
         $project->members()->attach(auth()->id());
 
+
+        foreach ($this->defaultCategories as $categoryData) {
+            Category::create([
+                'title' => $categoryData['title'],
+                'project_id' => $project->id,
+                'sort_order' => $categoryData['sort_order'],
+            ]);
+        }
         $this->closeModal();
+
+        // Redirect to the project board after creation
+        redirect()->route('project.board', $project->id)
+            ->with('success', 'Projet créé avec succès.');
         $this->reloadProjects();
     }
 
@@ -96,11 +122,16 @@ class ProjectManager extends Component
 
         // Only owner can delete
         if ($project->owner_id !== auth()->id()) {
-            session()->flash('error', 'Only the owner can delete this project.');
+            session()->flash('error', 'Vous n\'avez pas la permission de supprimer ce projet.');
             return;
         }
 
         $project->delete();
+
+        //redirect to the dashboard or projects list
+        redirect()->route('dashboard')
+            ->with('success', 'Project deleted successfully.');
+        // Reload projects after deletion
         $this->reloadProjects();
     }
 
@@ -117,8 +148,19 @@ class ProjectManager extends Component
         $this->description = '';
     }
 
+    protected $listeners = [
+        'viewProjectBoard' => 'viewBoard',
+        'open-create-project' => 'openCreateModal' // Ajouter cet écouteur
+    ];
+
+    public function viewBoard($projectId)
+    {
+        return $this->redirect(route('project.board', $projectId));
+    }
+
     public function render()
     {
-        return view('livewire.project-manager');
+        return view('livewire.project-manager')
+            ->layout('layouts.app', ['title' => 'Gestion des Projets']);
     }
 }
