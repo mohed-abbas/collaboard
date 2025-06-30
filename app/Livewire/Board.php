@@ -6,12 +6,12 @@ use App\Models\Category;
 use Livewire\Component;
 use App\Models\Project;
 use Livewire\Attributes\On;
+use App\Models\Task;
+use Illuminate\Support\Facades\Auth;
 
 class Board extends Component
 {
     public $viewMode = 'board'; // Default view mode
-
-
     public $project;
     public $categories;
     public $categoryTitle = '';
@@ -113,21 +113,9 @@ class Board extends Component
         $this->project = $project;
         $this->loadBoard();
     }
-    public function sortTasks($categoryId, $sortBy)
-    {
-        if ($sortBy === 'task') {
-            $this->tasks[$categoryId] = collect($this->tasks[$categoryId])->sortBy('title')->values()->toArray();
-        } elseif ($sortBy === 'status') {
-            $this->tasks[$categoryId] = collect($this->tasks[$categoryId])->sortBy('status')->values()->toArray();
-        }
-        $this->listSortby = $sortBy;
-    }
 
-  
     public function render()
     {
         return view('livewire.board')->layout('components.layouts.app', ['title' => 'Tableau - ' . $this->project->name]);
     }
-
-
 }
