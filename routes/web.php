@@ -27,12 +27,15 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/projects/manage', function () {
-        return view('projects.manage');
-    })->name('projects.manage');
-
-    Route::get('/{project}/board', Board::class)->name('project.board');
-    Route::get('/{project}/settings', ProjectSettings::class)->name('project.settings');
+    // MODIFICATION: Route pour la gestion des projets (liste et actions CRUD)
+    Route::get('/projects/manage', ProjectManager::class)->name('projects.manage');
+    // MODIFICATION: Route pour la création de projet (même composant mais avec modal ouvert)
+    Route::get('/projects/create', ProjectManager::class)->name('projects.create');
+    // MODIFICATION: Route pour accéder au tableau Kanban d'un projet spécifique
+    Route::get('/project/{project}/board', Board::class)->name('project.board');
+    // MODIFICATION: Route pour les paramètres d'un projet spécifique
+    Route::get('/project/{project}/settings', ProjectSettings::class)
+        ->name('project.settings');// MODIFICATION: Ajout de la vérification de la permission d'accès aux paramètres du projet
 });
 
 // MODIFICATION: Inclusion des routes d'authentification Laravel Breeze

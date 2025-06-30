@@ -9,6 +9,7 @@ use Livewire\Attributes\On;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 
+
 class Board extends Component
 {
     public $viewMode = 'board'; // Default view mode
@@ -17,7 +18,6 @@ class Board extends Component
     public $categoryTitle = '';
     public $tasks = [];
     public $tasksByCategory = [];
-
     public $showCategoryModal = false;
     public $showTaskModal = false;
     public $isEditing = false;
@@ -29,7 +29,10 @@ class Board extends Component
         $this->categories = Category::where('project_id', $this->project->id)->with('tasks')
             ->orderBy('created_at', 'asc')
             ->get();
+
         $this->tasksByCategory = [];
+        // MODIFICATION: Organisation des tâches par catégorie
+
         foreach ($this->categories as $category) {
             $this->tasksByCategory[$category->id] = $category->tasks;
         }
@@ -43,6 +46,7 @@ class Board extends Component
                 $this->tasks[] = $task;
             }
         }
+      
         // Ensure tasks are in the correct format
         foreach ($this->tasksByCategory as $categoryId => $taskCollection) {
             $this->tasksByCategory[$categoryId] = $taskCollection->map(function ($task) {
@@ -63,7 +67,7 @@ class Board extends Component
         $this->isEditing = false;
         $this->showCategoryModal = false;
         $this->showTaskModal = false;
-        $this->reset(['categoryTitle']);
+        $this->reset(['categoryTitle', 'editingCategoryId']);
     }
 
     // MODIFICATION: Flux de création de catégorie - Ouverture du modal
@@ -90,11 +94,54 @@ class Board extends Component
         $this->loadBoard();
     }
 
+    // MODIFICATION: Flux d'édition de catégorie - Variable pour stocker l'ID en cours d'édition
+    public $editingCategoryId;
 
-    // Listener for project updates
+    // MODIFICATION: Flux d'édition de catégorie - Ouverture du modal d'édition
+    public function openEditCategoryModal($categoryId)
+    {
+        $this->resetForm();
+        $this->isEditing = true;
+        $this->editingCategoryId = $categoryId;
+        $category = $this->categories->find($categoryId);
+        $this->categoryTitle = $category->title;
+        $this->showCategoryModal = true;
+    }
+
+    // MODIFICATION: Flux d'édition de catégorie - Mise à jour effective
+    public function updateCategory()
+    {
+        $this->validate([
+            'categoryTitle' => 'required|string|max:255',
+        ]);
+
+        $category = Category::find($this->editingCategoryId);
+        $category->update([
+            'title' => $this->categoryTitle
+        ]);
+
+        $this->resetForm();
+        $this->loadBoard();
+    }
+
+    // MODIFICATION: Flux de suppression de catégorie - Suppression en cascade des tâches
+    public function deleteCategory($categoryId)
+    {
+        $category = Category::find($categoryId);
+        if ($category) {
+            // MODIFICATION: Suppression d'abord de toutes les tâches de cette catégorie
+            Task::where('category_id', $categoryId)->delete();
+            // MODIFICATION: Puis suppression de la catégorie elle-même
+            $category->delete();
+            $this->loadBoard();
+        }
+    }
+
+    // MODIFICATION: Écouteur pour les mises à jour de projet
     #[On('projectUpdated')]
     public function projectUpdated()
     {
+        // MODIFICATION: Rechargement du tableau quand le projet est mis à jour
         $this->loadBoard();
     }
     // MODIFICATION: Méthode d'initialisation du composant avec vérification des droits d'accès
@@ -113,6 +160,8 @@ class Board extends Component
         $this->project = $project;
         $this->loadBoard();
     }
+
+    // MODIFICATION: Rendu de la vue avec layout personnalisé et titre dynamique
 
     public function render()
     {

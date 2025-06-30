@@ -41,8 +41,7 @@
             <div class="mb-4 px-6 lg:px-8">
                 <h1 class="text-2xl font-bold text-gray-900">
                     {{ $project->name }}
-                </h1>
-                
+                </h1>                
                     <!-- MODIFICATION: Bouton de création de catégorie avec style cohérent -->
                     <button wire:click="openCreateCategoryModal"
                         class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
@@ -126,16 +125,23 @@
                                     wire:click="$dispatch('openCreateTaskModal', {categoryId: {{ $category->id }}})"
                                     class="mt-2 px-3 py-1 border text-black rounded cursor-pointer hover:bg-gray-100 transition-colors duration-150">
                                     + Ajouter une Tâche
-                                </button>
+                                </button>             
                             </div>
+                            @empty
+                            <!-- MODIFICATION: Message d'état vide quand aucune tâche n'existe -->
+                            <div class="text-gray-400 italic text-center p-2">Aucune tâche</div>
+                            @endforelse
+                            <!-- MODIFICATION: Bouton d'ajout de tâche avec dispatch d'événement -->
+                            <button wire:click="$dispatch('openCreateTaskModal', {categoryId: {{ $category->id }}})"
+                                class="mt-2 px-3 py-1 border text-black rounded cursor-pointer hover:bg-gray-100 transition-colors duration-150">
+                                + Ajouter une Tâche
+                            </button>
                         </div>
                     @endforeach
-                   
                 </div>
             </div>    
             @endif
 
-            
             <!-- MODIFICATION: Inclusion du modal de gestion des catégories -->
             @include('livewire.category-modal')
             <!-- MODIFICATION: Composant Livewire pour la gestion des tâches -->
@@ -143,3 +149,4 @@
         </div>
     </div>
 </div>
+
