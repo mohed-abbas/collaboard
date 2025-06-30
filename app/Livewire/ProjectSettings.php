@@ -6,6 +6,7 @@ use App\Models\Project;
 use Livewire\Component;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\MemberNotification;
 
 
 class ProjectSettings extends Component
@@ -110,28 +111,27 @@ class ProjectSettings extends Component
             return;
         }
 
-        try {
-            $user = User::findOrFail($userId);
-            // Check if user is already a member
-            if ($this->project->members()->where('user_id', $userId)->exists()) {
-                session()->flash('error', '' . $user->name . ' est déjà membre du projet.');
-                return;
-            }
-            // Add user to project
-            $this->project->members()->attach($userId);
-            // Refresh members list
-            $this->members = $this->project->members;
-            // Clear search
-            $this->searchMember = '';
-            $this->searchResults = [];
-            $this->showSearchResults = false;
-
-            // Flash success message
-            session()->flash('success', $user->name . ' a été ajouté au projet.');
-
-        } catch (\Exception $e) {
-            session()->flash('error', 'Échec de l\'ajout du membre au projet.');
+        $user = User::findOrFail($userId);
+        // Check if user is already a member
+        if ($this->project->members()->where('user_id', $userId)->exists()) {
+            session()->flash('error', '' . $user->name . ' est déjà membre du projet.');
+            return;
         }
+        // Add user to project
+        $this->project->members()->attach($userId);
+        // Refresh members list
+        $this->members = $this->project->members;
+        // Clear search
+        $this->searchMember = '';
+        $this->searchResults = [];
+        $this->showSearchResults = false;
+
+        // Send the notification to the user.
+        $user->notify(new MemberNotification($this->project, $user, Auth::user(), 'added'));
+
+
+        // Flash success message
+        session()->flash('success', $user->name . ' a été ajouté au projet.');
     }
 
     public function removeMember($userId)
@@ -142,15 +142,22 @@ class ProjectSettings extends Component
             $this->searchResults = [];
             $this->showSearchResults = false;
             return;
-        } else {
-            try {
-                $this->project->members()->detach($userId);
-                $this->members = $this->getMembers(); // Refresh members list
-                session()->flash('success', 'Membre supprimé avec succès.');
-            } catch (\Exception $e) {
-                session()->flash('error', 'Échec de la suppression du membre du projet.');
-            }
         }
+        $user = User::findOrFail($userId);
+        $this->project->members()->detach($userId);
+        $this->members = $this->getMembers(); // Refresh members list
+
+        // Clear search
+        $this->searchMember = '';
+        $this->searchResults = [];
+        $this->showSearchResults = false;
+
+        // Send the notification to the user.
+        $user->notify(new MemberNotification($this->project, $user, Auth::user(), 'removed'));
+
+        session()->flash('success', 'Membre supprimé avec succès.');
+
+
     }
 
     // Add this method to hide search results when clicking outside
