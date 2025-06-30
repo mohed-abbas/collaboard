@@ -5,16 +5,19 @@ namespace App\Livewire;
 use App\Models\Category;
 use Livewire\Component;
 use App\Models\Project;
+use Livewire\Attributes\On;
 use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\On;
+
 
 class Board extends Component
 {
+    public $viewMode = 'board'; // Default view mode
     public $project;
     public $categories;
     public $categoryTitle = '';
     public $tasks = [];
+    public $tasksByCategory = [];
     public $showCategoryModal = false;
     public $showTaskModal = false;
     public $isEditing = false;
@@ -26,23 +29,27 @@ class Board extends Component
         $this->categories = Category::where('project_id', $this->project->id)->with('tasks')
             ->orderBy('created_at', 'asc')
             ->get();
-        $this->tasks = [];
 
+        $this->tasksByCategory = [];
         // MODIFICATION: Organisation des tâches par catégorie
+
         foreach ($this->categories as $category) {
-            $this->tasks[$category->id] = $category->tasks;
+            $this->tasksByCategory[$category->id] = $category->tasks;
         }
 
         // MODIFICATION: Initialisation des tâches pour chaque catégorie (au cas où elle serait vide)
         foreach ($this->categories as $category) {
-            if (!isset($this->tasks[$category->id])) {
-                $this->tasks[$category->id] = collect();
+            if (!isset($this->tasksByCategory[$category->id])) {
+                $this->tasksByCategory[$category->id] = collect();
+            }
+            foreach ($category->tasks as $task) {
+                $this->tasks[] = $task;
             }
         }
-
-        // MODIFICATION: Formatage des tâches pour l'affichage
-        foreach ($this->tasks as $categoryId => $taskCollection) {
-            $this->tasks[$categoryId] = $taskCollection->map(function ($task) {
+      
+        // Ensure tasks are in the correct format
+        foreach ($this->tasksByCategory as $categoryId => $taskCollection) {
+            $this->tasksByCategory[$categoryId] = $taskCollection->map(function ($task) {
                 return [
                     'id' => $task->id,
                     'title' => $task->title,
@@ -155,6 +162,7 @@ class Board extends Component
     }
 
     // MODIFICATION: Rendu de la vue avec layout personnalisé et titre dynamique
+
     public function render()
     {
         return view('livewire.board')->layout('components.layouts.app', ['title' => 'Tableau - ' . $this->project->name]);

@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\MemberNotification;
 
-
 class ProjectSettings extends Component
 {
     public $project;
@@ -111,6 +110,7 @@ class ProjectSettings extends Component
             return;
         }
 
+
         $user = User::findOrFail($userId);
         // Check if user is already a member
         if ($this->project->members()->where('user_id', $userId)->exists()) {
@@ -156,8 +156,6 @@ class ProjectSettings extends Component
         $user->notify(new MemberNotification($this->project, $user, Auth::user(), 'removed'));
 
         session()->flash('success', 'Membre supprimé avec succès.');
-
-
     }
 
     // Add this method to hide search results when clicking outside

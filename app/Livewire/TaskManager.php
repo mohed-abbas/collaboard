@@ -25,7 +25,7 @@ class TaskManager extends Component
     public $showModal = false;
 
     #[On('openCreateTaskModal')]
-    public function openCreateTaskModal($categoryId)
+    public function openCreateTaskModal($categoryId = null)
     {
         $this->resetForm();
         $this->isEditing = false;
@@ -61,7 +61,7 @@ class TaskManager extends Component
         $task = Task::create([
             'title' => $this->taskTitle,
             'description' => $this->taskDescription,
-            'category_id' => $this->categoryId,
+            'category_id' => $this->categoryId ?? null, // Use user input or default
             'deadline' => $this->taskDeadline ?? now(), // Use user input or default
             'priority_level' => 1, // Default priority level
             'position' => 1,
@@ -121,7 +121,7 @@ class TaskManager extends Component
         $this->validate([
             'taskTitle' => 'required|string|max:255',
             'taskDescription' => 'nullable|string',
-            'categoryId' => 'required|exists:categories,id',
+            'categoryId' => 'nullable|exists:categories,id',
             'taskDeadline' => 'nullable|date',
         ]);
     }

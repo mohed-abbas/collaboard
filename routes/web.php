@@ -27,7 +27,6 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-
     // MODIFICATION: Route pour la gestion des projets (liste et actions CRUD)
     Route::get('/projects/manage', ProjectManager::class)->name('projects.manage');
     // MODIFICATION: Route pour la création de projet (même composant mais avec modal ouvert)

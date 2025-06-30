@@ -47,20 +47,20 @@
                 </div>
 
 
+                {{-- Category --}}
+                <div class="space-y-1">
+                    <label for="categoryId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Category
+                    </label>
+                    <select id="categoryId" wire:model="categoryId"
+                        class="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200 sm:text-sm">
+                        <option value="{{ $categoryId }}">Select category</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->title }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 @if ($isEditing)
-                    {{-- Category --}}
-                    <div class="space-y-1">
-                        <label for="categoryId" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Category
-                        </label>
-                        <select id="categoryId" wire:model="categoryId"
-                            class="mt-1 p-2 block w-full rounded-md border-gray-300 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-gray-200 sm:text-sm">
-                            <option value="{{ $categoryId }}">Select category</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->title }}</option>
-                            @endforeach
-                        </select>
-                    </div>
                     {{-- is Done --}}
                     <div class="space-y-1">
                         <div class="flex items-center space-x-2">
@@ -77,7 +77,7 @@
                     </div>
                 @endif
                 @if (!empty($task['users']))
-                <div class="space-y-1">
+                    <div class="space-y-1">
                         {{-- Afficher le creator --}}
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Creator
