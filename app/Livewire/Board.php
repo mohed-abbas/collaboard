@@ -46,7 +46,7 @@ class Board extends Component
                 $this->tasks[] = $task;
             }
         }
-      
+
         // Ensure tasks are in the correct format
         foreach ($this->tasksByCategory as $categoryId => $taskCollection) {
             $this->tasksByCategory[$categoryId] = $taskCollection->map(function ($task) {
