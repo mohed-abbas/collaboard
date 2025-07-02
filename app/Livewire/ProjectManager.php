@@ -20,9 +20,9 @@ class ProjectManager extends Component
 
 
     private array $defaultCategories = [
-        ['title' => 'À faire', 'sort_order' => 1],
-        ['title' => 'En cours', 'sort_order' => 2],
-        ['title' => 'Terminé', 'sort_order' => 3],
+        ['title' => 'À faire', 'sort_order' => 1, 'is_system' => true],
+        ['title' => 'En cours', 'sort_order' => 2, 'is_system' => true],
+        ['title' => 'Terminé', 'sort_order' => 3, 'is_system' => true],
     ];
 
 
@@ -77,7 +77,8 @@ class ProjectManager extends Component
             Category::create([
                 'title' => $categoryData['title'],
                 'project_id' => $project->id,
-                'sort_order' => $categoryData['sort_order'],
+                'is_system' => $categoryData['is_system'] ?? false, // Default to false if not set
+                'position' => $categoryData['sort_order']
             ]);
         }
         $this->closeModal();

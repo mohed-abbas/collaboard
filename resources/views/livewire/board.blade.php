@@ -47,8 +47,12 @@
                     class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
                     + Créer une Catégorie
                 </button>
-            </div>
 
+                <button wire:click="$dispatch('openLabelModal')"
+                    class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                    🏷️ Gérer les Étiquettes
+                </button>
+            </div>
 
             @if ($viewMode === 'list')
             <!-- MODIFICATION: Composant Livewire pour la vue en liste -->
@@ -91,13 +95,32 @@
                         <!-- MODIFICATION: Zone des tâches avec espacement vertical -->
                         <div class="flex flex-col gap-2">
                             @forelse($category->tasks as $task)
-                            <!-- MODIFICATION: Carte de tâche cliquable avec états visuels différents -->
+
+
+
+                            <!-- MODIFICATION: Carte de tâche cliquable avec états visuels différents et labels -->
                             <div wire:click="$dispatch('openEditTaskModal', { taskId: {{ $task->id }} })"
                                 class="task rounded-lg p-3 cursor-pointer transition-colors duration-150
-                                            {{ $task->is_done == 1 ? 'bg-green-100 hover:bg-green-200 line-through opacity-70' : 'bg-gray-100 hover:bg-blue-100' }}">
+                                                                    {{ $task->is_done == 1 ? 'bg-green-100 hover:bg-green-200 line-through opacity-70' : 'bg-gray-100 hover:bg-blue-100' }}">
+
+                                <!-- MODIFICATION: Labels affichés en haut de la carte -->
+                                @if($task->labels->count() > 0)
+                                <div class="flex flex-wrap gap-1 mb-2">
+                                    @foreach($task->labels as $label)
+                                    <span
+                                        class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white"
+                                        style="background-color: {{ $label->color }}">
+                                        {{ $label->name }}
+                                    </span>
+                                    @endforeach
+                                </div>
+                                @endif
+
                                 <div class="flex items-center justify-between">
                                     <!-- MODIFICATION: Titre de la tâche -->
-                                    <h3 class="font-medium">{{ $task->title }}</h3>
+                                    <h3 class="font-medium {{ $task->isOverdue() ? 'text-red-700' : 'text-gray-900' }}">
+                                        {{ $task->title }}
+                                    </h3>
                                     <!-- MODIFICATION: Checkbox pour marquer la tâche comme terminée -->
                                     <label class="mt-2 inline-flex items-center space-x-2 cursor-pointer">
                                         <input type="checkbox"
@@ -106,13 +129,48 @@
                                             class="form-checkbox h-5 w-5 text-green-600 transition duration-150 rounded checked:bg-green-600">
                                     </label>
                                 </div>
+
                                 <!-- MODIFICATION: Description de la tâche -->
-                                <p class="text-sm text-gray-600 ">{{ $task->description }}</p>
-                                <!-- MODIFICATION: Informations supplémentaires comme la deadline -->
+                                @if($task->description)
+                                <p class="text-sm text-gray-600 mt-1">{{ Str::limit($task->description, 100) }}
+                                </p>
+                                @endif
+
+                                <!-- MODIFICATION: Informations supplémentaires avec priorité et deadline -->
                                 <div class="mt-2 flex justify-between items-center">
-                                    <span class="text-xs text-gray-500">
-                                        {{ $task->deadline ? 'Deadline : ' . \Carbon\Carbon::parse($task->deadline)->format('Y-m-d H:i') : '' }}
-                                    </span>
+                                    <div class="flex items-center space-x-2">
+                                        <!-- Priority indicator -->
+                                        @if($task->priority_level > 1)
+                                        <span
+                                            class="px-2 py-0.5 text-xs rounded-full
+                                                                                {{ $task->priority_level === 4 ? 'bg-red-100 text-red-800' : '' }}
+                                                                                {{ $task->priority_level === 3 ? 'bg-orange-100 text-orange-800' : '' }}
+                                                                                {{ $task->priority_level === 2 ? 'bg-yellow-100 text-yellow-800' : '' }}">
+                                            {{ $task->priority_text }}
+                                        </span>
+                                        @endif
+
+                                        <!-- Deadline with visual warning -->
+                                        @if($task->deadline)
+                                        <span
+                                            class="text-xs {{ $task->isOverdue() ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
+                                            📅 {{ $task->deadline->format('d/m H:i') }}
+                                            @if($task->isOverdue())
+                                            <span class="ml-2 px-1 py-0.5 bg-red-500 text-[8px] text-white rounded">
+                                                RETARD
+                                            </span>
+                                            @endif
+                                        </span>
+                                        @endif
+                                    </div>
+
+                                    <!-- Task status indicator -->
+                                    <div class="flex items-center space-x-1">
+                                        @if($task->users->count() > 1)
+                                        <span class="text-xs text-gray-400">👥
+                                            {{ $task->users->count() }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                             @empty
@@ -135,6 +193,7 @@
             @include('livewire.category-modal')
             <!-- MODIFICATION: Composant Livewire pour la gestion des tâches -->
             <livewire:task-manager :categories="$categories" />
+            <livewire:label-manager :project="$project" />
         </div>
     </div>
 </div>
