@@ -27,6 +27,13 @@ class ProjectSettings extends Component
         ];
     }
 
+    protected $messages = [
+        'projectName.required' => 'Le nom du projet est requis.',
+        'projectName.string' => 'Le nom du projet doit être une chaîne de caractères.',
+        'projectDescription.string' => 'La description du projet doit être une chaîne de caractères.',
+    ];
+
+
     public function saveSettings()
     {
         $this->validate();

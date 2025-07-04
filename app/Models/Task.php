@@ -61,18 +61,28 @@ class Task extends Model
         return $this->deadline && $this->deadline->isPast() && !$this->is_done;
     }
 
+
+    /**
+     * Get priority levels array or specific priority text.
+     */
+    public static function getPriorityLevels(?int $level = null): array|string
+    {
+        $levels = [
+            1 => 'Bas',
+            2 => 'Moyen',
+            3 => 'Élevé',
+            4 => 'Critique',
+        ];
+
+        return $level ? ($levels[$level] ?? 'Inconnu') : $levels;
+    }
+
     /**
      * Get the task's priority level as a string.
      */
     public function getPriorityTextAttribute(): string
     {
-        return match ($this->priority_level) {
-            1 => 'Low',
-            2 => 'Medium',
-            3 => 'High',
-            4 => 'Critical',
-            default => 'Unknown'
-        };
+        return self::getPriorityLevels($this->priority_level);
     }
 
 
@@ -82,14 +92,14 @@ class Task extends Model
     public function getStatusAttribute(): string
     {
         if ($this->is_done) {
-            return 'Completed';
+            return 'Terminé';
         }
 
         if ($this->isOverdue()) {
-            return 'Overdue';
+            return 'En retard';
         }
 
-        return 'Pending';
+        return 'En attente';
     }
 
     /**
@@ -142,6 +152,8 @@ class Task extends Model
     {
         return $this->labels()->where('labels.id', $labelId)->exists();
     }
+
+
 
     /**
      * Get labels as a comma-separated string.

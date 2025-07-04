@@ -144,6 +144,23 @@ class LabelManager extends Component
         $this->dispatch('labelUpdated');
     }
 
+
+    public function forceDeleteLabel($labelId)
+    {
+        $label = Label::find($labelId);
+        if (!$label || $label->project_id !== $this->project->id) {
+            session()->flash('error', 'Étiquette non trouvée ou vous n\'avez pas la permission de la supprimer.');
+            return;
+        }
+
+        $label->delete();
+        $this->loadLabels();
+        session()->flash('success', 'Étiquette supprimée avec succès.');
+        $this->dispatch('labelUpdated');
+        $this->dispatch('projectUpdated');
+    }
+
+
     public function resetForm()
     {
         $this->labelId = null;

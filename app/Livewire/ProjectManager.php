@@ -17,8 +17,6 @@ class ProjectManager extends Component
     public ?int $editingId = null;
     public string $name = '';
     public string $description = '';
-
-
     private array $defaultCategories = [
         ['title' => 'À faire', 'sort_order' => 1, 'is_system' => true],
         ['title' => 'En cours', 'sort_order' => 2, 'is_system' => true],
@@ -53,6 +51,7 @@ class ProjectManager extends Component
             ->get();
     }
 
+    #[On('openCreateProjectModal')]
     //–– Create Flow ––
     public function openCreateModal()
     {
@@ -153,6 +152,44 @@ class ProjectManager extends Component
         'viewProjectBoard' => 'viewBoard',
         'open-create-project' => 'openCreateModal' // Ajouter cet écouteur
     ];
+
+
+    #[On('getProjectColors')]
+    public function getProjectColors(string $projectName): array|string
+    {
+        $colors = [
+            'A' => 'from-red-500 to-pink-600 shadow-red-500/25',
+            'B' => 'from-blue-500 to-cyan-600 shadow-blue-500/25',
+            'C' => 'from-green-500 to-emerald-600 shadow-green-500/25',
+            'D' => 'from-purple-500 to-indigo-600 shadow-purple-500/25',
+            'E' => 'from-yellow-500 to-orange-600 shadow-yellow-500/25',
+            'F' => 'from-pink-500 to-rose-600 shadow-pink-500/25',
+            'G' => 'from-teal-500 to-cyan-600 shadow-teal-500/25',
+            'H' => 'from-indigo-500 to-purple-600 shadow-indigo-500/25',
+            'I' => 'from-orange-500 to-red-600 shadow-orange-500/25',
+            'J' => 'from-emerald-500 to-teal-600 shadow-emerald-500/25',
+            'K' => 'from-violet-500 to-purple-600 shadow-violet-500/25',
+            'L' => 'from-lime-500 to-green-600 shadow-lime-500/25',
+            'M' => 'from-fuchsia-500 to-pink-600 shadow-fuchsia-500/25',
+            'N' => 'from-sky-500 to-blue-600 shadow-sky-500/25',
+            'O' => 'from-amber-500 to-orange-600 shadow-amber-500/25',
+            'P' => 'from-rose-500 to-pink-600 shadow-rose-500/25',
+            'Q' => 'from-cyan-500 to-teal-600 shadow-cyan-500/25',
+            'R' => 'from-red-600 to-rose-700 shadow-red-500/25',
+            'S' => 'from-blue-600 to-indigo-700 shadow-blue-500/25',
+            'T' => 'from-green-600 to-emerald-700 shadow-green-500/25',
+            'U' => 'from-purple-600 to-violet-700 shadow-purple-500/25',
+            'V' => 'from-yellow-600 to-amber-700 shadow-yellow-500/25',
+            'W' => 'from-pink-600 to-fuchsia-700 shadow-pink-500/25',
+            'X' => 'from-teal-600 to-cyan-700 shadow-teal-500/25',
+            'Y' => 'from-orange-600 to-red-700 shadow-orange-500/25',
+            'Z' => 'from-indigo-600 to-purple-700 shadow-indigo-500/25',
+        ];
+
+        $firstletter = strtoupper(substr($projectName, 0, 1));
+        return $colors[$firstletter] ?? 'from-gray-500 to-gray-600 shadow-gray-500/25';
+    }
+
 
     public function viewBoard($projectId)
     {

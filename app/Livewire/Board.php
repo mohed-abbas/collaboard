@@ -14,19 +14,28 @@ class Board extends Component
     public $viewMode = 'board'; // Default view mode
     public $project;
     public $categories;
-    public $categoryTitle = '';
     public $tasks = [];
     public $tasksByCategory = [];
     public $showCategoryModal = false;
     public $showTaskModal = false;
     public $isEditing = false;
-
+    public $categoryTitle = '';
     public $labels = []; // Variable pour stocker les labels du projet
-
-    // Variables pour stocker l'ID en cours d'édition
-    public $editingCategoryId;
-
+    public $editingCategoryId; // Variable pour stocker l'ID en cours d'édition
     public $filterByLabel = null; // Variable pour filtrer les tâches par label
+
+
+    protected $rules = [
+        'categoryTitle' => 'required|string|max:50|min:3',
+    ];
+
+
+    protected $messages = [
+        'categoryTitle.required' => 'Le titre de la catégorie est requis.',
+        'categoryTitle.string' => 'Le titre de la catégorie doit être une chaîne de caractères.',
+        'categoryTitle.max' => 'Le titre de la catégorie ne peut pas dépasser 255 caractères.',
+    ];
+
 
     // MODIFICATION: Méthode pour charger le tableau avec les catégories, tâches et labels
     public function loadBoard()
@@ -116,9 +125,7 @@ class Board extends Component
     // Flux de création de catégorie - Création effective
     public function createCategory()
     {
-        $this->validate([
-            'categoryTitle' => 'required|string|max:255',
-        ]);
+        $this->validate();
 
         // Déterminer la position pour la nouvelle catégorie
         $maxPosition = Category::where('project_id', $this->project->id)->max('position') ?? 0;
@@ -151,9 +158,7 @@ class Board extends Component
     // Flux d'édition de catégorie - Mise à jour effective
     public function updateCategory()
     {
-        $this->validate([
-            'categoryTitle' => 'required|string|max:255',
-        ]);
+        $this->validate();
 
         $category = Category::find($this->editingCategoryId);
         if ($category) {
