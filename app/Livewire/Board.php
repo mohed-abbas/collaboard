@@ -2,250 +2,257 @@
 
 namespace App\Livewire;
 
+use App\Models\Project;
 use App\Models\Category;
 use Livewire\Component;
-use App\Models\Project;
 use Livewire\Attributes\On;
-use App\Models\Task;
-use Illuminate\Support\Facades\Auth;
 
 class Board extends Component
 {
-    public $viewMode = 'board'; // Default view mode
     public $project;
     public $categories;
-    public $tasks = [];
-    public $tasksByCategory = [];
+    public $labels;
+    public $filteredTasks;
+    public $viewMode = 'board'; // board or list
+
+    // Filtering properties
+    public $selectedCategory = '';
+    public $searchTerm = '';
+    public $showPendingOnly = false;
+    public $selectedLabels = []; // Array of selected label IDs
+
+    // Sorting properties
+    public $sortBy = 'created_at';
+    public $sortDirection = 'desc';
+
+    // Category management
     public $showCategoryModal = false;
-    public $showTaskModal = false;
-    public $isEditing = false;
+    public $categoryId;
     public $categoryTitle = '';
-    public $labels = []; // Variable pour stocker les labels du projet
-    public $editingCategoryId; // Variable pour stocker l'ID en cours d'édition
-    public $filterByLabel = null; // Variable pour filtrer les tâches par label
+    public $categoryColor = '#3B82F6';
+    public $isEditingCategory = false;
 
+    public $isEditing = false;
 
-    protected $rules = [
-        'categoryTitle' => 'required|string|max:50|min:3',
-    ];
-
-
-    protected $messages = [
-        'categoryTitle.required' => 'Le titre de la catégorie est requis.',
-        'categoryTitle.string' => 'Le titre de la catégorie doit être une chaîne de caractères.',
-        'categoryTitle.max' => 'Le titre de la catégorie ne peut pas dépasser 255 caractères.',
-    ];
-
-
-    // MODIFICATION: Méthode pour charger le tableau avec les catégories, tâches et labels
-    public function loadBoard()
+    public function mount($project)
     {
-        $query = Category::where('project_id', $this->project->id)
-            ->with([
-                'tasks' => function ($query) {
-                    $query->with(['labels', 'users'])->orderBy('position');
+        $this->loadProject($project);
+        $this->viewMode = session('board_view_mode', 'board'); // Default to 'board' view mode
+        $this->applyFilters();
+    }
 
-                    if ($this->filterByLabel) {
-                        $query->whereHas('labels', function ($labelQuery) {
-                            $labelQuery->where('labels.id', $this->filterByLabel);
-                        });
-                    }
-                }
-            ]);
+    public function updatedViewMode()
+    {
+        session(['board_view_mode' => $this->viewMode]);
+        $this->applyFilters();
+    }
 
-        $this->categories = $query->orderBy('position')->get();
-
-        $this->tasksByCategory = [];
-        $this->tasks = [];
-
-        // Organisation des tâches par catégorie
-        foreach ($this->categories as $category) {
-            $this->tasksByCategory[$category->id] = $category->tasks;
-            // Ajout de toutes les tâches dans le tableau global
-            foreach ($category->tasks as $task) {
-                $this->tasks[] = $task;
+    public function loadProject($project)
+    {
+        $this->project = Project::findOrFail(is_object($project) ? $project->id : $project);
+        $this->categories = $this->project->categories()->with([
+            'tasks' => function ($query) {
+                $query->with(['labels', 'users', 'category']);
             }
-        }
-
-        // Initialisation des tâches pour chaque catégorie (au cas où elle serait vide)
-        foreach ($this->categories as $category) {
-            if (!isset($this->tasksByCategory[$category->id])) {
-                $this->tasksByCategory[$category->id] = collect();
-            }
-        }
-
-        // Charger les labels du projet
-        $this->loadLabels();
-    }
-
-
-    // Add listener for filter changes
-    public function updatedFilterByLabel()
-    {
-        $this->loadBoard();
-    }
-
-    public function clearLabelFilter()
-    {
-        $this->filterByLabel = null;
-        $this->loadBoard();
-    }
-
-
-    // MODIFICATION: Nouvelle méthode pour charger les labels
-    public function loadLabels()
-    {
+        ])->get();
         $this->labels = $this->project->labels()->orderBy('name')->get();
     }
 
-    // MODIFICATION: Écouteur pour les mises à jour de labels
-    #[On('labelsUpdated')]
-    public function refreshLabels()
+    // Auto-trigger filtering when properties change
+    public function updatedSelectedCategory()
     {
-        $this->loadLabels();
-        $this->loadBoard(); // Recharger le tableau pour avoir les labels mis à jour sur les tâches
+        $this->applyFilters();
     }
 
-    // Méthode pour réinitialiser le formulaire modal
-    public function resetForm()
+    public function updatedSearchTerm()
     {
-        $this->isEditing = false;
-        $this->showCategoryModal = false;
-        $this->showTaskModal = false;
-        $this->reset(['categoryTitle', 'editingCategoryId']);
+        $this->applyFilters();
     }
 
-    // Flux de création de catégorie - Ouverture du modal
+    public function updatedShowPendingOnly()
+    {
+        $this->applyFilters();
+    }
+
+    public function updatedSelectedLabels()
+    {
+        $this->applyFilters();
+    }
+
+    public function applyFilters()
+    {
+        $query = $this->project->tasks()->with(['category', 'labels', 'users']);
+
+        // Apply category filter
+        if ($this->selectedCategory !== '' && $this->selectedCategory !== 'all') {
+            $query->where('category_id', $this->selectedCategory);
+        }
+
+        // Apply search term filter
+        if (!empty($this->searchTerm)) {
+            $query->where(function ($q) {
+                $q->where('tasks.title', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('tasks.description', 'like', '%' . $this->searchTerm . '%');
+            });
+        }
+
+        // Apply pending only filter
+        if ($this->showPendingOnly) {
+            $query->where('is_done', false);
+        }
+
+        // Apply label filters
+        if (!empty($this->selectedLabels)) {
+            $query->whereHas('labels', function ($q) {
+                $q->whereIn('labels.id', $this->selectedLabels);
+            });
+        }
+
+        // Apply sorting
+        switch ($this->sortBy) {
+            case 'title':
+                $query->orderBy('tasks.title', $this->sortDirection);
+                break;
+            case 'deadline':
+                $query->orderBy('deadline', $this->sortDirection);
+                break;
+            case 'priority':
+                $query->orderBy('priority_level', $this->sortDirection);
+                break;
+            case 'status':
+                $query->orderBy('is_done', $this->sortDirection);
+                break;
+            default:
+                $query->orderBy('created_at', $this->sortDirection);
+        }
+
+        $this->filteredTasks = $query->get();
+    }
+
+    public function sortTasks($sortBy)
+    {
+        if ($this->sortBy === $sortBy) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $sortBy;
+            $this->sortDirection = 'asc';
+        }
+        $this->applyFilters();
+    }
+
+    public function toggleLabel($labelId)
+    {
+        if (in_array($labelId, $this->selectedLabels)) {
+            $this->selectedLabels = array_diff($this->selectedLabels, [$labelId]);
+        } else {
+            $this->selectedLabels[] = $labelId;
+        }
+        $this->applyFilters();
+    }
+
+    public function clearFilters()
+    {
+        $this->selectedCategory = '';
+        $this->searchTerm = '';
+        $this->showPendingOnly = false;
+        $this->selectedLabels = [];
+        $this->sortBy = 'created_at';
+        $this->sortDirection = 'desc';
+        $this->applyFilters();
+    }
+
+    public function clearLabelFilters()
+    {
+        $this->selectedLabels = [];
+        $this->applyFilters();
+    }
+
+    // Category Management Methods
     public function openCreateCategoryModal()
     {
-        $this->resetForm();
+        $this->resetCategoryForm();
+        $this->isEditingCategory = false;
         $this->showCategoryModal = true;
     }
 
-    // Flux de création de catégorie - Création effective
-    public function createCategory()
-    {
-        $this->validate();
-
-        // Déterminer la position pour la nouvelle catégorie
-        $maxPosition = Category::where('project_id', $this->project->id)->max('position') ?? 0;
-
-        $category = Category::create([
-            'title' => $this->categoryTitle,
-            'project_id' => $this->project->id,
-            'position' => $maxPosition + 1,
-        ]);
-
-        $this->resetForm();
-        $this->loadBoard();
-
-        session()->flash('success', 'Catégorie créée avec succès.');
-    }
-
-    // Flux d'édition de catégorie - Ouverture du modal d'édition
     public function openEditCategoryModal($categoryId)
     {
-        $this->resetForm();
-        $this->isEditing = true;
-        $this->editingCategoryId = $categoryId;
-        $category = $this->categories->find($categoryId);
+        $category = Category::find($categoryId);
         if ($category) {
+            $this->categoryId = $categoryId;
             $this->categoryTitle = $category->title;
+            $this->categoryColor = $category->color;
+            $this->isEditingCategory = true;
             $this->showCategoryModal = true;
         }
     }
 
-    // Flux d'édition de catégorie - Mise à jour effective
-    public function updateCategory()
+    public function saveCategory()
     {
-        $this->validate();
+        $this->validate([
+            'categoryTitle' => 'required|string|max:255',
+            'categoryColor' => 'required|string',
+        ]);
 
-        $category = Category::find($this->editingCategoryId);
-        if ($category) {
-            $category->update([
-                'title' => $this->categoryTitle
+        if ($this->isEditingCategory) {
+            $category = Category::find($this->categoryId);
+            if ($category) {
+                $category->update([
+                    'title' => $this->categoryTitle,
+                    'color' => $this->categoryColor,
+                ]);
+                session()->flash('success', 'Catégorie mise à jour avec succès.');
+            }
+        } else {
+            Category::create([
+                'title' => $this->categoryTitle,
+                'color' => $this->categoryColor,
+                'project_id' => $this->project->id,
             ]);
-
-            session()->flash('success', 'Catégorie mise à jour avec succès.');
+            session()->flash('success', 'Catégorie créée avec succès.');
         }
 
-        $this->resetForm();
-        $this->loadBoard();
+        $this->resetCategoryForm();
+        $this->projectUpdated();
     }
 
-    // Flux de suppression de catégorie - Suppression en cascade des tâches
     public function deleteCategory($categoryId)
     {
         $category = Category::find($categoryId);
-        if ($category) {
-            $tasksCount = $category->tasks->count();
-
-            // Suppression d'abord de toutes les tâches de cette catégorie
-            // Les labels seront automatiquement détachés grâce aux contraintes de clé étrangère
-            Task::where('category_id', $categoryId)->delete();
-
-            // Puis suppression de la catégorie elle-même
+        if ($category && $category->tasks()->count() === 0) {
             $category->delete();
-            $this->loadBoard();
-
-            session()->flash('success', "Catégorie supprimée avec succès ($tasksCount tâche(s) supprimée(s)).");
+            session()->flash('success', 'Catégorie supprimée avec succès.');
+            $this->projectUpdated();
+        } else {
+            session()->flash('error', 'Impossible de supprimer une catégorie contenant des tâches.');
         }
     }
 
-    // MODIFICATION: Nouvelle méthode pour filtrer les tâches par label
-    public function getTasksByLabel($labelId)
+    private function resetCategoryForm()
     {
-        return $this->tasks->filter(function ($task) use ($labelId) {
-            return $task->labels->contains('id', $labelId);
-        });
+        $this->categoryId = null;
+        $this->categoryTitle = '';
+        $this->categoryColor = '#3B82F6';
+        $this->showCategoryModal = false;
+        $this->resetErrorBag();
     }
 
-    // MODIFICATION: Nouvelle méthode pour obtenir les statistiques des labels
-    public function getLabelStats()
-    {
-        $stats = [];
-        foreach ($this->labels as $label) {
-            $stats[$label->id] = [
-                'name' => $label->name,
-                'color' => $label->color,
-                'tasks_count' => $this->tasks->filter(function ($task) use ($label) {
-                    return $task->labels->contains('id', $label->id);
-                })->count()
-            ];
-        }
-        return $stats;
-    }
-
-    // MODIFICATION: Nouvelle méthode pour obtenir les tâches avec labels pour une catégorie
-    public function getCategoryTasksWithLabels($categoryId)
-    {
-        return $this->tasksByCategory[$categoryId] ?? collect();
-    }
-
-    // Écouteur pour les mises à jour de projet
     #[On('projectUpdated')]
     public function projectUpdated()
     {
-        // Rechargement du tableau quand le projet est mis à jour
-        $this->loadBoard();
+        $this->loadProject($this->project->id);
+        $this->applyFilters();
     }
 
-    // Méthode d'initialisation du composant avec vérification des droits d'accès
-    public function mount(Project $project)
+    #[On('labelUpdated')]
+    public function labelUpdated()
     {
-        // Vérification que l'utilisateur a accès à ce projet
-        if (!Auth::user()->can('view', $project)) {
-            session()->flash('error', 'Vous n\'avez pas la permission de voir ce projet.');
-            return redirect()->route('dashboard');
-        }
-
-        $this->project = $project;
-        $this->loadBoard();
+        $this->labels = $this->project->labels()->orderBy('name')->get();
+        $this->applyFilters();
     }
 
-    // Rendu de la vue avec layout personnalisé et titre dynamique
     public function render()
     {
-        return view('livewire.board')->layout('components.layouts.app', ['title' => 'Tableau - ' . $this->project->name]);
+        return view('livewire.board');
     }
 }

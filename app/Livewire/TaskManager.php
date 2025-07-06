@@ -15,7 +15,7 @@ class TaskManager extends Component
     public $taskId;
     public $taskTitle = '';
     public $taskDescription = '';
-    public $categoryId;
+    public $categoryId; // Default to first category if available
     public $taskDeadline;
     public $taskIsDone;
     public $task;
@@ -48,6 +48,7 @@ class TaskManager extends Component
     public function mount($categories)
     {
         $this->categories = $categories;
+        // $this->categoryId = $this->categories[0]->id ?? null; // Default to first category if available
         $this->loadLabels(); // Load available labels when component mounts
         $this->loadPriorityLevels(); // Load priority levels when component mounts
         $this->loadAvailableUsers(); // Load project members
@@ -75,7 +76,11 @@ class TaskManager extends Component
         $this->resetForm();
         $this->isEditing = false;
         $this->showModal = true;
-        $this->categoryId = $categoryId;
+
+        $this->categoryId = ($categoryId === null || $categoryId === 'null')
+            ? ($this->categories[0]->id ?? null)
+            : $categoryId;
+
         // Set default deadline to one day from now for new tasks
         $this->taskDeadline = now()->addDay()->format('Y-m-d\TH:i');
     }
@@ -190,11 +195,8 @@ class TaskManager extends Component
 
                 // Success feedback
                 session()->flash('success', "Tâche \"{$taskTitle}\" supprimée avec succès.");
-
                 // Refresh the board
                 $this->dispatch('projectUpdated');
-                $this->redirect(route('project.board', $task->category->project_id));
-
             } else {
                 // Task not found
                 $this->resetForm();

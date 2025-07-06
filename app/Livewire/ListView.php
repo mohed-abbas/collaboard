@@ -7,7 +7,6 @@ use Livewire\Component;
 use App\Models\Project;
 use Livewire\Attributes\On;
 
-
 class ListView extends Component
 {
     public $project;
@@ -15,11 +14,11 @@ class ListView extends Component
     public $tasks;
 
     // Sorting
-    public $listSortby = 'task'; // Default sort by task
-    public $listSortDirection = 'asc'; // Default sort direction
+    public $listSortby = 'task';
+    public $listSortDirection = 'asc';
 
     // Filters
-    public $selectedCategory = 'all';
+    public $selectedCategory = '';
     public $searchTerm = '';
     public $showPendingOnly = false;
 
@@ -32,55 +31,68 @@ class ListView extends Component
     {
         $this->project = Project::findOrFail(is_object($project) ? $project->id : $project);
         $this->categories = $this->project->categories()->with('tasks')->get();
-        $this->tasks = $this->project->tasks()->with('category')->get();
+        $this->applyFilters();
     }
 
-    public function sortTasks($categoryId, $sortBy)
+    // Auto-trigger filtering when properties change
+    public function updatedSelectedCategory()
     {
-        if ($sortBy === 'task') {
-            $this->tasks[$categoryId] = collect($this->tasks[$categoryId])->sortBy('title')->values()->toArray();
-        } elseif ($sortBy === 'status') {
-            $this->tasks[$categoryId] = collect($this->tasks[$categoryId])->sortBy('status')->values()->toArray();
+        $this->applyFilters();
+    }
+
+    public function updatedSearchTerm()
+    {
+        $this->applyFilters();
+    }
+
+    public function updatedShowPendingOnly()
+    {
+        $this->applyFilters();
+    }
+
+    // Combined filtering method
+    public function applyFilters()
+    {
+        $query = $this->project->tasks()->with('category');
+
+        // Apply category filter
+        if ($this->selectedCategory !== 'all' && $this->selectedCategory !== '') {
+            $query->where('category_id', $this->selectedCategory);
         }
+
+        // Apply search term filter - specify table name for title column
+        if (!empty($this->searchTerm)) {
+            $query->where('tasks.title', 'like', '%' . $this->searchTerm . '%');
+        }
+
+        // Apply pending only filter
+        if ($this->showPendingOnly) {
+            $query->where('is_done', false);
+        }
+
+        // Apply sorting - specify table name for title column
+        if ($this->listSortby === 'task') {
+            $query->orderBy('tasks.title', $this->listSortDirection);
+        } elseif ($this->listSortby === 'status') {
+            $query->orderBy('is_done', $this->listSortDirection);
+        }
+
+        $this->tasks = $query->get();
+    }
+
+    public function sortTasks($sortBy)
+    {
         $this->listSortby = $sortBy;
+        $this->listSortDirection = $this->listSortDirection === 'asc' ? 'desc' : 'asc';
+        $this->applyFilters();
     }
 
-    public function filterByCategory()
+    public function clearFilters()
     {
-        if ($this->selectedCategory == 'all') {
-            $this->tasks = $this->project->tasks()->with('category')->get();
-            return;
-        }
-        $this->tasks = $this->project->tasks()
-            ->when($this->selectedCategory, function ($query) {
-                return $query->where('category_id', $this->selectedCategory);
-            })
-            ->with('category')
-            ->get();
-    }
-
-    public function filterBySearchTerm()
-    {
-        $this->tasks = $this->project->tasks()
-            ->when($this->searchTerm, function ($query) {
-                return $query->where('tasks.title', 'like', '%' . $this->searchTerm . '%');
-            })
-            ->with('category')
-            ->get();
-    }
-
-    public function filterByIsDone()
-    {
-        if ($this->showPendingOnly == false) {
-            $this->tasks = $this->project->tasks()->with('category')->get();
-            return;
-        }
-        $this->tasks = $this->project->tasks()
-            ->when($this->showPendingOnly, function ($query) {
-                return $query->where('is_done', false);
-            })
-            ->with('category')
-            ->get();
+        $this->selectedCategory = '';
+        $this->searchTerm = '';
+        $this->showPendingOnly = false;
+        $this->applyFilters();
     }
 
     #[On('projectUpdated')]
