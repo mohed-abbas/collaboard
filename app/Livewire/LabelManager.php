@@ -9,12 +9,10 @@ use App\Models\Project;
 
 class LabelManager extends Component
 {
-
     public $labels = [];
     public $project;
     public $showModal = false;
     public $isEditing = false;
-
 
     // form fields
     public $labelId;
@@ -166,9 +164,15 @@ class LabelManager extends Component
         $this->labelId = null;
         $this->labelName = '';
         $this->labelColor = '#3B82F6'; // Reset to default color
-        $this->showModal = false;
         $this->isEditing = false;
         $this->resetErrorBag();
+    }
+
+
+    public function closeModal()
+    {
+        $this->showModal = false;
+        $this->resetForm();
     }
 
     public function setColor($color)

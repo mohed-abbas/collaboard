@@ -1,241 +1,177 @@
 <div>
-    <x-modal.dialog wire:model="showModal" class="w-full max-w-2xl horizontal-scroll">
+    <x-modal.dialog wire:model="showModal" class="w-full max-w-5xl">
         <x-slot name="title">
-            <div class="flex items-center space-x-3 p-6 border-b border-slate-200 dark:border-slate-700">
-                <div class="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-                    <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-semibold text-slate-900 dark:text-white">
-                    {{ $isEditing ? 'Modifier l\'Étiquette' : 'Créer une Nouvelle Étiquette' }}
-                </h3>
+            <!-- Minimal Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                <h2 class="text-lg font-semibold text-slate-900 dark:text-white">
+                    Gestion des étiquettes
+                </h2>
             </div>
         </x-slot>
 
         <x-slot name="newContent">
             <div class="p-6">
-                <form wire:submit.prevent="saveLabel" class="space-y-6">
-                    <!-- Label Name -->
-                    <div>
-                        <label for="labelName" class="block text-sm font-medium text-slate-900 dark:text-white mb-2">
-                            Nom de l'Étiquette <span class="text-red-500">*</span>
-                        </label>
-                        <input id="labelName" type="text" wire:model="labelName"
-                            class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200"
-                            placeholder="ex. : Backend, Frontend, Design">
-                        @error('labelName')
-                        <div
-                            class="flex items-center mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                            <svg class="w-4 h-4 mr-2 text-red-500 dark:text-red-400 flex-shrink-0" fill="currentColor"
-                                viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="text-sm font-medium text-red-600 dark:text-red-400">
-                                {{ $message }}
-                            </span>
-                        </div>
-                        @enderror
-                    </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 h-96">
 
-                    <!-- Color Selection -->
-                    <div>
-                        <label class="block text-sm font-medium text-slate-900 dark:text-white mb-3">
-                            Couleur <span class="text-red-500">*</span>
-                        </label>
-                        <!-- Predefined Colors -->
-                        <div
-                            class="bg-white dark:bg-slate-900 rounded-xl p-4 border border-slate-200 dark:border-slate-700 mb-6">
-                            <h4 class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Couleurs Populaires
-                            </h4>
-                            <div class="grid grid-cols-6 sm:grid-cols-8 gap-3">
-                                @foreach($predefinedColors as $color)
-                                <button type="button" wire:click="setColor('{{ $color }}')"
-                                    class="group relative w-10 h-10 rounded-xl border-2 transition-all duration-200 hover:scale-110 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 {{ $labelColor === $color ? 'border-slate-400 dark:border-slate-300 shadow-lg ring-2 ring-blue-500 dark:ring-blue-400' : 'border-slate-300 dark:border-slate-600' }}"
-                                    style="background-color: {{ $color }};">
-                                    @if($labelColor === $color)
-                                    <div class="absolute inset-0 flex items-center justify-center">
-                                        <svg class="w-4 h-4 text-white drop-shadow-sm" fill="currentColor"
-                                            viewBox="0 0 20 20">
+                    <!-- Left Column: Create/Edit Form -->
+                    <div class="flex flex-col">
+                        <h3 class="text-sm font-medium text-slate-900 dark:text-white mb-4">
+                            {{ $isEditing ? 'Modifier l\'étiquette' : 'Nouvelle étiquette' }}
+                        </h3>
+
+                        <form wire:submit.prevent="saveLabel" class="flex-1 flex flex-col space-y-4">
+                            <!-- Label Name -->
+                            <div>
+                                <input id="labelName" type="text" wire:model.live.debounce.300ms="labelName"
+                                    class="w-full text-lg font-medium bg-transparent border-0 border-b border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-blue-500 focus:ring-0 px-0 py-2"
+                                    placeholder="Nom de l'étiquette">
+                                @error('labelName')
+                                <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Color Selection -->
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
+                                    Couleur
+                                </label>
+
+                                <!-- Predefined Colors Grid -->
+                                <div class="grid grid-cols-6 gap-2 mb-3">
+                                    @foreach($predefinedColors as $color)
+                                    <button type="button" wire:click="setColor('{{ $color }}')"
+                                        class="w-7 h-7 rounded border-2 transition-colors {{ $labelColor === $color ? 'border-slate-400 dark:border-slate-300' : 'border-slate-200 dark:border-slate-600' }}"
+                                        style="background-color: {{ $color }};">
+                                        @if($labelColor === $color)
+                                        <svg class="w-3 h-3 text-white mx-auto" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd"
                                                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                                                 clip-rule="evenodd"></path>
                                         </svg>
-                                    </div>
-                                    @endif
-                                    <span class="sr-only">Sélectionner la couleur {{ $color }}</span>
-                                    <!-- Tooltip -->
-                                    <div
-                                        class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-slate-900 dark:bg-slate-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-                                        {{ $color }}
-                                    </div>
-                                </button>
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <!-- Custom Color Input -->
-                        <div
-                            class="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                            <div class="flex items-center space-x-4">
-                                <div class="flex items-center space-x-3">
-                                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Personnalisée
-                                        :</label>
-                                    <div class="relative">
-                                        <input type="color" wire:model="labelColor"
-                                            class="w-12 h-12 rounded-lg border-2 border-slate-300 dark:border-slate-600 cursor-pointer bg-white dark:bg-slate-700">
-                                    </div>
+                                        @endif
+                                    </button>
+                                    @endforeach
                                 </div>
-                                <input type="text" wire:model="labelColor"
-                                    class="flex-1 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
-                                    placeholder="#3B82F6" pattern="^#[0-9A-Fa-f]{6}$">
+
+                                <!-- Custom Color -->
+                                <div class="flex items-center space-x-2">
+                                    <input type="color" wire:model="labelColor"
+                                        class="w-7 h-7 rounded border border-slate-300 dark:border-slate-600 cursor-pointer">
+                                    <input type="text" wire:model="labelColor"
+                                        class="flex-1 px-2 py-1 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="#3B82F6">
+                                </div>
                             </div>
+
+                            <!-- Preview -->
+                            <div>
+                                <label
+                                    class="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wide">
+                                    Aperçu
+                                </label>
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium text-white"
+                                    style="background-color: {{ $labelColor }}">
+                                    {{ $labelName ?: 'Nom de l\'étiquette' }}
+                                </span>
+                            </div>
+
+                            <!-- Spacer -->
+                            <div class="flex-1"></div>
+
+                            <!-- Action Buttons -->
+                            <div
+                                class="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
+                                <button type="button" wire:click="resetForm"
+                                    class="px-3 py-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors">
+                                    {{ $isEditing ? 'Annuler' : 'Effacer' }}
+                                </button>
+
+                                <button type="submit"
+                                    class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors">
+                                    {{ $isEditing ? 'Sauvegarder' : 'Créer' }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Right Column: Tag Cloud -->
+                    <div class="flex flex-col border-l border-slate-200 dark:border-slate-700 pl-8">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-slate-900 dark:text-white">
+                                Étiquettes existantes
+                            </h3>
+                            <span class="text-xs text-slate-500 dark:text-slate-400">
+                                {{ count($labels) }}
+                            </span>
                         </div>
-                        @error('labelColor')
+
+                        @if(count($labels) > 0)
+                        <!-- Tag Cloud Container -->
                         <div
-                            class="flex items-center mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                            <svg class="w-4 h-4 mr-2 text-red-500 dark:text-red-400 flex-shrink-0" fill="currentColor"
-                                viewBox="0 0 20 20">
-                                <path fill-rule="evenodd"
-                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                    clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="text-sm font-medium text-red-600 dark:text-red-400">
-                                {{ $message }}
-                            </span>
-                        </div>
-                        @enderror
-                    </div>
-
-                    <!-- Preview -->
-                    <div
-                        class="bg-slate-50 dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
-                        <label class="block text-sm font-medium text-slate-900 dark:text-white mb-3">
-                            Aperçu
-                        </label>
-                        <div class="flex items-center space-x-3">
-                            <span
-                                class="inline-flex items-center px-4 py-2 rounded-xl text-sm font-medium text-white shadow-sm transition-all duration-200"
-                                style="background-color: {{ $labelColor }}">
-                                {{ $labelName ?: 'Nom de l\'Étiquette' }}
-                            </span>
-                            <span class="text-sm text-slate-500 dark:text-slate-400 font-mono">
-                                {{ $labelColor }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="flex justify-end space-x-3 pt-4">
-                        <button type="button" wire:click="resetForm"
-                            class="px-6 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 font-medium transition-all duration-200">
-                            Annuler
-                        </button>
-                        <button type="submit"
-                            class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg">
-                            {{ $isEditing ? 'Mettre à Jour l\'Étiquette' : 'Créer l\'Étiquette' }}
-                        </button>
-                    </div>
-                </form>
-
-                <!-- Existing Labels List -->
-                @if(count($labels) > 0)
-                <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
-                    <div class="flex items-center justify-between mb-4">
-                        <h4 class="text-lg font-semibold text-slate-900 dark:text-white">
-                            Étiquettes Existantes
-                        </h4>
-                        <span
-                            class="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium">
-                            {{ count($labels) }} au total
-                        </span>
-                    </div>
-                    <div class="space-y-3">
-                        @foreach($labels as $label)
-                        <div
-                            class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-sm transition-all duration-200">
-                            <div class="flex items-center space-x-3">
-                                <span
-                                    class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium text-white shadow-sm"
+                            class="flex-1 flex flex-wrap gap-2 content-start p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-600 max-h-80 overflow-hidden">
+                            @foreach($labels as $label)
+                            <div class="group relative">
+                                <!-- The Tag (clickable to edit) -->
+                                <button wire:click="openEditModal({{ $label->id }})"
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium text-white hover:scale-105 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md"
                                     style="background-color: {{ $label->color }}">
                                     {{ $label->name }}
-                                </span>
-                                <span
-                                    class="text-xs text-slate-500 dark:text-slate-400 font-mono bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded">
-                                    {{ $label->color }}
-                                </span>
-                                @if($label->tasks->count() > 0)
-                                <span
-                                    class="inline-flex items-center px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-medium">
-                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                    </svg>
-                                    {{ $label->tasks->count() }} tâche{{ $label->tasks->count() > 1 ? 's' : '' }}
-                                </span>
-                                @endif
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <!-- Edit Button -->
-                                <button wire:click="openEditModal({{ $label->id }})"
-                                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200">
-                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                    Modifier
+                                    @if($label->tasks->count() > 0)
+                                    <span class="ml-2 px-1.5 py-0.5 bg-white/20 rounded-full text-xs">
+                                        {{ $label->tasks->count() }}
+                                    </span>
+                                    @endif
                                 </button>
 
-                                <!-- Delete Button -->
-                                @if($label->tasks->count() > 0)
-                                <button wire:click="forceDeleteLabel({{ $label->id }})"
-                                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all duration-200">
-                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <!-- Delete Button (appears on hover) -->
+                                <button
+                                    wire:click="{{ $label->tasks->count() > 0 ? 'forceDeleteLabel' : 'deleteLabel' }}({{ $label->id }})"
+                                    wire:confirm="{{ $label->tasks->count() > 0 ? 'Supprimer cette étiquette supprimera aussi toutes ses associations ?' : 'Supprimer cette étiquette ?' }}"
+                                    class="absolute -top-2 -right-2 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 transform scale-0 group-hover:scale-100 shadow-sm">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.987-.833-2.732 0L3.005 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                            d="M6 18L18 6M6 6l12 12" />
                                     </svg>
-                                    Forcer Suppression
                                 </button>
-                                @else
-                                <button wire:click="deleteLabel({{ $label->id }})"
-                                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-200">
-                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <!-- Instructions -->
+                        <div
+                            class="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                            <p class="text-xs text-blue-700 dark:text-blue-300 flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Cliquez sur une étiquette pour la modifier, survolez pour la supprimer
+                            </p>
+                        </div>
+                        @else
+                        <!-- Empty State -->
+                        <div class="flex-1 flex items-center justify-center">
+                            <div class="text-center">
+                                <div
+                                    class="w-16 h-16 mx-auto mb-4 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                                     </svg>
-                                    Supprimer
-                                </button>
-                                @endif
+                                </div>
+                                <p class="text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">
+                                    Aucune étiquette
+                                </p>
+                                <p class="text-xs text-slate-500 dark:text-slate-500">
+                                    Créez votre première étiquette
+                                </p>
                             </div>
                         </div>
-                        @endforeach
+                        @endif
                     </div>
                 </div>
-                @else
-                <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
-                    <div class="text-center py-12">
-                        <div
-                            class="w-16 h-16 mx-auto mb-4 bg-slate-100 dark:bg-slate-800 rounded-2xl flex items-center justify-center">
-                            <svg class="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                            </svg>
-                        </div>
-                        <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                            Aucune Étiquette Créée
-                        </h4>
-                        <p class="text-slate-500 dark:text-slate-400 text-sm max-w-sm mx-auto">
-                            Créez votre première étiquette pour organiser les tâches par catégories comme Backend,
-                            Frontend, Design, etc.
-                        </p>
-                    </div>
-                </div>
-                @endif
             </div>
         </x-slot>
     </x-modal.dialog>

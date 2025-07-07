@@ -17,7 +17,7 @@
 
         <x-slot name="newContent">
             <div class="p-6">
-                <form wire:submit.prevent="{{ $isEditing ? 'updateCategory' : 'createCategory' }}" class="space-y-6">
+                <form wire:submit.prevent="saveCategory" class="space-y-6">
                     <!-- Category Title -->
                     <div>
                         <label for="categoryTitle"
@@ -26,7 +26,7 @@
                         </label>
                         <input id="categoryTitle" type="text" wire:model.live.debounce.150ms="categoryTitle"
                             class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200"
-                            placeholder="e.g. 'À faire', 'En cours', 'Terminé'" required>
+                            placeholder="e.g. 'À faire', 'En cours', 'Terminé'">
                         @error('categoryTitle')
                         <div
                             class="flex items-center mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
@@ -41,7 +41,39 @@
                         @enderror
                     </div>
 
-
+                    <!-- Category Color -->
+                    <div>
+                        <label for="categoryColor"
+                            class="block text-sm font-medium text-slate-900 dark:text-white mb-2">Couleur de la
+                            Catégorie
+                            <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <input id="categoryColor" type="color" wire:model.live="categoryColor"
+                                class="w-16 h-12 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 cursor-pointer focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200"
+                                value="{{ $categoryColor ?? '#3B82F6' }}">
+                            <div class="flex-1">
+                                <input type="text" wire:model.live="categoryColor"
+                                    class="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200"
+                                    placeholder="#3B82F6" pattern="^#[0-9A-Fa-f]{6}$">
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                            Choisissez une couleur ou entrez un code hexadécimal
+                        </p>
+                        @error('categoryColor')
+                        <div
+                            class="flex items-center mt-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                            <svg class="w-4 h-4 mr-2 text-red-500 dark:text-red-400 flex-shrink-0" fill="currentColor"
+                                viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-red-600 dark:text-red-400">{{ $message }}</span>
+                        </div>
+                        @enderror
+                    </div>
 
                     <!-- Preview -->
                     @if($categoryTitle)
@@ -55,7 +87,8 @@
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="text-lg font-semibold text-slate-900 dark:text-white">{{ $categoryTitle }}
                                 </h3>
-                                <div class="w-5 h-5 rounded bg-slate-300 dark:bg-slate-600"></div>
+                                <div class="w-5 h-5 rounded"
+                                    style="background-color: {{ $categoryColor ?? '#3B82F6' }}"></div>
                             </div>
 
                             <div class="space-y-2">
