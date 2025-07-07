@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Category;
 use Livewire\Component;
 use Livewire\Attributes\On;
+use Carbon\Carbon;
 
 class Board extends Component
 {
@@ -13,7 +14,7 @@ class Board extends Component
     public $categories;
     public $labels;
     public $filteredTasks;
-    public $viewMode = 'board'; // board or list
+    public $viewMode = 'board'; // board, list, or calendar
 
     // Filtering properties
     public $selectedCategory = '';
@@ -31,20 +32,165 @@ class Board extends Component
     public $categoryTitle = '';
     public $categoryColor = '#3B82F6';
     public $isEditingCategory = false;
-
     public $isEditing = false;
+
+    // Calendar view properties
+    public $calendarMonth;
+    public $calendarYear;
+    public $calendarView = 'month'; // month, week, day
+    public $calendarDays = [];
+    public $calendarWeeks = [];
 
     public function mount($project)
     {
         $this->loadProject($project);
         $this->viewMode = session('board_view_mode', 'board'); // Default to 'board' view mode
         $this->applyFilters();
+
+        // If calendar view, generate the calendar data
+        if ($this->viewMode === 'calendar') {
+            // Initialize calendar with current month/year
+            $now = Carbon::now();
+            $this->calendarMonth = $now->month;
+            $this->calendarYear = $now->year;
+        }
     }
 
     public function updatedViewMode()
     {
         session(['board_view_mode' => $this->viewMode]);
         $this->applyFilters();
+    }
+
+    /**
+     * Generate calendar data based on the selected month/year
+     */
+    public function generateCalendarData()
+    {
+        $this->calendarDays = [];
+        $this->calendarWeeks = [];
+
+        $date = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1);
+        $daysInMonth = $date->daysInMonth;
+
+        // Get the first day of the month
+        $firstDay = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1);
+        // Get day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        $dayOfWeek = $firstDay->dayOfWeek;
+
+        // Adjust for Monday as first day of week
+        $dayOfWeek = $dayOfWeek == 0 ? 6 : $dayOfWeek - 1;
+
+        // Calculate previous month's spillover days
+        $previousMonth = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->subMonth();
+        $daysInPreviousMonth = $previousMonth->daysInMonth;
+
+        // Create calendar grid with previous month spillover
+        $day = 1;
+        $nextMonthDay = 1;
+
+        // Build 6-week calendar (42 days) to ensure consistent height
+        for ($week = 0; $week < 6; $week++) {
+            $this->calendarWeeks[$week] = [];
+
+            for ($i = 0; $i < 7; $i++) {
+                if ($week === 0 && $i < $dayOfWeek) {
+                    // Previous month days
+                    $calendarDay = [
+                        'day' => $daysInPreviousMonth - ($dayOfWeek - $i) + 1,
+                        'month' => $previousMonth->month,
+                        'year' => $previousMonth->year,
+                        'isCurrentMonth' => false,
+                        'date' => Carbon::createFromDate($previousMonth->year, $previousMonth->month, $daysInPreviousMonth - ($dayOfWeek - $i) + 1)->format('Y-m-d'),
+                        'tasks' => []
+                    ];
+                } elseif ($day > $daysInMonth) {
+                    // Next month days
+                    $nextMonth = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->addMonth();
+                    $calendarDay = [
+                        'day' => $nextMonthDay,
+                        'month' => $nextMonth->month,
+                        'year' => $nextMonth->year,
+                        'isCurrentMonth' => false,
+                        'date' => Carbon::createFromDate($nextMonth->year, $nextMonth->month, $nextMonthDay)->format('Y-m-d'),
+                        'tasks' => []
+                    ];
+                    $nextMonthDay++;
+                } else {
+                    // Current month days
+                    $calendarDay = [
+                        'day' => $day,
+                        'month' => $this->calendarMonth,
+                        'year' => $this->calendarYear,
+                        'isCurrentMonth' => true,
+                        'date' => Carbon::createFromDate($this->calendarYear, $this->calendarMonth, $day)->format('Y-m-d'),
+                        'tasks' => []
+                    ];
+                    $day++;
+                }
+
+                // Add day to the calendar
+                $this->calendarWeeks[$week][$i] = $calendarDay;
+                $this->calendarDays[] = $calendarDay;
+            }
+        }
+
+        // Assign tasks to calendar days based on deadline
+        $this->assignTasksToCalendar();
+    }
+
+    /**
+     * Assign tasks to calendar days based on task deadline
+     */
+    private function assignTasksToCalendar()
+    {
+        foreach ($this->filteredTasks as $task) {
+            if (!empty($task->deadline)) {
+                $deadline = Carbon::parse($task->deadline)->format('Y-m-d');
+
+                // Find the matching calendar day
+                foreach ($this->calendarWeeks as $weekIndex => $week) {
+                    foreach ($week as $dayIndex => $day) {
+                        if ($day['date'] === $deadline) {
+                            $this->calendarWeeks[$weekIndex][$dayIndex]['tasks'][] = $task;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Change calendar to previous month
+     */
+    public function previousMonth()
+    {
+        $date = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->subMonth();
+        $this->calendarMonth = $date->month;
+        $this->calendarYear = $date->year;
+        $this->generateCalendarData();
+    }
+
+    /**
+     * Change calendar to next month
+     */
+    public function nextMonth()
+    {
+        $date = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->addMonth();
+        $this->calendarMonth = $date->month;
+        $this->calendarYear = $date->year;
+        $this->generateCalendarData();
+    }
+
+    /**
+     * Set calendar to current month
+     */
+    public function currentMonth()
+    {
+        $now = Carbon::now();
+        $this->calendarMonth = $now->month;
+        $this->calendarYear = $now->year;
+        $this->generateCalendarData();
     }
 
     public function loadProject($project)
@@ -127,6 +273,11 @@ class Board extends Component
         }
 
         $this->filteredTasks = $query->get();
+
+        // Regenerate calendar if in calendar view
+        if ($this->viewMode === 'calendar') {
+            $this->generateCalendarData();
+        }
     }
 
     public function sortTasks($sortBy)

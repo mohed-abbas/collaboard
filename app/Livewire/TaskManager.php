@@ -71,7 +71,7 @@ class TaskManager extends Component
     }
 
     #[On('openCreateTaskModal')]
-    public function openCreateTaskModal($categoryId)
+    public function openCreateTaskModal($categoryId, $deadline = null)
     {
         $this->resetForm();
         $this->isEditing = false;
@@ -82,7 +82,7 @@ class TaskManager extends Component
             : $categoryId;
 
         // Set default deadline to one day from now for new tasks
-        $this->taskDeadline = now()->addDay()->format('Y-m-d\TH:i');
+        $this->taskDeadline = $deadline ?: now()->addDay()->format('Y-m-d\TH:i');
     }
 
     #[On('openEditTaskModal')]

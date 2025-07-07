@@ -71,11 +71,20 @@
                                 </svg>
                                 Liste
                             </button>
+                            <div class="flex items-center">
+                                <button wire:click="$set('viewMode','calendar')"
+                                    class="flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 {{ $viewMode === 'calendar' ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-slate-600 dark:text-slate-400' }}">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
+                                    </svg>
+                                    Calendrier
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     </header>
 
     <!-- Collapsible Filters Panel -->
@@ -105,7 +114,7 @@
                         class="w-full px-4 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 appearance-none">
                         <option value="">Toutes les catégories</option>
                         @foreach($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->title }}</option>
+                            <option value="{{ $category->id }}">{{ $category->title }}</option>
                         @endforeach
                     </select>
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
@@ -144,42 +153,42 @@
                 <!-- Clear Filters -->
                 <div class="flex items-center justify-end">
                     @if($searchTerm || $selectedCategory || $showPendingOnly || !empty($selectedLabels))
-                    <button wire:click="clearFilters"
-                        class="flex items-center px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-300">
-                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        Effacer
-                    </button>
+                        <button wire:click="clearFilters"
+                            class="flex items-center px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-300">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Effacer
+                        </button>
                     @endif
                 </div>
             </div>
 
             <!-- Label Filters -->
             @if($labels->count() > 0)
-            <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-600">
-                <div class="flex flex-wrap gap-2">
-                    @foreach($labels as $label)
-                    @php
-                    $isSelected = in_array($label->id, $selectedLabels);
-                    @endphp
-                    <button wire:click="toggleLabel({{ $label->id }})"
-                        class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-300 {{ $isSelected ? 'ring-2 ring-blue-500/50' : 'hover:scale-105' }}"
-                        style="background: {{ $label->color }}20; color: {{ $label->color }}; border: 1px solid {{ $label->color }}40;">
-                        <div class="w-2 h-2 rounded-full mr-1.5" style="background: {{ $label->color }};"></div>
-                        {{ $label->name }}
-                        @if($isSelected)
-                        <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        @endif
-                    </button>
-                    @endforeach
+                <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-600">
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($labels as $label)
+                            @php
+                                $isSelected = in_array($label->id, $selectedLabels);
+                            @endphp
+                            <button wire:click="toggleLabel({{ $label->id }})"
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-300 {{ $isSelected ? 'ring-2 ring-blue-500/50' : 'hover:scale-105' }}"
+                                style="background: {{ $label->color }}20; color: {{ $label->color }}; border: 1px solid {{ $label->color }}40;">
+                                <div class="w-2 h-2 rounded-full mr-1.5" style="background: {{ $label->color }};"></div>
+                                {{ $label->name }}
+                                @if($isSelected)
+                                    <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                @endif
+                            </button>
+                        @endforeach
+                    </div>
                 </div>
-            </div>
             @endif
         </div>
     </div>
@@ -188,11 +197,14 @@
     <main class="flex-1 p-6">
         <!-- Content Area -->
         @if ($viewMode === 'list')
-        <!-- List View -->
-        @include('components.task-list-view')
+            <!-- List View -->
+            @include('components.task-list-view')
+        @elseif ($viewMode === 'calendar')
+            <!-- Calendar View -->
+            @include('components.task-calendar-view')
         @else
-        <!-- Board View -->
-        @include('components.task-board-view')
+            <!-- Board View -->
+            @include('components.task-board-view')
         @endif
     </main>
 
