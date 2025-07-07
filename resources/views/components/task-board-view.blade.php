@@ -5,14 +5,15 @@
     @endphp
     <div class="flex-shrink-0 w-80">
         <!-- Category Header - List View Style -->
-        <div class="mb-4 bg-slate-50 dark:bg-slate-700/50 border-b-2 border-slate-200 dark:border-slate-600 rounded-lg">
+        <div class="mb-4 border-b-2 rounded-lg"
+            style="background-color: {{ $category->color }}20; border-color: {{ $category->color }};">
             <div class="flex items-center justify-between px-4 py-3">
                 <div class="flex items-center gap-3">
-                    <h2 class="font-bold text-slate-900 dark:text-white tracking-wide">
+                    <h2 class="font-bold tracking-wide" style="color: {{ $category->color }};">
                         {{ Str::limit($category->title, 20) }}
                     </h2>
-                    <span
-                        class="px-2 py-1 bg-slate-200 dark:bg-slate-600 text-slate-600 dark:text-slate-400 text-xs font-medium rounded">
+                    <span class="px-2 py-1 text-xs font-medium rounded"
+                        style="background-color: {{ $category->color }}40; color: {{ $category->color }};">
                         {{ $categoryTasks->count() }}
                     </span>
                 </div>

@@ -54,7 +54,7 @@ class Board extends Component
             'tasks' => function ($query) {
                 $query->with(['labels', 'users', 'category']);
             }
-        ])->get();
+        ])->orderBy('position', 'asc')->get();
         $this->labels = $this->project->labels()->orderBy('name')->get();
     }
 
@@ -208,6 +208,7 @@ class Board extends Component
                 'title' => $this->categoryTitle,
                 'color' => $this->categoryColor,
                 'project_id' => $this->project->id,
+                'position' => $this->categories->count() + 1, // Position for drag-and-drop sorting
             ]);
             session()->flash('success', 'Catégorie créée avec succès.');
         }

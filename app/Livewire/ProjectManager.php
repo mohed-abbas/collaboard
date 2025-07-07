@@ -18,9 +18,9 @@ class ProjectManager extends Component
     public string $name = '';
     public string $description = '';
     private array $defaultCategories = [
-        ['title' => 'À faire', 'sort_order' => 1, 'is_system' => true],
-        ['title' => 'En cours', 'sort_order' => 2, 'is_system' => true],
-        ['title' => 'Terminé', 'sort_order' => 3, 'is_system' => true],
+        ['title' => 'À faire', 'sort_order' => 1, 'is_system' => true, 'color' => '#6b1bbb'], // Red for "To do"
+        ['title' => 'En cours', 'sort_order' => 2, 'is_system' => true, 'color' => '#dd7c0e'], // Orange for "In progress"
+        ['title' => 'Terminé', 'sort_order' => 3, 'is_system' => true, 'color' => '#048b0d'], // Green for "Completed"
     ];
 
 
@@ -31,6 +31,12 @@ class ProjectManager extends Component
             'description' => 'nullable|string',
         ];
     }
+
+    protected $messages = [
+        'name.required' => 'Le nom du projet est obligatoire.',
+        'name.max' => 'Le nom du projet ne peut pas dépasser 255 caractères.',
+        'description.string' => 'La description doit être une chaîne de caractères valide.',
+    ];
 
     public function mount()
     {
@@ -71,13 +77,13 @@ class ProjectManager extends Component
         ]);
         $project->members()->attach(auth()->id());
 
-
         foreach ($this->defaultCategories as $categoryData) {
             Category::create([
                 'title' => $categoryData['title'],
                 'project_id' => $project->id,
                 'is_system' => $categoryData['is_system'] ?? false, // Default to false if not set
-                'position' => $categoryData['sort_order']
+                'position' => $categoryData['sort_order'],
+                'color' => $categoryData['color'] ?? '#ef4444', // Default color if not set
             ]);
         }
         $this->closeModal();
