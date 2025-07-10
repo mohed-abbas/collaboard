@@ -148,3 +148,38 @@ select:focus[data-flux-control] {
 .dark .horizontal-scroll::-webkit-scrollbar-thumb:hover {
     background: rgb(71 85 105 / 0.9);
 }
+
+/* Task item styles */
+.task-item {
+    cursor: move;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.task-item.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+}
+
+.category-column.drag-over {
+    background-color: #f3f4f6;
+    border: 2px dashed #3b82f6;
+    border-radius: 8px;
+}
+
+.sortable-ghost {
+    opacity: 0.4;
+}
+
+.sortable-chosen {
+    background-color: #e5e7eb;
+}
+
+.sortable-drag {
+    background-color: #ffffff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}

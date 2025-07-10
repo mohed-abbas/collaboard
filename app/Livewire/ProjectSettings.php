@@ -7,6 +7,7 @@ use Livewire\Component;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Notifications\MemberNotification;
+use Livewire\Attributes\On;
 
 class ProjectSettings extends Component
 {

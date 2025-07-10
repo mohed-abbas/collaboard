@@ -6,6 +6,7 @@ use App\Models\Category;
 use Livewire\Component;
 use App\Models\Project;
 use Livewire\Attributes\On;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectManager extends Component
 {
@@ -194,6 +195,26 @@ class ProjectManager extends Component
 
         $firstletter = strtoupper(substr($projectName, 0, 1));
         return $colors[$firstletter] ?? 'from-gray-500 to-gray-600 shadow-gray-500/25';
+    }
+
+
+    #[On('leaveProject')]
+    public function leaveProject($projectId)
+    {
+        $project = Project::findOrFail($projectId);
+
+        if (!Auth::user()->can('leaveProject', $project)) {
+            session()->flash('error', 'Vous n\'avez pas la permission de quitter ce projet.');
+            return;
+        }
+
+        $user = Auth::user();
+        $project->members()->detach($user->id);
+
+
+        session()->flash('success', 'Vous avez quitté le projet avec succès.');
+        $this->reloadProjects(); // Notify other components to reload projects
+        return redirect()->route('dashboard');
     }
 
 

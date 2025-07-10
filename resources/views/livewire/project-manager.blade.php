@@ -38,8 +38,8 @@
                     </div>
                 </a>
 
-                <!-- Actions Menu for Owners -->
-                @if(auth()->user()->id === $project->owner_id)
+                <!-- Actions Menu for Owners and Members -->
+                @if(auth()->user()->id === $project->owner_id || $project->members->contains('id', auth()->user()->id))
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open"
                         class="p-1 hover:bg-slate-200 dark:hover:bg-slate-600 rounded opacity-0 group-hover:opacity-100 transition-all">
@@ -64,6 +64,7 @@
                                 Ouvrir
                             </a>
 
+                            @if(auth()->user()->id === $project->owner_id)
                             <a href="{{ route('project.settings', $project->id) }}"
                                 class="flex items-center px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                                 wire:navigate>
@@ -88,6 +89,19 @@
                                 </svg>
                                 Supprimer
                             </button>
+                            @else
+                            <div class="border-t border-slate-200 dark:border-slate-600 my-1"></div>
+
+                            <button wire:click="leaveProject({{ $project->id }})"
+                                wire:confirm="Êtes-vous sûr de vouloir quitter {{ $project->name }} ?"
+                                class="flex items-center w-full px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Quitter le projet
+                            </button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -106,7 +120,7 @@
                 </svg>
             </div>
             <p class="text-sm text-slate-500 dark:text-slate-400 mb-3">Aucun projet</p>
-            <button wire:click="openCreateProjectModal"
+            <button wire:click="openCreateModal"
                 class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
