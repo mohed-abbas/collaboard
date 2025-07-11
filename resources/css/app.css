@@ -72,87 +72,27 @@ select:focus[data-flux-control] {
     @apply size-4;
 } */
 
-/* Custom Scrollbar Styles */
-.custom-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(148 163 184) transparent;
+
+/* Hide Horizontal Scrollbar Permanently */
+#board-container {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
 }
 
-.custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+#board-container::-webkit-scrollbar {
+    display: none;
+    /* WebKit browsers (Chrome, Safari, Edge) */
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 3px;
-}
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgb(148 163 184 / 0.5);
-    border-radius: 3px;
-    transition: background-color 0.2s ease;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgb(148 163 184 / 0.8);
-}
-
-/* Dark mode scrollbar */
-.dark .custom-scrollbar {
-    scrollbar-color: rgb(71 85 105) transparent;
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgb(71 85 105 / 0.5);
-}
-
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgb(71 85 105 / 0.8);
-}
-
-/* Horizontal scrollbar for board view */
-.horizontal-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: rgb(148 163 184) transparent;
-}
-
-.horizontal-scroll::-webkit-scrollbar {
-    height: 8px;
-}
-
-.horizontal-scroll::-webkit-scrollbar-track {
-    background: rgb(248 250 252);
-    border-radius: 4px;
-}
-
-.horizontal-scroll::-webkit-scrollbar-thumb {
-    background: rgb(148 163 184 / 0.6);
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-}
-
-.horizontal-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgb(148 163 184 / 0.9);
-}
-
-/* Dark mode horizontal scrollbar */
-.dark .horizontal-scroll::-webkit-scrollbar-track {
-    background: rgb(15 23 42);
-}
-
-.dark .horizontal-scroll::-webkit-scrollbar-thumb {
-    background: rgb(71 85 105 / 0.6);
-}
-
-.dark .horizontal-scroll::-webkit-scrollbar-thumb:hover {
-    background: rgb(71 85 105 / 0.9);
-}
-
-/* Task item styles */
+/* Enhanced Task item styles for drag and drop */
 .task-item {
     cursor: move;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    position: relative;
+    user-select: none;
 }
 
 .task-item:hover {
@@ -162,24 +102,100 @@ select:focus[data-flux-control] {
 
 .task-item.dragging {
     opacity: 0.5;
-    transform: rotate(5deg);
+    transform: rotate(3deg) scale(1.05);
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.category-column {
+    transition: all 0.2s ease;
 }
 
 .category-column.drag-over {
-    background-color: #f3f4f6;
-    border: 2px dashed #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-color: #060436 !important;
+    border-style: solid !important;
+    transform: scale(1.02);
+}
+
+.dark .category-column.drag-over {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Drag handle styles */
+.drag-handle {
+    cursor: grab;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Calendar task item styles for drag and drop */
+.calendar-task-item {
+    cursor: move;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    position: relative;
+    user-select: none;
+}
+
+.calendar-task-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-task-item.calendar-dragging {
+    opacity: 0.6;
+    transform: rotate(2deg) scale(1.03);
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.calendar-day {
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.calendar-day.calendar-drag-over {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+    border-color: #060436 !important;
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.calendar-day.calendar-drag-over::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 2px dashed #060436;
     border-radius: 8px;
+    pointer-events: none;
+    z-index: 1;
 }
 
-.sortable-ghost {
-    opacity: 0.4;
+.dark .calendar-day.calendar-drag-over {
+    background-color: rgba(59, 130, 246, 0.2) !important;
 }
 
-.sortable-chosen {
-    background-color: #e5e7eb;
+/* Calendar drag handle styles */
+.calendar-drag-handle {
+    cursor: grab;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
-.sortable-drag {
-    background-color: #ffffff;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+.calendar-task-item:hover .calendar-drag-handle {
+    opacity: 1;
+}
+
+.calendar-drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Drop zone indicator */
+.calendar-day.calendar-drag-over .calendar-day-content {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
 }

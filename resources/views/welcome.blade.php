@@ -13,12 +13,12 @@
 
     <!-- Theme Detection Script (Must be before Tailwind) -->
     <script>
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia(
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia(
             '(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark')
-    } else {
-        document.documentElement.classList.remove('dark')
-    }
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
     </script>
 
     <!-- Tailwind CSS -->
@@ -113,23 +113,23 @@
 
                     <!-- Auth Buttons -->
                     @if (Route::has('login'))
-                    @auth
-                    <a href="{{ url('/dashboard') }}"
-                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 dark:hover:shadow-blue-400/25 transform">
-                        Tableau de bord
-                    </a>
-                    @else
-                    <a href="{{ route('login') }}"
-                        class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors">
-                        Se connecter
-                    </a>
-                    @if (Route::has('register'))
-                    <a href="{{ route('register') }}"
-                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 dark:hover:shadow-blue-400/25 transform">
-                        Inscrivez-vous
-                    </a>
-                    @endif
-                    @endauth
+                        @auth
+                            <a href="{{ url('/dashboard') }}"
+                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 dark:hover:shadow-blue-400/25 transform">
+                                Tableau de bord
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}"
+                                class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-medium transition-colors">
+                                Se connecter
+                            </a>
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}"
+                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 dark:hover:shadow-blue-400/25 transform">
+                                    Inscrivez-vous
+                                </a>
+                            @endif
+                        @endauth
                     @endif
                 </div>
             </div>
@@ -170,29 +170,29 @@
                 <!-- CTA Buttons -->
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
                     @auth
-                    <a href="{{ route('dashboard') }}"
-                        class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
-                        <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                        Accéder au tableau de bord
-                    </a>
+                        <a href="{{ route('dashboard') }}"
+                            class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
+                            <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                            Accéder au tableau de bord
+                        </a>
                     @else
-                    <a href="{{ route('register') }}"
-                        class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
-                        <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                        Inscrivez-vous gratuitement
-                    </a>
-                    <a href="{{ route('login') }}"
-                        class="inline-flex items-center px-6 py-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold border border-slate-200 dark:border-slate-700 transition-all duration-300 hover:scale-105 hover:shadow-lg dark:hover:shadow-slate-900/20">
-                        Se connecter
-                    </a>
+                        <a href="{{ route('register') }}"
+                            class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
+                            <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                            Inscrivez-vous gratuitement
+                        </a>
+                        <a href="{{ route('login') }}"
+                            class="inline-flex items-center px-6 py-3 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-semibold border border-slate-200 dark:border-slate-700 transition-all duration-300 hover:scale-105 hover:shadow-lg dark:hover:shadow-slate-900/20">
+                            Se connecter
+                        </a>
                     @endauth
                 </div>
 
@@ -437,25 +437,25 @@
             </p>
 
             @auth
-            <a href="{{ route('dashboard') }}"
-                class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:via-purple-600 dark:hover:to-indigo-600 text-white rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
-                <svg class="w-6 h-6 mr-4 group-hover:rotate-12 transition-transform duration-300" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-                Accéder au tableau de bord
-            </a>
+                <a href="{{ route('dashboard') }}"
+                    class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:via-purple-600 dark:hover:to-indigo-600 text-white rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
+                    <svg class="w-6 h-6 mr-4 group-hover:rotate-12 transition-transform duration-300" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                    Accéder au tableau de bord
+                </a>
             @else
-            <a href="{{ route('register') }}"
-                class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:via-purple-600 dark:hover:to-indigo-600 text-white rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
-                <svg class="w-6 h-6 mr-4 group-hover:rotate-12 transition-transform duration-300" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-                Commencez Maintenant (gratuitement)
-            </a>
+                <a href="{{ route('register') }}"
+                    class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:via-purple-600 dark:hover:to-indigo-600 text-white rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
+                    <svg class="w-6 h-6 mr-4 group-hover:rotate-12 transition-transform duration-300" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                    Commencez Maintenant (gratuitement)
+                </a>
             @endauth
         </div>
     </section>

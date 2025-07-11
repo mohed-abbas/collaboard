@@ -35,17 +35,13 @@
                                 </p>
                             </div>
                         </div>
-
-                        <!-- Status Indicator -->
-                        <div
-                            class="flex items-center space-x-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 rounded-full border border-green-200 dark:border-green-800">
-                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                            <span class="text-xs font-medium text-green-700 dark:text-green-300">En ligne</span>
-                        </div>
                     </div>
                 </div>
             </div>
         </nav>
+
+        <!-- Flash Messages -->
+        @include('livewire.flash-messages')
 
         <!-- Main Content -->
         <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -70,7 +66,7 @@
                             </div>
 
                             @if(auth()->check() && auth()->user()->projects->count() > 0)
-                                <button wire:click="$dispatch('openCreateProjectModal')"
+                                <button @click="$dispatch('open-create-project-modal')"
                                     class="group bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 px-6 py-3 rounded-xl text-white font-medium transition-all duration-200 hover:scale-105">
                                     <div class="flex items-center space-x-2">
                                         <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-200"
@@ -165,20 +161,6 @@
                         <h3 class="text-xl font-bold text-slate-900 dark:text-white">Vos projets</h3>
                         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Accédez rapidement à vos espaces de
                             travail</p>
-                    </div>
-
-                    <!-- View Toggle (like board view) -->
-                    <div class="flex items-center space-x-2">
-                        <div class="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
-                            <button
-                                class="px-3 py-1 bg-white dark:bg-slate-700 text-slate-900 dark:text-white rounded text-sm font-medium shadow-sm">
-                                Grille
-                            </button>
-                            <button
-                                class="px-3 py-1 text-slate-500 dark:text-slate-400 rounded text-sm font-medium hover:text-slate-700 dark:hover:text-slate-300">
-                                Liste
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -348,17 +330,20 @@
                             Créez votre premier projet pour commencer à organiser votre travail et collaborer avec votre
                             équipe.
                         </p>
-                        <a href="{{ route('projects.manage') }}"
+                        <button @click="$dispatch('open-create-project-modal')"
                             class="inline-flex items-center px-6 py-3 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 font-medium rounded-lg transition-colors duration-200">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                             </svg>
                             Créer un projet
-                        </a>
+                        </button>
                     </div>
                 @endif
             </section>
         </main>
     </div>
+
+    <livewire:project-manager :hideProjectsList="true" />
+
 </x-layouts.app>

@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Project;
 use App\Models\Category;
+use App\Models\Task;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Carbon\Carbon;
@@ -30,7 +31,7 @@ class Board extends Component
     public $showCategoryModal = false;
     public $categoryId;
     public $categoryTitle = '';
-    public $categoryColor = '#3B82F6';
+    public $categoryColor = '#060436';
     public $isEditingCategory = false;
     public $isEditing = false;
 
@@ -40,6 +41,10 @@ class Board extends Component
     public $calendarView = 'month'; // month, week, day
     public $calendarDays = [];
     public $calendarWeeks = [];
+
+    // Drag-and-drop properties
+    public $draggedTask = null; // Task being dragged
+    public $draggedCategory = null; // Category being dragged
 
     public function mount($project)
     {
@@ -59,6 +64,17 @@ class Board extends Component
     public function updatedViewMode()
     {
         session(['board_view_mode' => $this->viewMode]);
+
+        // Generate calendar data when switching to calendar view
+        if ($this->viewMode === 'calendar') {
+            if (!$this->calendarMonth || !$this->calendarYear) {
+                $now = Carbon::now();
+                $this->calendarMonth = $now->month;
+                $this->calendarYear = $now->year;
+            }
+            $this->generateCalendarData();
+        }
+
         $this->applyFilters();
     }
 
@@ -384,7 +400,7 @@ class Board extends Component
     {
         $this->categoryId = null;
         $this->categoryTitle = '';
-        $this->categoryColor = '#3B82F6';
+        $this->categoryColor = '#060436'; // Default color
         $this->showCategoryModal = false;
         $this->resetErrorBag();
     }
@@ -402,6 +418,142 @@ class Board extends Component
         $this->labels = $this->project->labels()->orderBy('name')->get();
         $this->applyFilters();
     }
+
+    /**
+     * Handle task drag and drop between categories
+     */
+    #[On('taskMoved')]
+    public function handleTaskMove($taskId, $newCategoryId, $newPosition = null)
+    {
+        try {
+            $task = Task::findOrFail($taskId);
+            $newCategory = Category::findOrFail($newCategoryId);
+
+            // Store old category for logging
+            $oldCategoryId = $task->category_id;
+
+            // Get current position in new category
+            if ($newPosition === null) {
+                $maxPosition = Task::where('category_id', $newCategoryId)->max('position') ?? 0;
+                $newPosition = $maxPosition + 1;
+            }
+
+            // Update task category and position
+            $task->update([
+                'category_id' => $newCategoryId,
+                'position' => $newPosition
+            ]);
+
+            logger()->info('Task updated', [
+                'taskId' => $taskId,
+                'new_category_id' => $task->fresh()->category_id,
+                'new_position' => $task->fresh()->position
+            ]);
+
+            // Reorder tasks in both categories if they're different
+            if ($oldCategoryId != $newCategoryId) {
+                $this->reorderTasksInCategory($oldCategoryId);
+                $this->reorderTasksInCategory($newCategoryId);
+            }
+
+            // Refresh the component data
+            $this->loadProject($this->project->id);
+            $this->applyFilters();
+
+        } catch (\Exception $e) {
+            logger()->error('Task move error: ' . $e->getMessage(), [
+                'taskId' => $taskId,
+                'newCategoryId' => $newCategoryId,
+                'exception' => $e->getTraceAsString()
+            ]);
+
+            session()->flash('error', 'Erreur lors du déplacement de la tâche: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reorder tasks within a category
+     */
+    private function reorderTasksInCategory($categoryId)
+    {
+        $tasks = Task::where('category_id', $categoryId)
+            ->orderBy('position')
+            ->get();
+
+        foreach ($tasks as $index => $task) {
+            $newPosition = $index + 1;
+            $task->update(['position' => $newPosition]);
+        }
+    }
+
+    /**
+     * Handle task date change from calendar drag and drop
+     */
+    #[On('taskDateMoved')]
+    public function handleTaskDateMove($taskId, $newDate)
+    {
+        try {
+            $task = Task::findOrFail($taskId);
+
+            // Parse the new date
+            $newDeadline = Carbon::parse($newDate);
+            $oldDeadline = $task->deadline;
+
+            // Update task deadline
+            $task->update([
+                'deadline' => $newDeadline
+            ]);
+
+            // Refresh the component data
+            $this->loadProject($this->project->id);
+            $this->applyFilters();
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Erreur lors du changement de date: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Handle creating a new task with a specific deadline from calendar
+     */
+    #[On('createTaskForDate')]
+    public function createTaskForDate($date, $categoryId = null)
+    {
+        try {
+            // Set default category if none provided
+            if (!$categoryId && $this->categories->count() > 0) {
+                $categoryId = $this->categories->first()->id;
+            }
+
+            $deadline = Carbon::parse($date);
+
+            // Dispatch event to open task creation modal with pre-filled deadline
+            $this->dispatch('openCreateTaskModal', [
+                'categoryId' => $categoryId,
+                'deadline' => $deadline->format('Y-m-d')
+            ]);
+
+        } catch (\Exception $e) {
+            logger()->error('Create task for date error: ' . $e->getMessage(), [
+                'date' => $date,
+                'categoryId' => $categoryId
+            ]);
+
+            session()->flash('error', 'Erreur lors de la création de la tâche.');
+        }
+    }
+
+    /**
+     * Go to today's date in calendar
+     */
+    public function goToToday()
+    {
+        $today = Carbon::today();
+        $this->calendarYear = $today->year;
+        $this->calendarMonth = $today->month;
+        $this->generateCalendarData();
+    }
+
 
     public function render()
     {

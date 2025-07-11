@@ -24,6 +24,8 @@ class ProjectManager extends Component
         ['title' => 'Terminé', 'sort_order' => 3, 'is_system' => true, 'color' => '#048b0d'], // Green for "Completed"
     ];
 
+    public $hideProjectsList = false;
+
 
     protected function rules()
     {
@@ -39,8 +41,10 @@ class ProjectManager extends Component
         'description.string' => 'La description doit être une chaîne de caractères valide.',
     ];
 
-    public function mount()
+    public function mount($hideProjectsList = false)
     {
+        $this->hideProjectsList = $hideProjectsList;
+        // Initial load of projects
         $this->reloadProjects();
 
         // Si on vient de projects.create, ouvrir automatiquement le modal
@@ -48,6 +52,7 @@ class ProjectManager extends Component
             $this->openCreateModal();
         }
     }
+
 
     #[On('reloadProjects')]
     public function reloadProjects()
@@ -123,6 +128,7 @@ class ProjectManager extends Component
     }
 
     //–– Delete Flow ––
+    #[On('deleteProject')]
     public function deleteProject(int $id)
     {
         $project = Project::findOrFail($id);
