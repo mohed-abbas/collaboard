@@ -3,19 +3,19 @@
     <!-- Background Elements -->
     <div class="absolute inset-0 -z-10">
         <div
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-400/10 dark:to-purple-400/10 rounded-full blur-3xl">
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-[#4586FF]/20 to-[#99BDFF]/20 dark:from-[#4586FF]/10 dark:to-[#99BDFF]/10 rounded-full blur-3xl">
         </div>
         <div
-            class="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-indigo-500/15 to-cyan-500/15 dark:from-indigo-400/8 dark:to-cyan-400/8 rounded-full blur-2xl">
+            class="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-[#4586FF]/15 to-[#99BDFF]/15 dark:from-[#4586FF]/8 dark:to-[#99BDFF]/8 rounded-full blur-2xl">
         </div>
         <div
-            class="absolute bottom-1/4 left-1/4 w-48 h-48 bg-gradient-to-r from-purple-500/10 to-pink-500/10 dark:from-purple-400/5 dark:to-pink-400/5 rounded-full blur-xl">
+            class="absolute bottom-1/4 left-1/4 w-48 h-48 bg-gradient-to-r from-[#4586FF]/10 to-[#99BDFF]/10 dark:from-[#4586FF]/5 dark:to-[#99BDFF]/5 rounded-full blur-xl">
         </div>
     </div>
 
     <!-- Left Side - Branding -->
     <div
-        class="hidden lg:flex lg:w-2/5 flex-shrink-0 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 dark:from-blue-700 dark:via-purple-700 dark:to-indigo-800 relative overflow-hidden">
+        class="hidden lg:flex lg:w-2/5 flex-shrink-0 bg-gradient-to-br from-[#4586FF] via-[#4d8aff] to-[#99BDFF] dark:from-[#3d79f5] dark:via-[#4586ff] dark:to-[#8eb2fc] relative overflow-hidden">
         <!-- Pattern Background -->
         <div class="absolute inset-0 opacity-10 dark:opacity-5">
             <div class="absolute top-0 left-0 w-full h-full"
@@ -95,7 +95,7 @@
             <div class="lg:hidden text-center mb-6">
                 <div class="inline-flex items-center space-x-3 mb-4">
                     <div
-                        class="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20">
+                        class="w-10 h-10 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />
@@ -135,7 +135,7 @@
                         </label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors"
+                                <svg class="w-5 h-5 text-slate-400 dark:text-slate-500 group-focus-within:text-[#4586FF] dark:group-focus-within:text-[#99BDFF] transition-colors"
                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
@@ -143,24 +143,24 @@
                             </div>
                             <input wire:model="email" id="email" type="email" required autofocus autocomplete="email"
                                 placeholder="votre@email.com"
-                                class="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 dark:focus:ring-blue-400/50 dark:focus:border-blue-400 transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-500" />
+                                class="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-[#4586FF]/50 focus:border-[#4586FF] dark:focus:ring-[#99BDFF]/50 dark:focus:border-[#99BDFF] transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-500" />
                         </div>
                         @error('email')
-                        <p class="text-sm text-red-600 dark:text-red-400 font-medium">{{ $message }}</p>
+                            <p class="text-sm text-red-600 dark:text-red-400 font-medium">{{ $message }}</p>
                         @enderror
                     </div>
 
                     <!-- Info Box -->
                     <div
-                        class="flex items-start space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800/50">
+                        class="flex items-start space-x-3 p-4 bg-gradient-to-r from-[#4586FF]/10 to-[#99BDFF]/10 dark:from-[#4586FF]/20 dark:to-[#99BDFF]/20 rounded-xl border border-[#4586FF]/20 dark:border-[#99BDFF]/30">
                         <div class="flex-shrink-0 mt-0.5">
-                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                            <svg class="w-5 h-5 text-[#4586FF] dark:text-[#99BDFF]" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <div class="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                        <div class="text-sm text-[#4586FF] dark:text-[#99BDFF] leading-relaxed">
                             <strong class="font-semibold">Instructions :</strong> Vérifiez votre boîte de réception (et
                             vos spams) après avoir cliqué sur "Envoyer le lien". Le lien sera valide pendant 60 minutes.
                         </div>
@@ -168,7 +168,7 @@
 
                     <!-- Submit Button -->
                     <button type="submit"
-                        class="group w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:via-purple-600 dark:hover:to-indigo-600 text-white rounded-xl font-bold text-lg shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                        class="group w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-[#4586FF] to-[#99BDFF] hover:from-[#3d79f5] hover:to-[#8eb2fc] text-white rounded-xl font-bold text-lg shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         wire:loading.attr="disabled">
                         <svg wire:loading class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -181,7 +181,7 @@
                         <svg wire:loading.remove class="w-5 h-5 mr-3" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                d="M3 8l7.89 7.89a2 2 0 002.83 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />
                         </svg>
                         <span wire:loading.remove>Envoyer le lien de réinitialisation</span>
                         <span wire:loading>Envoi en cours...</span>
@@ -201,7 +201,7 @@
                     <p class="text-sm text-slate-600 dark:text-slate-400">
                         Vous vous souvenez de votre mot de passe ?
                         <a href="{{ route('login') }}" wire:navigate
-                            class="font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors ml-1">
+                            class="font-bold text-[#4586FF] dark:text-[#99BDFF] hover:text-[#3d79f5] dark:hover:text-[#8eb2fc] transition-colors ml-1">
                             Se connecter
                         </a>
                     </p>

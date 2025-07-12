@@ -14,7 +14,7 @@
                             $priorityIcon = $priorityColors[$priorityLevel] ?? $priorityColors['medium'];
                         @endphp
 
-                        <div class="w-8 h-8 {{ $priorityIcon }} rounded-lg flex items-center justify-center">
+                        <div class="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
                             <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -29,11 +29,27 @@
                     </div>
 
                     @if($isEditing)
-                        <button type="button" wire:click="$toggle('taskIsDone')"
-                            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors {{ $taskIsDone ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600' }}">
-                            <span
-                                class="inline-block h-3 w-3 transform rounded-full bg-white transition-transform {{ $taskIsDone ? 'translate-x-5' : 'translate-x-1' }}"></span>
-                        </button>
+                        <div class="flex items-center space-x-3">
+                            <div class="relative group">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" wire:model.live="taskIsDone" class="sr-only peer">
+                                    <div
+                                        class="w-5 h-5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500/20 peer-checked:bg-green-500 peer-checked:border-green-500 dark:peer-checked:bg-green-600 dark:peer-checked:border-green-600 transition-all duration-200 hover:border-slate-400 dark:hover:border-slate-500">
+                                        <!-- Check icon -->
+                                        <svg class="w-3 h-3 text-white absolute top-0.5 left-0.5 opacity-0 peer-checked:opacity-100 transition-opacity duration-200"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </div>
+                                </label>
+
+                                <!-- Tooltip -->
+                                <div
+                                    class="absolute bottom-full right-0 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                                    {{ $taskIsDone ? 'Marquer comme non terminé' : 'Marquer comme terminé' }}
+                                </div>
+                            </div>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -59,14 +75,14 @@
 
                     <!-- Properties -->
                     <div class="grid grid-cols-3 gap-3">
-                        <select wire:model="categoryId"
+                        <select name="categoryId" wire:model="categoryId"
                             class="px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors">
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->title }}</option>
                             @endforeach
                         </select>
 
-                        <select wire:model="priorityLevel"
+                        <select name="priorityLevel" wire:model="priorityLevel"
                             class="px-3 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors">
                             @foreach($priorityLevelsInfo as $level => $info)
                                 <option value="{{ $level }}">{{ ucfirst($info) }}</option>

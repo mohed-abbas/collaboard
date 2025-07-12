@@ -9,11 +9,6 @@
         <!-- Drag Handle -->
         <div class="drag-handle no-click absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-move z-10"
             onclick="event.stopPropagation()">
-            <svg class="w-4 h-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" fill="currentColor"
-                viewBox="0 0 20 20">
-                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z">
-                </path>
-            </svg>
         </div>
 
         <!-- Task Labels -->
@@ -32,14 +27,14 @@
         <div class="flex items-start justify-between mb-2">
             <h3 class="font-medium text-slate-900 dark:text-white {{ $task->is_done ? 'line-through opacity-75' : '' }}
                        {{ $task->isOverdue() ? 'text-red-600 dark:text-red-400' : '' }}">
-                {{ Str::limit($task->title, 60) }}
+                {{ Str::limit($task->title, 40) }}
             </h3>
 
             <!-- Task Completion Checkbox -->
             <div class="flex-shrink-0 ml-3 no-click">
                 <input type="checkbox" wire:click.stop="$dispatch('toggleTaskDone', {taskId: {{ $task->id }}})"
                     {{ $task->is_done ? 'checked' : '' }} onclick="event.stopPropagation()"
-                    class="w-4 h-4 text-green-600 bg-white dark:bg-slate-600 border-slate-300 dark:border-slate-500 rounded focus:ring-green-500 dark:focus:ring-green-400">
+                    class="w-4 h-4 text-green-600 bg-white dark:bg-slate-600 border-slate-300 dark:border-slate-500 rounded-full focus:ring-green-500 dark:focus:ring-green-400">
             </div>
         </div>
 
@@ -47,7 +42,7 @@
         @if($task->description)
         <p
             class="text-sm text-slate-600 dark:text-slate-400 mb-3 {{ $task->is_done ? 'line-through opacity-75' : '' }}">
-            {{ Str::limit($task->description, 80) }}
+            {{ Str::limit($task->description, 60) }}
         </p>
         @endif
 
@@ -68,7 +63,7 @@
                 <!-- Deadline -->
                 @if($task->deadline)
                 <span class="text-slate-500 dark:text-slate-400
-                             {{ $task->isOverdue() ? 'text-red-600 dark:text-red-400 font-medium' : '' }}">
+                            {{ $task->isOverdue() ? 'text-red-600 dark:text-red-400 font-medium' : '' }}">
                     {{ $task->deadline->format('M j') }}
                 </span>
                 @endif

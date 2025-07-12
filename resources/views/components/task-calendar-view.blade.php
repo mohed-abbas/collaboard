@@ -58,16 +58,16 @@
                         $isToday = $dayDate->isToday();
                     @endphp
                     <div class="calendar-day group min-h-[120px] border-r last:border-r-0 border-slate-200 dark:border-slate-800 p-1 
-                                                       {{ $day['isCurrentMonth'] ? 'dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50' : 'bg-slate-50 dark:bg-slate-900/70' }} 
-                                                       {{ $isToday && $day['isCurrentMonth'] ? 'bg-blue-50/40 dark:bg-blue-950/50 ring-1 ring-inset ring-blue-500/20 dark:ring-blue-400/20' : '' }}
-                                                       relative transition-colors" data-date="{{ $day['date'] }}">
+                                                               {{ $day['isCurrentMonth'] ? 'dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/50' : 'bg-slate-50 dark:bg-slate-900/70' }} 
+                                                               {{ $isToday && $day['isCurrentMonth'] ? 'bg-blue-50/40 dark:bg-blue-950/50 ring-1 ring-inset ring-blue-500/20 dark:ring-blue-400/20' : '' }}
+                                                               relative transition-colors" data-date="{{ $day['date'] }}">
 
                         <!-- Date indicator -->
                         <div class="calendar-day-content">
                             <div class="flex justify-between mb-1">
                                 <span
                                     class="text-sm {{ $day['isCurrentMonth'] ? 'font-medium text-slate-800 dark:text-slate-300' : 'text-slate-400 dark:text-slate-600' }}
-                                                                    {{ $isToday && $day['isCurrentMonth'] ? 'text-blue-600 dark:text-blue-400 font-semibold' : '' }}">
+                                                                            {{ $isToday && $day['isCurrentMonth'] ? 'text-blue-600 dark:text-blue-400 font-semibold' : '' }}">
                                     {{ $day['day'] }}
                                     @if(isset($day['tasks']) && count($day['tasks']) > 3)
                                         <span

@@ -65,7 +65,7 @@
                 <!-- Logo -->
                 <div class="flex items-center space-x-3">
                     <div
-                        class="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20">
+                        class="w-10 h-10 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />
@@ -115,7 +115,7 @@
                     @if (Route::has('login'))
                         @auth
                             <a href="{{ url('/dashboard') }}"
-                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 dark:hover:shadow-blue-400/25 transform">
+                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#4586FF] to-[#99BDFF] hover:from-[#3d79f5] hover:to-[#8eb2fc] text-white rounded-xl font-semibold shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 dark:hover:shadow-blue-400/25 transform">
                                 Tableau de bord
                             </a>
                         @else
@@ -125,7 +125,7 @@
                             </a>
                             @if (Route::has('register'))
                                 <a href="{{ route('register') }}"
-                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 dark:hover:shadow-blue-400/25 transform">
+                                    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#4586FF] to-[#99BDFF] hover:from-[#3d79f5] hover:to-[#8eb2fc] text-white rounded-xl font-semibold shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30 dark:hover:shadow-blue-400/25 transform">
                                     Inscrivez-vous
                                 </a>
                             @endif
@@ -141,10 +141,10 @@
         <!-- Background Elements -->
         <div class="absolute inset-0 -z-10">
             <div
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-400/10 dark:to-purple-400/10 rounded-full blur-3xl">
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-[#4586FF]/20 to-[#99BDFF]/20 dark:from-[#4586FF]/10 dark:to-[#99BDFF]/10 rounded-full blur-3xl">
             </div>
             <div
-                class="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-indigo-500/15 to-cyan-500/15 dark:from-indigo-400/8 dark:to-cyan-400/8 rounded-full blur-2xl">
+                class="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-[#4586FF]/15 to-[#99BDFF]/15 dark:from-[#4586FF]/8 dark:to-[#99BDFF]/8 rounded-full blur-2xl">
             </div>
         </div>
 
@@ -156,8 +156,7 @@
                         Collaboration
                     </span>
                     <br>
-                    <span
-                        class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                    <span class="bg-gradient-to-r from-[#4586FF] to-[#99BDFF] bg-clip-text text-transparent">
                         simplifiée
                     </span>
                 </h1>
@@ -171,7 +170,7 @@
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
                     @auth
                         <a href="{{ route('dashboard') }}"
-                            class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
+                            class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#4586FF] to-[#99BDFF] hover:from-[#3d79f5] hover:to-[#8eb2fc] text-white rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
                             <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -181,7 +180,7 @@
                         </a>
                     @else
                         <a href="{{ route('register') }}"
-                            class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 text-white rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
+                            class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-[#4586FF] to-[#99BDFF] hover:from-[#3d79f5] hover:to-[#8eb2fc] text-white rounded-2xl font-bold text-lg shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
                             <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -199,7 +198,7 @@
                 <!-- Stats -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
                     <div class="text-center">
-                        <div class="text-3xl font-black text-blue-600 dark:text-blue-400 mb-2">10k+</div>
+                        <div class="text-3xl font-black text-[#4586FF] mb-2">10k+</div>
                         <div class="text-slate-600 dark:text-slate-400 font-medium">Projets créés</div>
                     </div>
                     <div class="text-center">
@@ -207,7 +206,7 @@
                         <div class="text-slate-600 dark:text-slate-400 font-medium">Tâches gérées</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-3xl font-black text-indigo-600 dark:text-indigo-400 mb-2">99%</div>
+                        <div class="text-3xl font-black text-[#99BDFF] mb-2">99%</div>
                         <div class="text-slate-600 dark:text-slate-400 font-medium">Satisfaction</div>
                     </div>
                 </div>
@@ -233,14 +232,14 @@
                 <div
                     class="group bg-white/70 dark:bg-slate-800/70 backdrop-blur-sm rounded-3xl p-8 border border-slate-200/60 dark:border-slate-700/60 hover:shadow-2xl hover:shadow-slate-200/60 dark:hover:shadow-slate-900/40 transition-all duration-500 hover:-translate-y-2">
                     <div
-                        class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-600 dark:from-blue-400 dark:to-cyan-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                        class="w-16 h-16 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />
                         </svg>
                     </div>
                     <h3
-                        class="text-xl font-bold mb-4 text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        class="text-xl font-bold mb-4 text-slate-900 dark:text-white group-hover:text-[#4586FF] transition-colors">
                         Tableaux Kanban
                     </h3>
                     <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -377,18 +376,17 @@
                         class="absolute inset-4 bg-white dark:bg-slate-800 rounded-xl shadow-lg dark:shadow-slate-900/50">
                         <div class="p-4 border-b border-slate-200 dark:border-slate-700">
                             <div class="flex items-center space-x-3">
-                                <div
-                                    class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-400 dark:to-purple-500 rounded-lg">
+                                <div class="w-8 h-8 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-lg">
                                 </div>
                                 <div class="h-4 bg-slate-200 dark:bg-slate-600 rounded w-32"></div>
                             </div>
                         </div>
                         <div class="p-4 grid grid-cols-3 gap-4">
                             <div class="space-y-3">
-                                <div class="h-3 bg-blue-200 dark:bg-blue-800 rounded"></div>
+                                <div class="h-3 bg-[#4586FF]/30 rounded"></div>
                                 <div class="space-y-2">
-                                    <div class="h-16 bg-blue-100 dark:bg-blue-900 rounded"></div>
-                                    <div class="h-16 bg-blue-100 dark:bg-blue-900 rounded"></div>
+                                    <div class="h-16 bg-[#4586FF]/10 rounded"></div>
+                                    <div class="h-16 bg-[#4586FF]/10 rounded"></div>
                                 </div>
                             </div>
                             <div class="space-y-3">
@@ -438,7 +436,7 @@
 
             @auth
                 <a href="{{ route('dashboard') }}"
-                    class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:via-purple-600 dark:hover:to-indigo-600 text-white rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
+                    class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-[#4586FF] to-[#99BDFF] hover:from-[#3d79f5] hover:to-[#8eb2fc] text-white rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
                     <svg class="w-6 h-6 mr-4 group-hover:rotate-12 transition-transform duration-300" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -448,7 +446,7 @@
                 </a>
             @else
                 <a href="{{ route('register') }}"
-                    class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:via-purple-600 dark:hover:to-indigo-600 text-white rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
+                    class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-[#4586FF] to-[#99BDFF] hover:from-[#3d79f5] hover:to-[#8eb2fc] text-white rounded-2xl font-black text-xl shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform">
                     <svg class="w-6 h-6 mr-4 group-hover:rotate-12 transition-transform duration-300" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -468,7 +466,7 @@
                 <div class="md:col-span-2">
                     <div class="flex items-center space-x-3 mb-4">
                         <div
-                            class="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 rounded-2xl flex items-center justify-center">
+                            class="w-10 h-10 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-2xl flex items-center justify-center">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />

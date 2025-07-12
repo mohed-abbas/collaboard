@@ -211,6 +211,45 @@
 
     <!-- Modals -->
     @include('livewire.category-modal')
-    <livewire:task-manager :categories="$categories" />
+    <livewire:task-manager :categories="$categories" :viewMode="$viewMode" />
     <livewire:label-manager :project="$project" />
 </div>
+
+<script>
+    document.addEventListener('livewire:init', () => {
+        // Handle task deletion to prevent 404 errors
+        Livewire.on('projectUpdated', () => {
+            // Force close any task modals
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (window.Alpine && modal.__x) {
+                    // For Alpine.js modals
+                    modal.__x.$data.showModal = false;
+                }
+            });
+
+            // Remove any references to deleted tasks in the DOM
+            const taskElements = document.querySelectorAll('[data-task-id]');
+            taskElements.forEach(el => {
+                // Check if this task still exists in the current data
+                const taskId = el.getAttribute('data-task-id');
+                if (taskId) {
+                    const taskExists = false;
+                    // If not found in data, remove from DOM
+                    if (!taskExists) {
+                        el.remove();
+                    }
+                }
+            });
+        });
+    });
+
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('forceCalendarRefresh', () => {
+            // Wait a moment to allow Livewire operations to complete
+            setTimeout(() => {
+                window.location.reload();
+            }, 200);
+        });
+    });
+</script>

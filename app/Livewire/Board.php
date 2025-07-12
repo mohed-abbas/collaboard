@@ -8,6 +8,7 @@ use App\Models\Task;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class Board extends Component
 {
@@ -45,6 +46,21 @@ class Board extends Component
     // Drag-and-drop properties
     public $draggedTask = null; // Task being dragged
     public $draggedCategory = null; // Category being dragged
+
+
+    protected $messages = [
+        'categoryTitle.required' => 'Le titre de la catégorie est obligatoire.',
+        'categoryColor.required' => 'La couleur de la catégorie est obligatoire.',
+        'categoryTitle.max' => 'Le titre de la catégorie ne peut pas dépasser 255 caractères.',
+        'categoryColor.regex' => 'La couleur de la catégorie doit être un code hexadécimal valide.',
+        'searchTerm.max' => 'Le terme de recherche ne peut pas dépasser 255 caractères.',
+        'selectedLabels.array' => 'Les étiquettes sélectionnées doivent être un tableau.',
+        'selectedLabels.*.exists' => 'Une ou plusieurs étiquettes sélectionnées n\'existent pas.',
+        'selectedCategory.exists' => 'La catégorie sélectionnée n\'existe pas.',
+        'sortBy.in' => 'Le critère de tri sélectionné n\'est pas valide.',
+        'sortDirection.in' => 'La direction de tri sélectionnée n\'est pas valide.',
+        'categoryTitle.title' => 'Le titre de la catégorie ne peut pas être "Terminé" car c\'est une catégorie système.',
+    ];
 
     public function mount($project)
     {
@@ -160,8 +176,26 @@ class Board extends Component
      */
     private function assignTasksToCalendar()
     {
+        // Clear existing tasks from calendar days first
+        foreach ($this->calendarWeeks as $weekIndex => $week) {
+            foreach ($week as $dayIndex => $day) {
+                $this->calendarWeeks[$weekIndex][$dayIndex]['tasks'] = [];
+            }
+        }
+
+        // Reset all calendar days tasks arrays
+        foreach ($this->calendarDays as $index => $day) {
+            $this->calendarDays[$index]['tasks'] = [];
+        }
+
+        // Then assign current tasks - with safety checks
         foreach ($this->filteredTasks as $task) {
-            if (!empty($task->deadline)) {
+            // Skip any null or invalid tasks
+            if (!$task || !$task->exists || empty($task->deadline)) {
+                continue;
+            }
+
+            try {
                 $deadline = Carbon::parse($task->deadline)->format('Y-m-d');
 
                 // Find the matching calendar day
@@ -172,6 +206,16 @@ class Board extends Component
                         }
                     }
                 }
+
+                // Also update calendarDays for consistency
+                foreach ($this->calendarDays as $index => $day) {
+                    if ($day['date'] === $deadline) {
+                        $this->calendarDays[$index]['tasks'][] = $task;
+                    }
+                }
+            } catch (\Exception $e) {
+                // Log any parsing errors but don't break the calendar
+                \Illuminate\Support\Facades\Log::error('Calendar task assignment error: ' . $e->getMessage());
             }
         }
     }
@@ -209,6 +253,19 @@ class Board extends Component
         $this->generateCalendarData();
     }
 
+
+    // In your Board component where you load the project
+    public function syncAllTasksStatus()
+    {
+        foreach ($this->project->tasks as $task) {
+            $isInDoneCategory = $task->category->title === 'Terminé' && $task->category->is_system;
+
+            if ($task->is_done !== $isInDoneCategory) {
+                $task->update(['is_done' => $isInDoneCategory]);
+            }
+        }
+    }
+
     public function loadProject($project)
     {
         $this->project = Project::findOrFail(is_object($project) ? $project->id : $project);
@@ -218,6 +275,7 @@ class Board extends Component
             }
         ])->orderBy('position', 'asc')->get();
         $this->labels = $this->project->labels()->orderBy('name')->get();
+        $this->syncAllTasksStatus();
     }
 
     // Auto-trigger filtering when properties change
@@ -363,6 +421,11 @@ class Board extends Component
 
         if ($this->isEditingCategory) {
             $category = Category::find($this->categoryId);
+            if ($category->is_system && (strtoupper($category->title) === 'TERMINÉ' || strtoupper($category->title) === 'À FAIRE')) {
+                $this->addError('categoryTitle', $this->messages['categoryTitle.title']);
+                return;
+            }
+
             if ($category) {
                 $category->update([
                     'title' => $this->categoryTitle,
@@ -408,7 +471,8 @@ class Board extends Component
     #[On('projectUpdated')]
     public function projectUpdated()
     {
-        $this->loadProject($this->project->id);
+
+        $this->loadProject(project: $this->project->id);
         $this->applyFilters();
     }
 
@@ -444,11 +508,6 @@ class Board extends Component
                 'position' => $newPosition
             ]);
 
-            logger()->info('Task updated', [
-                'taskId' => $taskId,
-                'new_category_id' => $task->fresh()->category_id,
-                'new_position' => $task->fresh()->position
-            ]);
 
             // Reorder tasks in both categories if they're different
             if ($oldCategoryId != $newCategoryId) {
@@ -461,12 +520,6 @@ class Board extends Component
             $this->applyFilters();
 
         } catch (\Exception $e) {
-            logger()->error('Task move error: ' . $e->getMessage(), [
-                'taskId' => $taskId,
-                'newCategoryId' => $newCategoryId,
-                'exception' => $e->getTraceAsString()
-            ]);
-
             session()->flash('error', 'Erreur lors du déplacement de la tâche: ' . $e->getMessage());
         }
     }
@@ -520,25 +573,19 @@ class Board extends Component
     public function createTaskForDate($date, $categoryId = null)
     {
         try {
-            // Set default category if none provided
+            // Set default category if none provided - find "À faire" category first
             if (!$categoryId && $this->categories->count() > 0) {
-                $categoryId = $this->categories->first()->id;
+                // Try to find "À faire" system category first
+                $todoCategory = $this->categories->where('title', 'À faire')->where('is_system', true)->first();
+                $categoryId = $todoCategory ? $todoCategory->id : $this->categories->first()->id;
             }
 
             $deadline = Carbon::parse($date);
 
             // Dispatch event to open task creation modal with pre-filled deadline
-            $this->dispatch('openCreateTaskModal', [
-                'categoryId' => $categoryId,
-                'deadline' => $deadline->format('Y-m-d')
-            ]);
+            $this->dispatch('openCreateTaskModal', $categoryId, $deadline->format('Y-m-d\TH:i'));
 
         } catch (\Exception $e) {
-            logger()->error('Create task for date error: ' . $e->getMessage(), [
-                'date' => $date,
-                'categoryId' => $categoryId
-            ]);
-
             session()->flash('error', 'Erreur lors de la création de la tâche.');
         }
     }
@@ -553,8 +600,6 @@ class Board extends Component
         $this->calendarMonth = $today->month;
         $this->generateCalendarData();
     }
-
-
     public function render()
     {
         return view('livewire.board');

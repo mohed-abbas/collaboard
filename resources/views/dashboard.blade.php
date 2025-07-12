@@ -8,7 +8,7 @@
                     <!-- Left: Dashboard Title -->
                     <div class="flex items-center space-x-4">
                         <div
-                            class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                            class="w-8 h-8 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-lg flex items-center justify-center">
                             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2v0"></path>
@@ -22,7 +22,7 @@
                         <!-- User Avatar -->
                         <div class="flex items-center space-x-3">
                             <div
-                                class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                                class="w-8 h-8 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-lg flex items-center justify-center">
                                 <span class="text-white font-semibold text-sm">
                                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                                 </span>
@@ -48,7 +48,7 @@
             <!-- Welcome Section -->
             <section class="mb-8">
                 <div
-                    class="bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-2xl p-8 text-white relative overflow-hidden">
+                    class="bg-gradient-to-r from-[#4586FF] to-[#99BDFF] rounded-2xl p-8 text-white relative overflow-hidden">
                     <!-- Background Pattern -->
                     <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
                     <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
@@ -92,9 +92,8 @@
                             class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
                             <div class="flex items-center space-x-4">
                                 <div
-                                    class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
+                                    class="w-12 h-12 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
                                         </path>
@@ -114,9 +113,8 @@
                             class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
                             <div class="flex items-center space-x-4">
                                 <div
-                                    class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
+                                    class="w-12 h-12 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
@@ -135,9 +133,8 @@
                             class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
                             <div class="flex items-center space-x-4">
                                 <div
-                                    class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-                                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
+                                    class="w-12 h-12 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
@@ -169,69 +166,35 @@
                         @foreach(auth()->user()->projects as $project)
                             @php
                                 $colors = [
-                                    'A' => [
-                                        'bg' => 'bg-red-500',
-                                        'light' => 'bg-red-50 dark:bg-red-900/20',
-                                        'text' => 'text-red-600
-                                            dark:text-red-400'
-                                    ],
-                                    'B' => [
-                                        'bg' => 'bg-blue-500',
-                                        'light' => 'bg-blue-50 dark:bg-blue-900/20',
-                                        'text' => 'text-blue-600
-                                            dark:text-blue-400'
-                                    ],
-                                    'C' => [
-                                        'bg' => 'bg-green-500',
-                                        'light' => 'bg-green-50 dark:bg-green-900/20',
-                                        'text' =>
-                                            'text-green-600 dark:text-green-400'
-                                    ],
-                                    'D' => [
-                                        'bg' => 'bg-purple-500',
-                                        'light' => 'bg-purple-50 dark:bg-purple-900/20',
-                                        'text' =>
-                                            'text-purple-600 dark:text-purple-400'
-                                    ],
-                                    'E' => [
-                                        'bg' => 'bg-yellow-500',
-                                        'light' => 'bg-yellow-50 dark:bg-yellow-900/20',
-                                        'text' =>
-                                            'text-yellow-600 dark:text-yellow-400'
-                                    ],
-                                    'F' => [
-                                        'bg' => 'bg-pink-500',
-                                        'light' => 'bg-pink-50 dark:bg-pink-900/20',
-                                        'text' => 'text-pink-600
-                                            dark:text-pink-400'
-                                    ],
-                                    'G' => [
-                                        'bg' => 'bg-teal-500',
-                                        'light' => 'bg-teal-50 dark:bg-teal-900/20',
-                                        'text' => 'text-teal-600
-                                            dark:text-teal-400'
-                                    ],
-                                    'H' => [
-                                        'bg' => 'bg-indigo-500',
-                                        'light' => 'bg-indigo-50 dark:bg-indigo-900/20',
-                                        'text' =>
-                                            'text-indigo-600 dark:text-indigo-400'
-                                    ],
-                                    'I' => [
-                                        'bg' => 'bg-orange-500',
-                                        'light' => 'bg-orange-50 dark:bg-orange-900/20',
-                                        'text' =>
-                                            'text-orange-600 dark:text-orange-400'
-                                    ],
-                                    'J' => [
-                                        'bg' => 'bg-emerald-500',
-                                        'light' => 'bg-emerald-50 dark:bg-emerald-900/20',
-                                        'text' =>
-                                            'text-emerald-600 dark:text-emerald-400'
-                                    ],
+                                    'A' => "from-red-500 to-pink-600 shadow-red-500/25",
+                                    'B' => "from-blue-500 to-cyan-600 shadow-blue-500/25",
+                                    'C' => "from-green-500 to-emerald-600 shadow-green-500/25",
+                                    'D' => "from-purple-500 to-indigo-600 shadow-purple-500/25",
+                                    'E' => "from-yellow-500 to-orange-600 shadow-yellow-500/25",
+                                    'F' => "from-pink-500 to-rose-600 shadow-pink-500/25",
+                                    'G' => "from-teal-500 to-cyan-600 shadow-teal-500/25",
+                                    'H' => "from-indigo-500 to-purple-600 shadow-indigo-500/25",
+                                    'I' => "from-orange-500 to-red-600 shadow-orange-500/25",
+                                    'J' => "from-emerald-500 to-teal-600 shadow-emerald-500/25",
+                                    'K' => "from-violet-500 to-purple-600 shadow-violet-500/25",
+                                    'L' => "from-lime-500 to-green-600 shadow-lime-500/25",
+                                    'M' => "from-fuchsia-500 to-pink-600 shadow-fuchsia-500/25",
+                                    'N' => "from-sky-500 to-blue-600 shadow-sky-500/25",
+                                    'O' => "from-amber-500 to-orange-600 shadow-amber-500/25",
+                                    'P' => "from-rose-500 to-pink-600 shadow-rose-500/25",
+                                    'Q' => "from-cyan-500 to-teal-600 shadow-cyan-500/25",
+                                    'R' => "from-red-600 to-rose-700 shadow-red-500/25",
+                                    'S' => "from-blue-600 to-indigo-700 shadow-blue-500/25",
+                                    'T' => "from-green-600 to-emerald-700 shadow-green-500/25",
+                                    'U' => "from-purple-600 to-violet-700 shadow-purple-500/25",
+                                    'V' => "from-yellow-600 to-amber-700 shadow-yellow-500/25",
+                                    'W' => "from-pink-600 to-fuchsia-700 shadow-pink-500/25",
+                                    'X' => "from-teal-600 to-cyan-700 shadow-teal-500/25",
+                                    'Y' => "from-orange-600 to-red-700 shadow-orange-500/25",
+                                    'Z' => "from-indigo-600 to-purple-700 shadow-indigo-500/25"
                                 ];
                                 $firstLetter = strtoupper(substr($project->name, 0, 1));
-                                $colorScheme = $colors[$firstLetter] ?? $colors['A'];
+                                $colorScheme = $colors[$firstLetter] ?? ['from-gray-500', 'to-gray-600', 'shadow-gray-500/25'];
                             @endphp
 
                             <div
@@ -241,12 +204,11 @@
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center space-x-3">
                                             <div
-                                                class="w-10 h-10 {{ $colorScheme['bg'] }} rounded-lg flex items-center justify-center">
+                                                class="w-10 h-10 bg-gradient-to-br {{ $colorScheme }} rounded-lg flex items-center justify-center">
                                                 <span class="text-white font-bold">{{ $firstLetter }}</span>
                                             </div>
                                             <div>
-                                                <h4
-                                                    class="font-semibold text-slate-900 dark:text-white group-hover:{{ $colorScheme['text'] }} transition-colors">
+                                                <h4 class="font-semibold text-slate-900 dark:text-white transition-colors">
                                                     {{ $project->name }}
                                                 </h4>
                                                 <p class="text-xs text-slate-500 dark:text-slate-400">
@@ -257,8 +219,7 @@
 
                                         <!-- Role Badge -->
                                         @if(auth()->user()->id === $project->owner_id)
-                                            <span
-                                                class="inline-flex items-center px-2 py-1 {{ $colorScheme['light'] }} {{ $colorScheme['text'] }} rounded-full text-xs font-medium">
+                                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium">
                                                 <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -316,9 +277,8 @@
                     <!-- Empty State -->
                     <div class="text-center py-16">
                         <div
-                            class="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-8 h-8 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
+                            class="w-16 h-16 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-xl flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                             </svg>

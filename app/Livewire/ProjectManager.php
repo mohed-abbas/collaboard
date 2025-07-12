@@ -21,7 +21,7 @@ class ProjectManager extends Component
     private array $defaultCategories = [
         ['title' => 'À faire', 'sort_order' => 1, 'is_system' => true, 'color' => '#6b1bbb'], // Red for "To do"
         ['title' => 'En cours', 'sort_order' => 2, 'is_system' => true, 'color' => '#dd7c0e'], // Orange for "In progress"
-        ['title' => 'Terminé', 'sort_order' => 3, 'is_system' => true, 'color' => '#048b0d'], // Green for "Completed"
+        ['title' => 'Terminé', 'sort_order' => 3, 'is_system' => true, 'color' => '#b20101'], // Green for "Completed"
     ];
 
     public $hideProjectsList = false;

@@ -3,13 +3,13 @@
     <!-- Background Elements -->
     <div class="absolute inset-0 -z-10">
         <div
-            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-500/20 to-purple-500/20 dark:from-blue-400/10 dark:to-purple-400/10 rounded-full blur-3xl">
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-[#4586FF]/20 to-[#99BDFF]/20 dark:from-[#4586FF]/10 dark:to-[#99BDFF]/10 rounded-full blur-3xl">
         </div>
         <div
-            class="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-indigo-500/15 to-cyan-500/15 dark:from-indigo-400/8 dark:to-cyan-400/8 rounded-full blur-2xl">
+            class="absolute top-1/4 right-1/4 w-64 h-64 bg-gradient-to-r from-[#4586FF]/15 to-[#99BDFF]/15 dark:from-[#4586FF]/8 dark:to-[#99BDFF]/8 rounded-full blur-2xl">
         </div>
         <div
-            class="absolute bottom-1/4 left-1/4 w-48 h-48 bg-gradient-to-r from-purple-500/10 to-pink-500/10 dark:from-purple-400/5 dark:to-pink-400/5 rounded-full blur-xl">
+            class="absolute bottom-1/4 left-1/4 w-48 h-48 bg-gradient-to-r from-[#4586FF]/10 to-[#99BDFF]/10 dark:from-[#4586FF]/5 dark:to-[#99BDFF]/5 rounded-full blur-xl">
         </div>
     </div>
 
@@ -20,7 +20,7 @@
             <div class="lg:hidden text-center mb-4">
                 <div class="inline-flex items-center space-x-2 mb-3">
                     <div
-                        class="w-8 h-8 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20">
+                        class="w-8 h-8 bg-gradient-to-br from-[#4586FF] to-[#99BDFF] rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/25 dark:shadow-blue-400/20">
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />
@@ -58,7 +58,7 @@
                         </label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors"
+                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 group-focus-within:text-[#4586FF] dark:group-focus-within:text-[#99BDFF] transition-colors"
                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -66,10 +66,10 @@
                             </div>
                             <input wire:model="name" id="name" type="text" required autofocus autocomplete="name"
                                 placeholder="Votre nom complet"
-                                class="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 dark:focus:ring-blue-400/50 dark:focus:border-blue-400 transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-500 text-sm" />
+                                class="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-[#4586FF]/50 focus:border-[#4586FF] dark:focus:ring-[#99BDFF]/50 dark:focus:border-[#99BDFF] transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-500 text-sm" />
                         </div>
                         @error('name')
-                        <p class="text-xs text-red-600 dark:text-red-400 font-medium">{{ $message }}</p>
+                            <p class="text-xs text-red-600 dark:text-red-400 font-medium">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -80,7 +80,7 @@
                         </label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors"
+                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 group-focus-within:text-[#4586FF] dark:group-focus-within:text-[#99BDFF] transition-colors"
                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
@@ -88,10 +88,10 @@
                             </div>
                             <input wire:model="email" id="email" type="email" required autocomplete="email"
                                 placeholder="votre@email.com"
-                                class="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 dark:focus:ring-blue-400/50 dark:focus:border-blue-400 transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-500 text-sm" />
+                                class="w-full pl-9 pr-3 py-2.5 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-[#4586FF]/50 focus:border-[#4586FF] dark:focus:ring-[#99BDFF]/50 dark:focus:border-[#99BDFF] transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-500 text-sm" />
                         </div>
                         @error('email')
-                        <p class="text-xs text-red-600 dark:text-red-400 font-medium">{{ $message }}</p>
+                            <p class="text-xs text-red-600 dark:text-red-400 font-medium">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -102,7 +102,7 @@
                         </label>
                         <div class="relative group" x-data="{ showPassword: false }">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors"
+                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 group-focus-within:text-[#4586FF] dark:group-focus-within:text-[#99BDFF] transition-colors"
                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -110,7 +110,7 @@
                             </div>
                             <input wire:model="password" id="password" :type="showPassword ? 'text' : 'password'"
                                 required autocomplete="new-password" placeholder="Créez un mot de passe sécurisé"
-                                class="w-full pl-9 pr-9 py-2.5 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 dark:focus:ring-blue-400/50 dark:focus:border-blue-400 transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-500 text-sm" />
+                                class="w-full pl-9 pr-9 py-2.5 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-[#4586FF]/50 focus:border-[#4586FF] dark:focus:ring-[#99BDFF]/50 dark:focus:border-[#99BDFF] transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-500 text-sm" />
                             <button type="button" @click="showPassword = !showPassword"
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors">
                                 <svg x-show="!showPassword" class="w-4 h-4" fill="none" stroke="currentColor"
@@ -128,7 +128,7 @@
                             </button>
                         </div>
                         @error('password')
-                        <p class="text-xs text-red-600 dark:text-red-400 font-medium">{{ $message }}</p>
+                            <p class="text-xs text-red-600 dark:text-red-400 font-medium">{{ $message }}</p>
                         @enderror
                     </div>
 
@@ -140,7 +140,7 @@
                         </label>
                         <div class="relative group" x-data="{ showConfirmPassword: false }">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 group-focus-within:text-blue-500 dark:group-focus-within:text-blue-400 transition-colors"
+                                <svg class="w-4 h-4 text-slate-400 dark:text-slate-500 group-focus-within:text-[#4586FF] dark:group-focus-within:text-[#99BDFF] transition-colors"
                                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -149,7 +149,7 @@
                             <input wire:model="password_confirmation" id="password_confirmation"
                                 :type="showConfirmPassword ? 'text' : 'password'" required autocomplete="new-password"
                                 placeholder="Confirmez votre mot de passe"
-                                class="w-full pl-9 pr-9 py-2.5 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 dark:focus:ring-blue-400/50 dark:focus:border-blue-400 transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-500 text-sm" />
+                                class="w-full pl-9 pr-9 py-2.5 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-[#4586FF]/50 focus:border-[#4586FF] dark:focus:ring-[#99BDFF]/50 dark:focus:border-[#99BDFF] transition-all duration-300 hover:border-slate-300 dark:hover:border-slate-500 text-sm" />
                             <button type="button" @click="showConfirmPassword = !showConfirmPassword"
                                 class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300 transition-colors">
                                 <svg x-show="!showConfirmPassword" class="w-4 h-4" fill="none" stroke="currentColor"
@@ -167,27 +167,12 @@
                             </button>
                         </div>
                         @error('password_confirmation')
-                        <p class="text-xs text-red-600 dark:text-red-400 font-medium">{{ $message }}</p>
+                            <p class="text-xs text-red-600 dark:text-red-400 font-medium">{{ $message }}</p>
                         @enderror
                     </div>
-
-                    <!-- Terms Agreement -->
-                    <div
-                        class="flex items-start space-x-2 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-100 dark:border-slate-600/50">
-                        <input type="checkbox" id="terms" required
-                            class="w-3.5 h-3.5 mt-0.5 text-blue-600 bg-white border-2 border-slate-300 rounded focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-slate-700 dark:border-slate-600 transition-colors" />
-                        <label for="terms" class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                            J'accepte les <a href="#"
-                                class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold underline underline-offset-2">conditions
-                                d'utilisation</a> et la <a href="#"
-                                class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold underline underline-offset-2">politique
-                                de confidentialité</a>.
-                        </label>
-                    </div>
-
                     <!-- Submit Button -->
                     <button type="submit"
-                        class="group w-full inline-flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 dark:from-blue-500 dark:via-purple-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:via-purple-600 dark:hover:to-indigo-600 text-white rounded-lg font-bold text-sm shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                        class="group w-full inline-flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-[#4586FF] to-[#99BDFF] hover:from-[#3d79f5] hover:to-[#8eb2fc] text-white rounded-lg font-bold text-sm shadow-2xl shadow-blue-500/25 dark:shadow-blue-400/20 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/40 dark:hover:shadow-blue-400/30 transform disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         wire:loading.attr="disabled">
                         <svg wire:loading class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -216,7 +201,7 @@
                     <p class="text-xs text-slate-600 dark:text-slate-400">
                         Vous avez déjà un compte ?
                         <a href="{{ route('login') }}" wire:navigate
-                            class="font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors ml-1">
+                            class="font-bold text-[#4586FF] dark:text-[#99BDFF] hover:text-[#3d79f5] dark:hover:text-[#8eb2fc] transition-colors ml-1">
                             Se connecter
                         </a>
                     </p>
@@ -239,7 +224,7 @@
 
     <!-- Left Side - Branding -->
     <div
-        class="hidden lg:flex lg:w-1/2 xl:w-2/5 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 dark:from-blue-700 dark:via-purple-700 dark:to-indigo-800 relative overflow-hidden">
+        class="hidden lg:flex lg:w-1/2 xl:w-2/5 bg-gradient-to-br from-[#4586FF] via-[#4d8aff] to-[#99BDFF] dark:from-[#3d79f5] dark:via-[#4586ff] dark:to-[#8eb2fc] relative overflow-hidden">
         <!-- Pattern Background -->
         <div class="absolute inset-0 opacity-10 dark:opacity-5">
             <div class="absolute top-0 left-0 w-full h-full"
