@@ -6,6 +6,7 @@ use App\Models\Category;
 use Livewire\Component;
 use App\Models\Project;
 use Livewire\Attributes\On;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectManager extends Component
 {
@@ -20,8 +21,10 @@ class ProjectManager extends Component
     private array $defaultCategories = [
         ['title' => 'À faire', 'sort_order' => 1, 'is_system' => true, 'color' => '#6b1bbb'], // Red for "To do"
         ['title' => 'En cours', 'sort_order' => 2, 'is_system' => true, 'color' => '#dd7c0e'], // Orange for "In progress"
-        ['title' => 'Terminé', 'sort_order' => 3, 'is_system' => true, 'color' => '#048b0d'], // Green for "Completed"
+        ['title' => 'Terminé', 'sort_order' => 3, 'is_system' => true, 'color' => '#b20101'], // Green for "Completed"
     ];
+
+    public $hideProjectsList = false;
 
 
     protected function rules()
@@ -38,8 +41,10 @@ class ProjectManager extends Component
         'description.string' => 'La description doit être une chaîne de caractères valide.',
     ];
 
-    public function mount()
+    public function mount($hideProjectsList = false)
     {
+        $this->hideProjectsList = $hideProjectsList;
+        // Initial load of projects
         $this->reloadProjects();
 
         // Si on vient de projects.create, ouvrir automatiquement le modal
@@ -47,6 +52,7 @@ class ProjectManager extends Component
             $this->openCreateModal();
         }
     }
+
 
     #[On('reloadProjects')]
     public function reloadProjects()
@@ -122,6 +128,7 @@ class ProjectManager extends Component
     }
 
     //–– Delete Flow ––
+    #[On('deleteProject')]
     public function deleteProject(int $id)
     {
         $project = Project::findOrFail($id);
@@ -194,6 +201,26 @@ class ProjectManager extends Component
 
         $firstletter = strtoupper(substr($projectName, 0, 1));
         return $colors[$firstletter] ?? 'from-gray-500 to-gray-600 shadow-gray-500/25';
+    }
+
+
+    #[On('leaveProject')]
+    public function leaveProject($projectId)
+    {
+        $project = Project::findOrFail($projectId);
+
+        if (!Auth::user()->can('leaveProject', $project)) {
+            session()->flash('error', 'Vous n\'avez pas la permission de quitter ce projet.');
+            return;
+        }
+
+        $user = Auth::user();
+        $project->members()->detach($user->id);
+
+
+        session()->flash('success', 'Vous avez quitté le projet avec succès.');
+        $this->reloadProjects(); // Notify other components to reload projects
+        return redirect()->route('dashboard');
     }
 
 

@@ -38,6 +38,12 @@ class ProjectPolicy
         return $user->id === $project->owner_id;
     }
 
+    public function leaveProject(User $user, Project $project): bool
+    {
+        // Allow leaving the project if the user is a member
+        return $project->members->contains($user) && $user->id !== $project->owner_id;
+    }
+
     public function viewSettings(User $user, Project $project): bool
     {
         // Allow viewing settings if the user is the owner or a member of the project

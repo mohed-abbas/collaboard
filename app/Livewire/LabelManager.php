@@ -17,11 +17,12 @@ class LabelManager extends Component
     // form fields
     public $labelId;
     public $labelName = '';
-    public $labelColor = '#3B82F6'; // Default color
+    public $labelColor = '#060436'; // Default color
 
 
     // Predefined colors
     public $predefinedColors = [
+        '#060436',
         '#3B82F6',
         '#F43F5E',
         '#FBBF24',
@@ -163,7 +164,7 @@ class LabelManager extends Component
     {
         $this->labelId = null;
         $this->labelName = '';
-        $this->labelColor = '#3B82F6'; // Reset to default color
+        $this->labelColor = '#060436'; // Reset to default color
         $this->isEditing = false;
         $this->resetErrorBag();
     }
