@@ -11,15 +11,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800,900" rel="stylesheet" />
 
-    <!-- Theme Detection Script (Must be before Tailwind) -->
-    <script>
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia(
-            '(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
-        } else {
-            document.documentElement.classList.remove('dark')
-        }
-    </script>
+    <!-- Theme handled by Flux -->
 
     <!-- Tailwind CSS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -30,32 +22,7 @@
 
 <body
     class="bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 text-slate-900 dark:text-white antialiased transition-colors duration-300"
-    x-data="{ 
-        darkMode: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
-        toggleDarkMode() {
-            this.darkMode = !this.darkMode;
-            if (this.darkMode) {
-                document.documentElement.classList.add('dark');
-                localStorage.theme = 'dark';
-            } else {
-                document.documentElement.classList.remove('dark');
-                localStorage.theme = 'light';
-            }
-        }
-    }" x-init="
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-            if (!('theme' in localStorage)) {
-                if (e.matches) {
-                    document.documentElement.classList.add('dark');
-                    darkMode = true;
-                } else {
-                    document.documentElement.classList.remove('dark');
-                    darkMode = false;
-                }
-            }
-        });
-    ">
+    x-data>
 
     <!-- Navigation -->
     <nav
@@ -96,26 +63,18 @@
                 <!-- Right Side: Theme Toggle + Auth Buttons -->
                 <div class="flex items-center space-x-4">
                     <!-- Theme Toggle Button -->
-                    <button @click="toggleDarkMode()"
+                    <button @click="$flux.appearance = $flux.appearance === 'dark' ? 'light' : 'dark'"
                         class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all duration-300 border border-slate-200 dark:border-slate-700"
-                        :aria-label="darkMode ? 'Switch to light mode' : 'Switch to dark mode'">
+                        :aria-label="$flux.appearance === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
                         <!-- Sun Icon (Light Mode) -->
-<<<<<<< HEAD
                         <svg x-show="$flux.appearance === 'dark'" class="w-5 h-5" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
-=======
-                        <svg x-show="darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
->>>>>>> a3e6a9836cc91af6c065c665e7d87ac9e628da4d
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                         <!-- Moon Icon (Dark Mode) -->
-<<<<<<< HEAD
                         <svg x-show="$flux.appearance !== 'dark'" class="w-5 h-5" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
-=======
-                        <svg x-show="!darkMode" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
->>>>>>> a3e6a9836cc91af6c065c665e7d87ac9e628da4d
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                         </svg>
