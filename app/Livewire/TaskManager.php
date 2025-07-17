@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
 use App\Models\Task;
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -10,14 +11,16 @@ use Illuminate\Support\Facades\Log;
 
 class TaskManager extends Component
 {
+
     // Props from Board component
     public $categories = [];
+    public $viewMode = 'board'; // Default view mode
     public $taskId;
     public $taskTitle = '';
     public $taskDescription = '';
-    public $categoryId;
+    public $categoryId; // Default to first category if available
     public $taskDeadline;
-    public $taskIsDone;
+    public $taskIsDone = 0; // Default to not done
     public $task;
     public $priorityLevelsInfo = [];
     public int $priorityLevel = 1; // Default priority level
@@ -43,11 +46,19 @@ class TaskManager extends Component
         'taskDeadline.required' => 'Veuillez définir une date limite pour la tâche.',
         'taskDeadline.date' => 'La date limite doit être une date valide.',
         'taskDeadline.after_or_equal' => 'La date limite doit être aujourd\'hui ou plus tard.',
+        'selectedLabels.array' => 'Les étiquettes sélectionnées doivent être un tableau.',
+        'selectedLabels.*.exists' => 'Une ou plusieurs étiquettes sélectionnées n\'existent pas.',
+        'taskUsers.array' => 'Les utilisateurs assignés doivent être un tableau.',
+        'taskUsers.*.id.exists' => 'Un ou plusieurs utilisateurs assignés n\'existent pas.',
+        'taskUsers.*.name.string' => 'Le nom de l\'utilisateur doit être une chaîne de caractères.',
+        'taskUsers.*.email.email' => 'L\'email de l\'utilisateur doit être une adresse email valide.',
     ];
 
-    public function mount($categories)
+    public function mount($categories, $viewMode = 'board')
     {
         $this->categories = $categories;
+        $this->viewMode = $viewMode;
+        // $this->categoryId = $this->categories[0]->id ?? null; // Default to first category if available
         $this->loadLabels(); // Load available labels when component mounts
         $this->loadPriorityLevels(); // Load priority levels when component mounts
         $this->loadAvailableUsers(); // Load project members
@@ -70,14 +81,23 @@ class TaskManager extends Component
     }
 
     #[On('openCreateTaskModal')]
-    public function openCreateTaskModal($categoryId)
+    public function openCreateTaskModal($categoryId = null, $deadline = null)
     {
         $this->resetForm();
         $this->isEditing = false;
         $this->showModal = true;
-        $this->categoryId = $categoryId;
-        // Set default deadline to one day from now for new tasks
-        $this->taskDeadline = now()->addDay()->format('Y-m-d\TH:i');
+
+        // Set category - prefer "À faire" system category as default
+        if ($categoryId === null || $categoryId === 'null') {
+            // Try to find "À faire" system category first
+            $todoCategory = collect($this->categories)->where('title', 'À faire')->where('is_system', true)->first();
+            $this->categoryId = $todoCategory ? $todoCategory->id : ($this->categories[0]->id ?? null);
+        } else {
+            $this->categoryId = $categoryId;
+        }
+
+        // Set deadline - use provided deadline or default to one day from now
+        $this->taskDeadline = $deadline ?: now()->addDay()->format('Y-m-d\TH:i');
     }
 
     #[On('openEditTaskModal')]
@@ -169,7 +189,6 @@ class TaskManager extends Component
         $this->dispatch('projectUpdated');
         session()->flash('success', 'Tâche mise à jour avec succès.');
         $this->resetForm();
-        $this->dispatch('$refresh'); // Refresh the component
     }
 
     #[On('deleteTask')]
@@ -178,33 +197,43 @@ class TaskManager extends Component
         try {
             $task = Task::find($taskId);
 
-            if ($task) {
-                // Store info before deletion
-                $taskTitle = $task->title;
-
-                // Close modal and reset form FIRST
-                $this->resetForm();
-
-                // Delete the task (labels automatically detached)
-                $task->delete();
-
-                // Success feedback
-                session()->flash('success', "Tâche \"{$taskTitle}\" supprimée avec succès.");
-
-                // Refresh the board
-                $this->dispatch('projectUpdated');
-                $this->redirect(route('project.board', $task->category->project_id));
-
-            } else {
-                // Task not found
-                $this->resetForm();
+            if (!$task) {
                 session()->flash('error', 'Tâche non trouvée.');
+                return;
             }
+
+            // Store info before deletion
+            $taskTitle = $task->title;
+
+            // First, reset UI state and close any modals
+            // $this->showModal = false;
+            // $this->isEditing = false;
+            // $this->taskId = null;
+            // $this->task = null;
+
+            // Reset form fields
+            $this->resetForm();
+
+            // Then delete the task
+            $task->delete();
+
+            // Success notification
+            session()->flash('success', "Tâche \"{$taskTitle}\" supprimée avec succès.");
+
+            // For calendar view, add a JavaScript redirect
+            if ($this->viewMode === 'calendar') {
+                // This will trigger a page reload only for calendar view
+                $this->dispatch('forceCalendarRefresh');
+            } else {
+                // Dispatch event to update the UI
+                $this->dispatch('projectUpdated');
+            }
+
 
         } catch (\Exception $e) {
             // Handle any unexpected errors
             $this->resetForm();
-            session()->flash('error', 'Erreur lors de la suppression de la tâche.');
+            session()->flash('error', 'Erreur lors de la suppression de la tâche: ' . $e->getMessage());
             Log::error('Task deletion error: ' . $e->getMessage());
         }
     }
@@ -212,14 +241,51 @@ class TaskManager extends Component
     #[On('toggleTaskDone')]
     public function toggleTaskDone($taskId)
     {
-        // Toggle the is_done status of the task
         $task = Task::find($taskId);
 
-        if ($task) {
-            $task->is_done = !$task->is_done;
-            $task->save();
-            $this->dispatch('projectUpdated');
+        if (!$task) {
+            session()->flash('error', 'Tâche non trouvée.');
+            return;
         }
+
+        // Toggle the is_done status
+        $task->is_done = !$task->is_done;
+
+        $project = $task->category->project;
+        // If task is being marked as done, move it to the "Terminé" category
+        if ($task->is_done) {
+            // Find the "Terminé" category that is marked as system category
+            $doneCategory = $project->categories()
+                ->where('title', 'Terminé')
+                ->where('is_system', true)
+                ->first();
+
+            // If "Terminé" category exists, move the task there
+            if ($doneCategory) {
+                $task->category_id = $doneCategory->id;
+            }
+        } else {
+            // If task is being unmarked as done, we could optionally move it back
+            // to a default category or keep it in the current category
+
+            // If task is being unmarked as done, move it back to "À faire" category
+            $todoCategory = $project->categories()
+                ->where('title', 'À faire')
+                ->where('is_system', true)
+                ->first();
+
+            if ($todoCategory) {
+                $task->category_id = $todoCategory->id;
+            }
+        }
+
+        $task->save();
+        $this->resetForm(); // Reset form after toggling task status
+        $this->dispatch('projectUpdated');
+
+        // Optional: Flash success message
+        $statusMessage = $task->is_done ? 'Tâche marquée comme terminée' : 'Tâche marquée comme non terminée';
+        session()->flash('success', $statusMessage);
     }
 
     // End CRUD operations
@@ -245,7 +311,7 @@ class TaskManager extends Component
 
         // Only apply the after_or_equal validation for new tasks
         if (!$this->isEditing) {
-            $rules['taskDeadline'] = 'required|date|after_or_equal:today';
+            $rules['taskDeadline'] = 'required|date';
         }
 
         $this->validate($rules);
@@ -271,9 +337,8 @@ class TaskManager extends Component
         // Reset modal state
         $this->isEditing = false;
         $this->showModal = false;
-
-        $this->dispatch('$refresh'); // Refresh the component
         $this->resetErrorBag();
+        $this->resetValidation();
     }
     public function toggleLabel($labelId)
     {
@@ -409,6 +474,14 @@ class TaskManager extends Component
     {
         // Hide dropdown after a short delay to allow for clicks
         $this->showUserDropdown = false;
+    }
+
+    public function updatedTaskIsDone()
+    {
+        // This method will be called automatically when taskIsDone property changes
+        if ($this->isEditing && $this->taskId) {
+            $this->toggleTaskDone($this->taskId);
+        }
     }
 
     /**

@@ -1,331 +1,255 @@
-<div class="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
-    <!-- Flash Messages -->
-    @include('livewire.flash-messages')
-
-    <!-- Refined Header -->
+<div
+    class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 transition-colors duration-300">
+    <!-- Compact Header -->
     <header
-        class="sticky top-0 z-40 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        class="sticky top-0 z-40 bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60">
+        <div class="max-w-full mx-auto px-4 lg:px-6">
             <div class="flex items-center justify-between h-16">
                 <!-- Navigation -->
-                <nav class="flex items-center">
+                <nav class="flex items-center flex-1 min-w-0">
                     <a href="{{ route('dashboard') }}"
-                        class="group flex items-center text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors duration-200">
+                        class="group flex items-center text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300"
+                        wire:navigate>
                         <div
-                            class="p-2 rounded-md bg-slate-100 dark:bg-slate-700 group-hover:bg-slate-200 dark:group-hover:bg-slate-600 transition-colors mr-3">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="p-2 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/50 dark:to-indigo-900/50 group-hover:scale-110 transition-transform duration-300 mr-3">
+                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
                         </div>
-                        <span class="text-sm font-medium">Retour au Tableau de Bord</span>
+                        <h1
+                            class="text-lg lg:text-xl font-bold bg-gradient-to-r from-slate-900 to-blue-900 dark:from-white dark:to-blue-100 bg-clip-text text-transparent truncate">
+                            {{ $project->name }}
+                        </h1>
                     </a>
                 </nav>
 
-                <!-- View Mode Toggle -->
-                <div class="flex items-center bg-slate-100 dark:bg-slate-700 rounded-lg p-1">
-                    <button wire:click="$set('viewMode','board')"
-                        class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {{ $viewMode === 'board' ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }}">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <!-- Action Buttons - Always Visible -->
+                <div class="flex items-center gap-2 lg:gap-3">
+                    <!-- Filters Toggle -->
+                    <button x-data="{ open: false }" @click="open = !open; $dispatch('toggle-filters')"
+                        class="group flex items-center px-3 py-2 lg:px-4 lg:py-2 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-600 transition-all duration-300">
+                        <svg class="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />
+                                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
                         </svg>
-                        Tableau
+                        <span class="hidden sm:block text-sm font-medium ml-2">Filtres</span>
                     </button>
-                    <button wire:click="$set('viewMode','list')"
-                        class="flex items-center px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {{ $viewMode === 'list' ? 'bg-white dark:bg-slate-600 text-slate-900 dark:text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white' }}">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                    <!-- Labels Button -->
+                    <button wire:click="$dispatch('openLabelModal')"
+                        class="group flex items-center px-3 py-2 lg:px-4 lg:py-2 bg-slate-900 hover:from-emerald-600 hover:to-teal-600 text-white rounded-xl transition-all duration-300 hover:scale-105">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                         </svg>
-                        Liste
+                        <span class="hidden sm:block text-sm font-medium ml-2">Étiquettes</span>
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-6 lg:px-8 py-8">
-        <!-- Project Header -->
-        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-8 mb-8">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                <div class="space-y-2">
-                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
-                        {{ $project->name }}
-                    </h1>
-                    <p class="text-slate-600 dark:text-slate-400">Organisez et suivez les tâches de votre projet</p>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-wrap gap-3">
-                    <button wire:click="$dispatch('openLabelModal')"
-                        class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                        </svg>
-                        Étiquettes
-                    </button>
-                    <button wire:click="openCreateCategoryModal"
-                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-lg transition-colors duration-200">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        Nouvelle Catégorie
-                    </button>
-                </div>
-            </div>
+    <!-- Floating View Mode Selector -->
+    <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-30">
+        <div
+            class="flex items-center bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border border-slate-200/60 dark:border-slate-700/60 rounded-2xl p-2 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50">
+            <button wire:click="$set('viewMode','board')"
+                class="flex flex-col items-center px-4 py-3 text-xs font-medium rounded-xl transition-all duration-200 {{ $viewMode === 'board' ? 'bg-slate-900 text-white shadow-lg shadow-blue-500/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700' }}">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h2a2 2 0 002-2z" />
+                </svg>
+                <span>Tableau</span>
+            </button>
+            <button wire:click="$set('viewMode','list')"
+                class="flex flex-col items-center px-4 py-3 text-xs font-medium rounded-xl transition-all duration-200 {{ $viewMode === 'list' ? 'bg-slate-900 text-white shadow-lg shadow-blue-500/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700' }}">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <span>Liste</span>
+            </button>
+            <button wire:click="$set('viewMode','calendar')"
+                class="flex flex-col items-center px-4 py-3 text-xs font-medium rounded-xl transition-all duration-200 {{ $viewMode === 'calendar' ? 'bg-slate-900 text-white shadow-lg shadow-blue-500/25' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700' }}">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <rect x="3" y="8" width="18" height="13" rx="2" stroke-width="2" stroke="currentColor"
+                        fill="none" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 2v4M8 2v4M3 10h18" />
+                </svg>
+                <span>Calendrier</span>
+            </button>
         </div>
+    </div>
 
-        <!-- Label Filters -->
-        @if($labels->count() > 0)
-        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 mb-8">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Filtrer par Étiquettes</h3>
-                @if($filterByLabel)
-                <button wire:click="clearLabelFilter"
-                    class="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors">
-                    Effacer le filtre
-                </button>
-                @endif
-            </div>
+    <!-- Flash Messages -->
+    @include('livewire.flash-messages')
 
-            <div class="flex flex-wrap gap-2">
-                <!-- All Tasks Button -->
-                <button wire:click="clearLabelFilter"
-                    class="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg transition-colors duration-200
-                    {{ !$filterByLabel ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600' }}">
-                    Toutes les Tâches
-                    <span class="ml-2 px-1.5 py-0.5 bg-white dark:bg-slate-600 rounded text-xs">
-                        {{ collect($tasksByCategory)->flatten()->count() }}
-                    </span>
-                </button>
+    <!-- Collapsible Filters Panel -->
+    <div x-data="{ open: false }" @toggle-filters.window="open = !open" x-show="open"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-y-4"
+        x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-4"
+        class="bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-700/60 shadow-lg">
 
-                <!-- Label Filter Buttons -->
-                @foreach($labels as $label)
-                @php
-                $labelTaskCount = collect($tasksByCategory)->flatten()->filter(function ($task) use ($label) {
-                return $task->labels->contains('id', $label->id);
-                })->count();
-                @endphp
-
-                @if($labelTaskCount > 0)
-                <button wire:click="$set('filterByLabel', {{ $label->id }})" class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white rounded-lg transition-all duration-200 hover:opacity-90
-                    {{ $filterByLabel === $label->id ? 'ring-2 ring-offset-2 ring-white dark:ring-slate-800' : '' }}"
-                    style="background-color: {{ $label->color }}">
-                    {{ $label->name }}
-                    <span class="ml-2 px-1.5 py-0.5 bg-black/20 rounded text-xs">
-                        {{ $labelTaskCount }}
-                    </span>
-                </button>
-                @endif
-                @endforeach
-            </div>
-
-            <!-- Active Filter Indicator -->
-            @if($filterByLabel)
-            @php
-            $activeLabel = $labels->find($filterByLabel);
-            @endphp
-            <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                <div class="flex items-center gap-2">
-                    <span class="text-sm text-slate-600 dark:text-slate-400">Affichage :</span>
-                    <span class="inline-flex items-center px-2 py-1 text-sm font-medium text-white rounded"
-                        style="background-color: {{ $activeLabel->color }}">
-                        {{ $activeLabel->name }}
-                    </span>
-                    <span class="text-sm text-slate-500 dark:text-slate-400">tâches uniquement</span>
+        <div class="max-w-full mx-auto px-6 py-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <!-- Search -->
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" wire:model.live.debounce.300ms="searchTerm" placeholder="Rechercher..."
+                        class="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300" />
                 </div>
-            </div>
-            @endif
-        </div>
-        @endif
 
-        <!-- Content Area -->
-        @if ($viewMode === 'list')
-        <livewire:list-view :project="$project" />
-        @else
-        <!-- Board View -->
-        <div class="overflow-x-auto">
-            <div class="flex gap-6 pb-6 min-h-[calc(100vh-20rem)]">
-                @foreach ($categories as $category)
-                <div class="flex-shrink-0 w-80">
-                    <!-- Category Column -->
-                    <div
-                        class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 h-fit">
-                        <!-- Category Header -->
-                        <div
-                            class="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-700">
-                            <h2 class="text-lg font-semibold text-slate-900 dark:text-white">{{ $category->title }}</h2>
-
-                            <!-- Category Menu -->
-                            <div class="relative" x-data="{ open: false }">
-                                <button @click="open = !open"
-                                    class="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                                    <svg class="w-5 h-5 text-slate-500 dark:text-slate-400" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-                                    </svg>
-                                </button>
-
-                                <div x-show="open" @click.outside="open = false" x-transition
-                                    class="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 z-50">
-                                    <div class="py-1">
-                                        <button wire:click="openEditCategoryModal({{ $category->id }})"
-                                            class="w-full flex items-center px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                            Modifier la Catégorie
-                                        </button>
-                                        <button wire:click="deleteCategory({{ $category->id }})"
-                                            class="w-full flex items-center px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
-                                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                            Supprimer la Catégorie
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Tasks Container -->
-                        <div class="p-4 space-y-3 max-h-[calc(100vh-16rem)] overflow-y-auto">
-                            @forelse($category->tasks as $task)
-                            <!-- Task Card -->
-                            <div wire:click="$dispatch('openEditTaskModal', { taskId: {{ $task->id }} })"
-                                class="group p-4 rounded-lg border cursor-pointer transition-all duration-200
-                                {{ $task->is_done == 1 ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800' : 'bg-slate-50 dark:bg-slate-700/50 border-slate-200 dark:border-slate-600 hover:bg-white dark:hover:bg-slate-700 hover:border-blue-300 dark:hover:border-blue-500' }}">
-
-                                <!-- Task Labels -->
-                                @if($task->labels->count() > 0)
-                                <div class="flex flex-wrap gap-1 mb-3">
-                                    @foreach($task->labels as $label)
-                                    <span
-                                        class="inline-flex items-center px-2 py-0.5 text-xs font-medium text-white rounded"
-                                        style="background-color: {{ $label->color }}">
-                                        {{ $label->name }}
-                                    </span>
-                                    @endforeach
-                                </div>
-                                @endif
-
-                                <!-- Task Header -->
-                                <div class="flex items-start justify-between mb-2">
-                                    <h3 class="font-medium text-slate-900 dark:text-white {{ $task->is_done ? 'line-through opacity-75' : '' }}
-                                        {{ $task->isOverdue() ? 'text-red-600 dark:text-red-400' : '' }}">
-                                        {{ $task->title }}
-                                    </h3>
-
-                                    <!-- Task Completion Checkbox -->
-                                    <div class="flex-shrink-0 ml-3">
-                                        <input type="checkbox"
-                                            wire:click.stop="$dispatch('toggleTaskDone', {taskId: {{ $task->id }}})"
-                                            {{ $task->is_done ? 'checked' : '' }}
-                                            class="w-4 h-4 text-green-600 bg-white dark:bg-slate-600 border-slate-300 dark:border-slate-500 rounded focus:ring-green-500 dark:focus:ring-green-400">
-                                    </div>
-                                </div>
-
-                                <!-- Task Description -->
-                                @if($task->description)
-                                <p
-                                    class="text-sm text-slate-600 dark:text-slate-400 mb-3 {{ $task->is_done ? 'line-through opacity-75' : '' }}">
-                                    {{ Str::limit($task->description, 80) }}
-                                </p>
-                                @endif
-
-                                <!-- Task Meta -->
-                                <div class="flex items-center justify-between text-xs">
-                                    <div class="flex items-center gap-2">
-                                        <!-- Priority Badge -->
-                                        @if($task->priority_level > 1)
-                                        <span
-                                            class="px-2 py-1 rounded font-medium
-                                            {{ $task->priority_level === 4 ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300' : '' }}
-                                            {{ $task->priority_level === 3 ? 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300' : '' }}
-                                            {{ $task->priority_level === 2 ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300' : '' }}">
-                                            {{ $task->priority_text }}
-                                        </span>
-                                        @endif
-
-                                        <!-- Team Size -->
-                                        @if($task->users->count() > 1)
-                                        <span
-                                            class="flex items-center px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded font-medium">
-                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                            </svg>
-                                            {{ $task->users->count() }}
-                                        </span>
-                                        @endif
-                                    </div>
-
-                                    <!-- Deadline -->
-                                    @if($task->deadline)
-                                    <div
-                                        class="flex items-center gap-1 {{ $task->isOverdue() ? 'text-red-600 dark:text-red-400' : 'text-slate-500 dark:text-slate-400' }}">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        <span>{{ $task->deadline->format('j M') }}</span>
-
-                                        @if($task->isOverdue())
-                                        <span class="px-1 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded">
-                                            {{ $task->getStatusAttribute() }}
-                                        </span>
-                                        @endif
-
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                            @empty
-                            <!-- Empty State -->
-                            <div class="text-center py-12 text-slate-400 dark:text-slate-500">
-                                <svg class="w-8 h-8 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                                <p class="text-sm font-medium">Aucune tâche</p>
-                                <p class="text-xs">Ajoutez votre première tâche</p>
-                            </div>
-                            @endforelse
-
-                            <!-- Add Task Button -->
-                            <button wire:click="$dispatch('openCreateTaskModal', {categoryId: {{ $category->id }}})"
-                                class="w-full p-3 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-slate-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all duration-200 group">
-                                <div class="flex items-center justify-center">
-                                    <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" fill="none"
-                                        stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                    <span class="text-sm font-medium">Ajouter une Tâche</span>
-                                </div>
-                            </button>
-                        </div>
+                <!-- Category Filter -->
+                <div class="relative">
+                    <select wire:model.live="selectedCategory"
+                        class="w-full px-4 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 appearance-none">
+                        <option value="">Toutes les catégories</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}">{{ $category->title }}</option>
+                        @endforeach
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
                     </div>
                 </div>
-                @endforeach
+
+                <!-- Sort Options -->
+                <div class="relative">
+                    <select wire:model.live="sortBy"
+                        class="w-full px-4 py-2.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-300 appearance-none">
+                        <option value="created_at">Date de création</option>
+                        <option value="title">Titre</option>
+                        <option value="deadline">Échéance</option>
+                        <option value="priority">Priorité</option>
+                        <option value="status">Statut</option>
+                    </select>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Pending Only -->
+                <div class="flex items-center">
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" wire:model.live="showPendingOnly"
+                            class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500" />
+                        <span class="ml-2 text-sm text-slate-700 dark:text-slate-300">En cours uniquement</span>
+                    </label>
+                </div>
+
+                <!-- Clear Filters -->
+                <div class="flex items-center justify-end">
+                    @if($searchTerm || $selectedCategory || $showPendingOnly || !empty($selectedLabels))
+                        <button wire:click="clearFilters"
+                            class="flex items-center px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all duration-300">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Effacer
+                        </button>
+                    @endif
+                </div>
             </div>
+
+            <!-- Label Filters -->
+            @if($labels->count() > 0)
+                <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-600">
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($labels as $label)
+                            @php
+                                $isSelected = in_array($label->id, $selectedLabels);
+                            @endphp
+                            <button wire:click="toggleLabel({{ $label->id }})"
+                                class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg transition-all duration-300 {{ $isSelected ? 'ring-2 ring-blue-500/50' : 'hover:scale-105' }}"
+                                style="background: {{ $label->color }}20; color: {{ $label->color }}; border: 1px solid {{ $label->color }}40;">
+                                <div class="w-2 h-2 rounded-full mr-1.5" style="background: {{ $label->color }};"></div>
+                                {{ $label->name }}
+                                @if($isSelected)
+                                    <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                @endif
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+        <!-- Content Area -->
+        @if ($viewMode === 'list')
+            <!-- List View -->
+            @include('components.task-list-view')
+        @elseif ($viewMode === 'calendar')
+            <!-- Calendar View -->
+            @include('components.task-calendar-view')
+
+        @else
+            <!-- Board View -->
+            @include('components.task-board-view')
         @endif
+
     </main>
 
     <!-- Modals -->
     @include('livewire.category-modal')
-    <livewire:task-manager :categories="$categories" />
+    <livewire:task-manager :categories="$categories" :viewMode="$viewMode" />
     <livewire:label-manager :project="$project" />
 </div>
+
+<script>
+    document.addEventListener('livewire:init', () => {
+        // Handle task deletion to prevent 404 errors
+        Livewire.on('projectUpdated', () => {
+            // Force close any task modals
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (window.Alpine && modal.__x) {
+                    // For Alpine.js modals
+                    modal.__x.$data.showModal = false;
+                }
+            });
+
+            // Remove any references to deleted tasks in the DOM
+            const taskElements = document.querySelectorAll('[data-task-id]');
+            taskElements.forEach(el => {
+                // Check if this task still exists in the current data
+                const taskId = el.getAttribute('data-task-id');
+                if (taskId) {
+                    const taskExists = false;
+                    // If not found in data, remove from DOM
+                    if (!taskExists) {
+                        el.remove();
+                    }
+                }
+            });
+        });
+    });
+
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('forceCalendarRefresh', () => {
+            // Wait a moment to allow Livewire operations to complete
+            setTimeout(() => {
+                window.location.reload();
+            }, 200);
+        });
+    });
+</script>

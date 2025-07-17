@@ -153,8 +153,6 @@ class Task extends Model
         return $this->labels()->where('labels.id', $labelId)->exists();
     }
 
-
-
     /**
      * Get labels as a comma-separated string.
      */

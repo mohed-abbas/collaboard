@@ -2,250 +2,606 @@
 
 namespace App\Livewire;
 
-use App\Models\Category;
-use Livewire\Component;
 use App\Models\Project;
-use Livewire\Attributes\On;
+use App\Models\Category;
 use App\Models\Task;
+use Livewire\Component;
+use Livewire\Attributes\On;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class Board extends Component
 {
-    public $viewMode = 'board'; // Default view mode
     public $project;
     public $categories;
-    public $tasks = [];
-    public $tasksByCategory = [];
+    public $labels;
+    public $filteredTasks;
+    public $viewMode = 'board'; // board, list, or calendar
+
+    // Filtering properties
+    public $selectedCategory = '';
+    public $searchTerm = '';
+    public $showPendingOnly = false;
+    public $selectedLabels = []; // Array of selected label IDs
+
+    // Sorting properties
+    public $sortBy = 'created_at';
+    public $sortDirection = 'desc';
+
+    // Category management
     public $showCategoryModal = false;
-    public $showTaskModal = false;
-    public $isEditing = false;
+    public $categoryId;
     public $categoryTitle = '';
-    public $labels = []; // Variable pour stocker les labels du projet
-    public $editingCategoryId; // Variable pour stocker l'ID en cours d'édition
-    public $filterByLabel = null; // Variable pour filtrer les tâches par label
+    public $categoryColor = '#060436';
+    public $isEditingCategory = false;
+    public $isEditing = false;
 
+    // Calendar view properties
+    public $calendarMonth;
+    public $calendarYear;
+    public $calendarView = 'month'; // month, week, day
+    public $calendarDays = [];
+    public $calendarWeeks = [];
 
-    protected $rules = [
-        'categoryTitle' => 'required|string|max:50|min:3',
-    ];
+    // Drag-and-drop properties
+    public $draggedTask = null; // Task being dragged
+    public $draggedCategory = null; // Category being dragged
 
 
     protected $messages = [
-        'categoryTitle.required' => 'Le titre de la catégorie est requis.',
-        'categoryTitle.string' => 'Le titre de la catégorie doit être une chaîne de caractères.',
+        'categoryTitle.required' => 'Le titre de la catégorie est obligatoire.',
+        'categoryColor.required' => 'La couleur de la catégorie est obligatoire.',
         'categoryTitle.max' => 'Le titre de la catégorie ne peut pas dépasser 255 caractères.',
+        'categoryColor.regex' => 'La couleur de la catégorie doit être un code hexadécimal valide.',
+        'searchTerm.max' => 'Le terme de recherche ne peut pas dépasser 255 caractères.',
+        'selectedLabels.array' => 'Les étiquettes sélectionnées doivent être un tableau.',
+        'selectedLabels.*.exists' => 'Une ou plusieurs étiquettes sélectionnées n\'existent pas.',
+        'selectedCategory.exists' => 'La catégorie sélectionnée n\'existe pas.',
+        'sortBy.in' => 'Le critère de tri sélectionné n\'est pas valide.',
+        'sortDirection.in' => 'La direction de tri sélectionnée n\'est pas valide.',
+        'categoryTitle.title' => 'Le titre de la catégorie ne peut pas être "Terminé" car c\'est une catégorie système.',
     ];
 
-
-    // MODIFICATION: Méthode pour charger le tableau avec les catégories, tâches et labels
-    public function loadBoard()
+    public function mount($project)
     {
-        $query = Category::where('project_id', $this->project->id)
-            ->with([
-                'tasks' => function ($query) {
-                    $query->with(['labels', 'users'])->orderBy('position');
+        $this->loadProject($project);
+        $this->viewMode = session('board_view_mode', 'board'); // Default to 'board' view mode
+        $this->applyFilters();
 
-                    if ($this->filterByLabel) {
-                        $query->whereHas('labels', function ($labelQuery) {
-                            $labelQuery->where('labels.id', $this->filterByLabel);
-                        });
+        // If calendar view, generate the calendar data
+        if ($this->viewMode === 'calendar') {
+            // Initialize calendar with current month/year
+            $now = Carbon::now();
+            $this->calendarMonth = $now->month;
+            $this->calendarYear = $now->year;
+        }
+    }
+
+    public function updatedViewMode()
+    {
+        session(['board_view_mode' => $this->viewMode]);
+
+        // Generate calendar data when switching to calendar view
+        if ($this->viewMode === 'calendar') {
+            if (!$this->calendarMonth || !$this->calendarYear) {
+                $now = Carbon::now();
+                $this->calendarMonth = $now->month;
+                $this->calendarYear = $now->year;
+            }
+            $this->generateCalendarData();
+        }
+
+        $this->applyFilters();
+    }
+
+    /**
+     * Generate calendar data based on the selected month/year
+     */
+    public function generateCalendarData()
+    {
+        $this->calendarDays = [];
+        $this->calendarWeeks = [];
+
+        $date = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1);
+        $daysInMonth = $date->daysInMonth;
+
+        // Get the first day of the month
+        $firstDay = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1);
+        // Get day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        $dayOfWeek = $firstDay->dayOfWeek;
+
+        // Adjust for Monday as first day of week
+        $dayOfWeek = $dayOfWeek == 0 ? 6 : $dayOfWeek - 1;
+
+        // Calculate previous month's spillover days
+        $previousMonth = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->subMonth();
+        $daysInPreviousMonth = $previousMonth->daysInMonth;
+
+        // Create calendar grid with previous month spillover
+        $day = 1;
+        $nextMonthDay = 1;
+
+        // Build 6-week calendar (42 days) to ensure consistent height
+        for ($week = 0; $week < 6; $week++) {
+            $this->calendarWeeks[$week] = [];
+
+            for ($i = 0; $i < 7; $i++) {
+                if ($week === 0 && $i < $dayOfWeek) {
+                    // Previous month days
+                    $calendarDay = [
+                        'day' => $daysInPreviousMonth - ($dayOfWeek - $i) + 1,
+                        'month' => $previousMonth->month,
+                        'year' => $previousMonth->year,
+                        'isCurrentMonth' => false,
+                        'date' => Carbon::createFromDate($previousMonth->year, $previousMonth->month, $daysInPreviousMonth - ($dayOfWeek - $i) + 1)->format('Y-m-d'),
+                        'tasks' => []
+                    ];
+                } elseif ($day > $daysInMonth) {
+                    // Next month days
+                    $nextMonth = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->addMonth();
+                    $calendarDay = [
+                        'day' => $nextMonthDay,
+                        'month' => $nextMonth->month,
+                        'year' => $nextMonth->year,
+                        'isCurrentMonth' => false,
+                        'date' => Carbon::createFromDate($nextMonth->year, $nextMonth->month, $nextMonthDay)->format('Y-m-d'),
+                        'tasks' => []
+                    ];
+                    $nextMonthDay++;
+                } else {
+                    // Current month days
+                    $calendarDay = [
+                        'day' => $day,
+                        'month' => $this->calendarMonth,
+                        'year' => $this->calendarYear,
+                        'isCurrentMonth' => true,
+                        'date' => Carbon::createFromDate($this->calendarYear, $this->calendarMonth, $day)->format('Y-m-d'),
+                        'tasks' => []
+                    ];
+                    $day++;
+                }
+
+                // Add day to the calendar
+                $this->calendarWeeks[$week][$i] = $calendarDay;
+                $this->calendarDays[] = $calendarDay;
+            }
+        }
+
+        // Assign tasks to calendar days based on deadline
+        $this->assignTasksToCalendar();
+    }
+
+    /**
+     * Assign tasks to calendar days based on task deadline
+     */
+    private function assignTasksToCalendar()
+    {
+        // Clear existing tasks from calendar days first
+        foreach ($this->calendarWeeks as $weekIndex => $week) {
+            foreach ($week as $dayIndex => $day) {
+                $this->calendarWeeks[$weekIndex][$dayIndex]['tasks'] = [];
+            }
+        }
+
+        // Reset all calendar days tasks arrays
+        foreach ($this->calendarDays as $index => $day) {
+            $this->calendarDays[$index]['tasks'] = [];
+        }
+
+        // Then assign current tasks - with safety checks
+        foreach ($this->filteredTasks as $task) {
+            // Skip any null or invalid tasks
+            if (!$task || !$task->exists || empty($task->deadline)) {
+                continue;
+            }
+
+            try {
+                $deadline = Carbon::parse($task->deadline)->format('Y-m-d');
+
+                // Find the matching calendar day
+                foreach ($this->calendarWeeks as $weekIndex => $week) {
+                    foreach ($week as $dayIndex => $day) {
+                        if ($day['date'] === $deadline) {
+                            $this->calendarWeeks[$weekIndex][$dayIndex]['tasks'][] = $task;
+                        }
                     }
                 }
-            ]);
 
-        $this->categories = $query->orderBy('position')->get();
-
-        $this->tasksByCategory = [];
-        $this->tasks = [];
-
-        // Organisation des tâches par catégorie
-        foreach ($this->categories as $category) {
-            $this->tasksByCategory[$category->id] = $category->tasks;
-            // Ajout de toutes les tâches dans le tableau global
-            foreach ($category->tasks as $task) {
-                $this->tasks[] = $task;
+                // Also update calendarDays for consistency
+                foreach ($this->calendarDays as $index => $day) {
+                    if ($day['date'] === $deadline) {
+                        $this->calendarDays[$index]['tasks'][] = $task;
+                    }
+                }
+            } catch (\Exception $e) {
+                // Log any parsing errors but don't break the calendar
+                \Illuminate\Support\Facades\Log::error('Calendar task assignment error: ' . $e->getMessage());
             }
         }
+    }
 
-        // Initialisation des tâches pour chaque catégorie (au cas où elle serait vide)
-        foreach ($this->categories as $category) {
-            if (!isset($this->tasksByCategory[$category->id])) {
-                $this->tasksByCategory[$category->id] = collect();
+    /**
+     * Change calendar to previous month
+     */
+    public function previousMonth()
+    {
+        $date = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->subMonth();
+        $this->calendarMonth = $date->month;
+        $this->calendarYear = $date->year;
+        $this->generateCalendarData();
+    }
+
+    /**
+     * Change calendar to next month
+     */
+    public function nextMonth()
+    {
+        $date = Carbon::createFromDate($this->calendarYear, $this->calendarMonth, 1)->addMonth();
+        $this->calendarMonth = $date->month;
+        $this->calendarYear = $date->year;
+        $this->generateCalendarData();
+    }
+
+    /**
+     * Set calendar to current month
+     */
+    public function currentMonth()
+    {
+        $now = Carbon::now();
+        $this->calendarMonth = $now->month;
+        $this->calendarYear = $now->year;
+        $this->generateCalendarData();
+    }
+
+
+    // In your Board component where you load the project
+    public function syncAllTasksStatus()
+    {
+        foreach ($this->project->tasks as $task) {
+            $isInDoneCategory = $task->category->title === 'Terminé' && $task->category->is_system;
+
+            if ($task->is_done !== $isInDoneCategory) {
+                $task->update(['is_done' => $isInDoneCategory]);
             }
         }
-
-        // Charger les labels du projet
-        $this->loadLabels();
     }
 
-
-    // Add listener for filter changes
-    public function updatedFilterByLabel()
+    public function loadProject($project)
     {
-        $this->loadBoard();
-    }
-
-    public function clearLabelFilter()
-    {
-        $this->filterByLabel = null;
-        $this->loadBoard();
-    }
-
-
-    // MODIFICATION: Nouvelle méthode pour charger les labels
-    public function loadLabels()
-    {
+        $this->project = Project::findOrFail(is_object($project) ? $project->id : $project);
+        $this->categories = $this->project->categories()->with([
+            'tasks' => function ($query) {
+                $query->with(['labels', 'users', 'category']);
+            }
+        ])->orderBy('position', 'asc')->get();
         $this->labels = $this->project->labels()->orderBy('name')->get();
+        $this->syncAllTasksStatus();
     }
 
-    // MODIFICATION: Écouteur pour les mises à jour de labels
-    #[On('labelsUpdated')]
-    public function refreshLabels()
+    // Auto-trigger filtering when properties change
+    public function updatedSelectedCategory()
     {
-        $this->loadLabels();
-        $this->loadBoard(); // Recharger le tableau pour avoir les labels mis à jour sur les tâches
+        $this->applyFilters();
     }
 
-    // Méthode pour réinitialiser le formulaire modal
-    public function resetForm()
+    public function updatedSearchTerm()
     {
-        $this->isEditing = false;
-        $this->showCategoryModal = false;
-        $this->showTaskModal = false;
-        $this->reset(['categoryTitle', 'editingCategoryId']);
+        $this->applyFilters();
     }
 
-    // Flux de création de catégorie - Ouverture du modal
+    public function updatedShowPendingOnly()
+    {
+        $this->applyFilters();
+    }
+
+    public function updatedSelectedLabels()
+    {
+        $this->applyFilters();
+    }
+
+    public function applyFilters()
+    {
+        $query = $this->project->tasks()->with(['category', 'labels', 'users']);
+
+        // Apply category filter
+        if ($this->selectedCategory !== '' && $this->selectedCategory !== 'all') {
+            $query->where('category_id', $this->selectedCategory);
+        }
+
+        // Apply search term filter
+        if (!empty($this->searchTerm)) {
+            $query->where(function ($q) {
+                $q->where('tasks.title', 'like', '%' . $this->searchTerm . '%')
+                    ->orWhere('tasks.description', 'like', '%' . $this->searchTerm . '%');
+            });
+        }
+
+        // Apply pending only filter
+        if ($this->showPendingOnly) {
+            $query->where('is_done', false);
+        }
+
+        // Apply label filters
+        if (!empty($this->selectedLabels)) {
+            $query->whereHas('labels', function ($q) {
+                $q->whereIn('labels.id', $this->selectedLabels);
+            });
+        }
+
+        // Apply sorting
+        switch ($this->sortBy) {
+            case 'title':
+                $query->orderBy('tasks.title', $this->sortDirection);
+                break;
+            case 'deadline':
+                $query->orderBy('deadline', $this->sortDirection);
+                break;
+            case 'priority':
+                $query->orderBy('priority_level', $this->sortDirection);
+                break;
+            case 'status':
+                $query->orderBy('is_done', $this->sortDirection);
+                break;
+            default:
+                $query->orderBy('created_at', $this->sortDirection);
+        }
+
+        $this->filteredTasks = $query->get();
+
+        // Regenerate calendar if in calendar view
+        if ($this->viewMode === 'calendar') {
+            $this->generateCalendarData();
+        }
+    }
+
+    public function sortTasks($sortBy)
+    {
+        if ($this->sortBy === $sortBy) {
+            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        } else {
+            $this->sortBy = $sortBy;
+            $this->sortDirection = 'asc';
+        }
+        $this->applyFilters();
+    }
+
+    public function toggleLabel($labelId)
+    {
+        if (in_array($labelId, $this->selectedLabels)) {
+            $this->selectedLabels = array_diff($this->selectedLabels, [$labelId]);
+        } else {
+            $this->selectedLabels[] = $labelId;
+        }
+        $this->applyFilters();
+    }
+
+    public function clearFilters()
+    {
+        $this->selectedCategory = '';
+        $this->searchTerm = '';
+        $this->showPendingOnly = false;
+        $this->selectedLabels = [];
+        $this->sortBy = 'created_at';
+        $this->sortDirection = 'desc';
+        $this->applyFilters();
+    }
+
+    public function clearLabelFilters()
+    {
+        $this->selectedLabels = [];
+        $this->applyFilters();
+    }
+
+    // Category Management Methods
     public function openCreateCategoryModal()
     {
-        $this->resetForm();
+        $this->resetCategoryForm();
+        $this->isEditingCategory = false;
         $this->showCategoryModal = true;
     }
 
-    // Flux de création de catégorie - Création effective
-    public function createCategory()
-    {
-        $this->validate();
-
-        // Déterminer la position pour la nouvelle catégorie
-        $maxPosition = Category::where('project_id', $this->project->id)->max('position') ?? 0;
-
-        $category = Category::create([
-            'title' => $this->categoryTitle,
-            'project_id' => $this->project->id,
-            'position' => $maxPosition + 1,
-        ]);
-
-        $this->resetForm();
-        $this->loadBoard();
-
-        session()->flash('success', 'Catégorie créée avec succès.');
-    }
-
-    // Flux d'édition de catégorie - Ouverture du modal d'édition
     public function openEditCategoryModal($categoryId)
     {
-        $this->resetForm();
-        $this->isEditing = true;
-        $this->editingCategoryId = $categoryId;
-        $category = $this->categories->find($categoryId);
+        $category = Category::find($categoryId);
         if ($category) {
+            $this->categoryId = $categoryId;
             $this->categoryTitle = $category->title;
+            $this->categoryColor = $category->color;
+            $this->isEditingCategory = true;
             $this->showCategoryModal = true;
         }
     }
 
-    // Flux d'édition de catégorie - Mise à jour effective
-    public function updateCategory()
+    public function saveCategory()
     {
-        $this->validate();
+        $this->validate([
+            'categoryTitle' => 'required|string|max:255',
+            'categoryColor' => 'required|string',
+        ]);
 
-        $category = Category::find($this->editingCategoryId);
-        if ($category) {
-            $category->update([
-                'title' => $this->categoryTitle
+        if ($this->isEditingCategory) {
+            $category = Category::find($this->categoryId);
+            if ($category->is_system && (strtoupper($category->title) === 'TERMINÉ' || strtoupper($category->title) === 'À FAIRE')) {
+                $this->addError('categoryTitle', $this->messages['categoryTitle.title']);
+                return;
+            }
+
+            if ($category) {
+                $category->update([
+                    'title' => $this->categoryTitle,
+                    'color' => $this->categoryColor,
+                ]);
+                session()->flash('success', 'Catégorie mise à jour avec succès.');
+            }
+        } else {
+            Category::create([
+                'title' => $this->categoryTitle,
+                'color' => $this->categoryColor,
+                'project_id' => $this->project->id,
+                'position' => $this->categories->count() + 1, // Position for drag-and-drop sorting
             ]);
-
-            session()->flash('success', 'Catégorie mise à jour avec succès.');
+            session()->flash('success', 'Catégorie créée avec succès.');
         }
 
-        $this->resetForm();
-        $this->loadBoard();
+        $this->resetCategoryForm();
+        $this->projectUpdated();
     }
 
-    // Flux de suppression de catégorie - Suppression en cascade des tâches
     public function deleteCategory($categoryId)
     {
         $category = Category::find($categoryId);
-        if ($category) {
-            $tasksCount = $category->tasks->count();
-
-            // Suppression d'abord de toutes les tâches de cette catégorie
-            // Les labels seront automatiquement détachés grâce aux contraintes de clé étrangère
-            Task::where('category_id', $categoryId)->delete();
-
-            // Puis suppression de la catégorie elle-même
+        if ($category && $category->tasks()->count() === 0) {
             $category->delete();
-            $this->loadBoard();
-
-            session()->flash('success', "Catégorie supprimée avec succès ($tasksCount tâche(s) supprimée(s)).");
+            session()->flash('success', 'Catégorie supprimée avec succès.');
+            $this->projectUpdated();
+        } else {
+            session()->flash('error', 'Impossible de supprimer une catégorie contenant des tâches.');
         }
     }
 
-    // MODIFICATION: Nouvelle méthode pour filtrer les tâches par label
-    public function getTasksByLabel($labelId)
+    private function resetCategoryForm()
     {
-        return $this->tasks->filter(function ($task) use ($labelId) {
-            return $task->labels->contains('id', $labelId);
-        });
+        $this->categoryId = null;
+        $this->categoryTitle = '';
+        $this->categoryColor = '#060436'; // Default color
+        $this->showCategoryModal = false;
+        $this->resetErrorBag();
     }
 
-    // MODIFICATION: Nouvelle méthode pour obtenir les statistiques des labels
-    public function getLabelStats()
-    {
-        $stats = [];
-        foreach ($this->labels as $label) {
-            $stats[$label->id] = [
-                'name' => $label->name,
-                'color' => $label->color,
-                'tasks_count' => $this->tasks->filter(function ($task) use ($label) {
-                    return $task->labels->contains('id', $label->id);
-                })->count()
-            ];
-        }
-        return $stats;
-    }
-
-    // MODIFICATION: Nouvelle méthode pour obtenir les tâches avec labels pour une catégorie
-    public function getCategoryTasksWithLabels($categoryId)
-    {
-        return $this->tasksByCategory[$categoryId] ?? collect();
-    }
-
-    // Écouteur pour les mises à jour de projet
     #[On('projectUpdated')]
     public function projectUpdated()
     {
-        // Rechargement du tableau quand le projet est mis à jour
-        $this->loadBoard();
+
+        $this->loadProject(project: $this->project->id);
+        $this->applyFilters();
     }
 
-    // Méthode d'initialisation du composant avec vérification des droits d'accès
-    public function mount(Project $project)
+    #[On('labelUpdated')]
+    public function labelUpdated()
     {
-        // Vérification que l'utilisateur a accès à ce projet
-        if (!Auth::user()->can('view', $project)) {
-            session()->flash('error', 'Vous n\'avez pas la permission de voir ce projet.');
-            return redirect()->route('dashboard');
-        }
-
-        $this->project = $project;
-        $this->loadBoard();
+        $this->labels = $this->project->labels()->orderBy('name')->get();
+        $this->applyFilters();
     }
 
-    // Rendu de la vue avec layout personnalisé et titre dynamique
+    /**
+     * Handle task drag and drop between categories
+     */
+    #[On('taskMoved')]
+    public function handleTaskMove($taskId, $newCategoryId, $newPosition = null)
+    {
+        try {
+            $task = Task::findOrFail($taskId);
+            $newCategory = Category::findOrFail($newCategoryId);
+
+            // Store old category for logging
+            $oldCategoryId = $task->category_id;
+
+            // Get current position in new category
+            if ($newPosition === null) {
+                $maxPosition = Task::where('category_id', $newCategoryId)->max('position') ?? 0;
+                $newPosition = $maxPosition + 1;
+            }
+
+            // Update task category and position
+            $task->update([
+                'category_id' => $newCategoryId,
+                'position' => $newPosition
+            ]);
+
+
+            // Reorder tasks in both categories if they're different
+            if ($oldCategoryId != $newCategoryId) {
+                $this->reorderTasksInCategory($oldCategoryId);
+                $this->reorderTasksInCategory($newCategoryId);
+            }
+
+            // Refresh the component data
+            $this->loadProject($this->project->id);
+            $this->applyFilters();
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Erreur lors du déplacement de la tâche: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Reorder tasks within a category
+     */
+    private function reorderTasksInCategory($categoryId)
+    {
+        $tasks = Task::where('category_id', $categoryId)
+            ->orderBy('position')
+            ->get();
+
+        foreach ($tasks as $index => $task) {
+            $newPosition = $index + 1;
+            $task->update(['position' => $newPosition]);
+        }
+    }
+
+    /**
+     * Handle task date change from calendar drag and drop
+     */
+    #[On('taskDateMoved')]
+    public function handleTaskDateMove($taskId, $newDate)
+    {
+        try {
+            $task = Task::findOrFail($taskId);
+
+            // Parse the new date
+            $newDeadline = Carbon::parse($newDate);
+            $oldDeadline = $task->deadline;
+
+            // Update task deadline
+            $task->update([
+                'deadline' => $newDeadline
+            ]);
+
+            // Refresh the component data
+            $this->loadProject($this->project->id);
+            $this->applyFilters();
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Erreur lors du changement de date: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Handle creating a new task with a specific deadline from calendar
+     */
+    #[On('createTaskForDate')]
+    public function createTaskForDate($date, $categoryId = null)
+    {
+        try {
+            // Set default category if none provided - find "À faire" category first
+            if (!$categoryId && $this->categories->count() > 0) {
+                // Try to find "À faire" system category first
+                $todoCategory = $this->categories->where('title', 'À faire')->where('is_system', true)->first();
+                $categoryId = $todoCategory ? $todoCategory->id : $this->categories->first()->id;
+            }
+
+            $deadline = Carbon::parse($date);
+
+            // Dispatch event to open task creation modal with pre-filled deadline
+            $this->dispatch('openCreateTaskModal', $categoryId, $deadline->format('Y-m-d\TH:i'));
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Erreur lors de la création de la tâche.');
+        }
+    }
+
+    /**
+     * Go to today's date in calendar
+     */
+    public function goToToday()
+    {
+        $today = Carbon::today();
+        $this->calendarYear = $today->year;
+        $this->calendarMonth = $today->month;
+        $this->generateCalendarData();
+    }
     public function render()
     {
-        return view('livewire.board')->layout('components.layouts.app', ['title' => 'Tableau - ' . $this->project->name]);
+        return view('livewire.board');
     }
 }

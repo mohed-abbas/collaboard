@@ -1,5 +1,5 @@
 @props([
-    'id' => uniqid(),
+'id' => uniqid(),
 ])
 
 <svg {{ $attributes }} fill="none">
