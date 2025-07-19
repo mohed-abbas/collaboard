@@ -50,29 +50,10 @@
             </div>
 
             <!-- Theme Options -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" x-data="{ 
-                selectedTheme: localStorage.theme || 'system',
-                setTheme(theme) {
-                    this.selectedTheme = theme;
-                    if (theme === 'light') {
-                        localStorage.theme = 'light';
-                        document.documentElement.classList.remove('dark');
-                    } else if (theme === 'dark') {
-                        localStorage.theme = 'dark';
-                        document.documentElement.classList.add('dark');
-                    } else {
-                        localStorage.removeItem('theme');
-                        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                            document.documentElement.classList.add('dark');
-                        } else {
-                            document.documentElement.classList.remove('dark');
-                        }
-                    }
-                }
-            }">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" x-data>
                 <!-- Light Theme -->
-                <div @click="setTheme('light')"
-                    :class="selectedTheme === 'light' ? 'ring-2 ring-[#4586FF] dark:ring-[#99BDFF] ring-offset-2 ring-offset-white dark:ring-offset-slate-800' : ''"
+                <div @click="$flux.appearance = 'light'"
+                    :class="$flux.appearance === 'light' ? 'ring-2 ring-[#4586FF] dark:ring-[#99BDFF] ring-offset-2 ring-offset-white dark:ring-offset-slate-800' : ''"
                     class="group relative cursor-pointer rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all duration-300 hover:border-[#4586FF] dark:hover:border-[#99BDFF] hover:shadow-lg hover:shadow-blue-500/10 dark:hover:shadow-blue-400/10">
 
                     <!-- Theme Preview -->
@@ -98,7 +79,7 @@
                         </div>
 
                         <!-- Selection Indicator -->
-                        <div x-show="selectedTheme === 'light'"
+                        <div x-show="$flux.appearance === 'light'"
                             class="absolute top-2 right-2 w-6 h-6 bg-[#4586FF] rounded-full flex items-center justify-center shadow-lg">
                             <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
@@ -123,8 +104,8 @@
                 </div>
 
                 <!-- Dark Theme -->
-                <div @click="setTheme('dark')"
-                    :class="selectedTheme === 'dark' ? 'ring-2 ring-[#4586FF] dark:ring-[#99BDFF] ring-offset-2 ring-offset-white dark:ring-offset-slate-800' : ''"
+                <div @click="$flux.appearance = 'dark'"
+                    :class="$flux.appearance === 'dark' ? 'ring-2 ring-[#4586FF] dark:ring-[#99BDFF] ring-offset-2 ring-offset-white dark:ring-offset-slate-800' : ''"
                     class="group relative cursor-pointer rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all duration-300 hover:border-[#4586FF] dark:hover:border-[#99BDFF] hover:shadow-lg hover:shadow-blue-500/10 dark:hover:shadow-blue-400/10">
 
                     <!-- Theme Preview -->
@@ -150,7 +131,7 @@
                         </div>
 
                         <!-- Selection Indicator -->
-                        <div x-show="selectedTheme === 'dark'"
+                        <div x-show="$flux.appearance === 'dark'"
                             class="absolute top-2 right-2 w-6 h-6 bg-[#99BDFF] rounded-full flex items-center justify-center shadow-lg">
                             <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
@@ -175,8 +156,8 @@
                 </div>
 
                 <!-- System Theme -->
-                <div @click="setTheme('system')"
-                    :class="selectedTheme === 'system' ? 'ring-2 ring-[#4586FF] dark:ring-[#99BDFF] ring-offset-2 ring-offset-white dark:ring-offset-slate-800' : ''"
+                <div @click="$flux.appearance = 'system'"
+                    :class="$flux.appearance === 'system' ? 'ring-2 ring-[#4586FF] dark:ring-[#99BDFF] ring-offset-2 ring-offset-white dark:ring-offset-slate-800' : ''"
                     class="group relative cursor-pointer rounded-2xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 transition-all duration-300 hover:border-[#4586FF] dark:hover:border-[#99BDFF] hover:shadow-lg hover:shadow-blue-500/10 dark:hover:shadow-blue-400/10">
 
                     <!-- Theme Preview -->
@@ -211,7 +192,7 @@
                         </div>
 
                         <!-- Selection Indicator -->
-                        <div x-show="selectedTheme === 'system'"
+                        <div x-show="$flux.appearance === 'system'"
                             class="absolute top-2 right-2 w-6 h-6 bg-gradient-to-r from-[#4586FF] to-[#99BDFF] rounded-full flex items-center justify-center shadow-lg">
                             <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
