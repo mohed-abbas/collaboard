@@ -38,5 +38,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('project.settings');// MODIFICATION: Ajout de la vérification de la permission d'accès aux paramètres du projet
 });
 
+Route::get('/debug-scheme', fn() => request()->getScheme());
+
+
 // MODIFICATION: Inclusion des routes d'authentification Laravel Breeze
 require __DIR__ . '/auth.php';
