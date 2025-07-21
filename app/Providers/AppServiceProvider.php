@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Policies\ProjectPolicy;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\App;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if ($this->app->environment('production')) {
+        if (App::isProduction() || $this->app->environment('production')) {
             URL::forceScheme('https');
         }
     }
