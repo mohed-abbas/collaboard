@@ -64,6 +64,15 @@ class Board extends Component
 
     public function mount($project)
     {
+
+        $projectObj = is_object($project) ? $project : Project::findOrFail($project);
+
+        // Permission check using ProjectPolicy
+        if (!Auth::user()->can('view', $projectObj)) {
+            return redirect()->route('dashboard')->with('error', 'Vous n\'êtes pas autorisé à accéder à ce projet.');
+        }
+
+
         $this->loadProject($project);
         $this->viewMode = session('board_view_mode', 'board'); // Default to 'board' view mode
         $this->applyFilters();
